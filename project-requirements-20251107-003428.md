@@ -359,6 +359,125 @@ Base: 1 vote per user
 - Accuracy: 95%
 - Best quality, personalized feeds
 
+### 3.9 Folo-Inspired Features ⭐ NEW!
+
+**Reference:** https://github.com/RSSNext/Folo (35.7k stars - highly successful RSS reader)
+
+**Feature Set 1: AI Content Enhancement (Beta - Phase 2)**
+
+**AI Translation:**
+- **Implementation**: Google Translate API (FREE 500k characters/month)
+- **UI**: One-click translate button on every article
+- **Supported Languages**: 100+ languages (auto-detect source)
+- **User Experience**:
+  1. User reading Chinese article → Clicks "Translate" button
+  2. Article translated to English (or user's preferred language)
+  3. Translation cached in IndexedDB (no repeat API calls)
+  4. Toggle between original/translated view
+- **Cost**: $0 for MVP (500k chars covers ~5,000 articles/month)
+
+**AI Summaries:**
+- **Implementation Options**:
+  - **Free (MVP)**: Hugging Face Inference API (facebook/bart-large-cnn - FREE)
+  - **Paid (Beta)**: OpenAI GPT-4 Turbo ($0.01 per 1k tokens)
+- **UI**: "📝 Summary" button shows 3-sentence TL;DR
+- **User Experience**:
+  1. Long article (5,000 words) → User clicks "Summary"
+  2. AI generates 3-sentence summary
+  3. User decides if worth reading full article
+  4. Saves time, improves engagement
+- **Cost**: $0 (Hugging Face) or $0.05/month for 1,000 summaries (OpenAI)
+
+**Feature Set 2: Curated Lists & Collections (MVP - Phase 1)**
+
+**User-Created Lists:**
+- Users create custom lists (e.g., "Best DeFi News", "Top Crypto Analysis")
+- Add articles to lists (like playlists)
+- Public lists: Anyone can subscribe
+- Private lists: Personal organization (Pro feature)
+- **Database Schema**:
+```sql
+CREATE TABLE content_lists (
+  id UUID PRIMARY KEY,
+  clerk_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  is_public BOOLEAN DEFAULT TRUE,
+  subscriber_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE list_items (
+  id UUID PRIMARY KEY,
+  list_id UUID REFERENCES content_lists(id),
+  article_url TEXT NOT NULL,
+  added_by_clerk_id TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE list_subscriptions (
+  id UUID PRIMARY KEY,
+  list_id UUID REFERENCES content_lists(id),
+  subscriber_clerk_id TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(list_id, subscriber_clerk_id)
+);
+```
+
+**Feature Set 3: Dynamic Content Support (Beta - Phase 2)**
+
+**Video Content:**
+- **YouTube**: YouTube Data API v3 (FREE 10,000 quota/day)
+- **TikTok**: Public API (trending crypto videos)
+- **Embedded Players**: In-app video playback
+- **Example Sources**:
+  - YouTube: Crypto news channels, interviews, tutorials
+  - TikTok: Trending crypto content creators
+
+**Audio Content (Podcasts):**
+- **Apple Podcasts**: RSS feeds (free)
+- **Spotify**: Podcast RSS (via third-party)
+- **Example Podcasts**:
+  - "Unchained" (crypto podcast)
+  - "Bankless" (Ethereum/DeFi)
+  - "The Defiant" (DeFi news)
+- **Player**: HTML5 audio player (in-app playback)
+
+**Feature Set 4: Reader View Mode (MVP - Phase 1)**
+
+**Distraction-Free Reading:**
+- **Implementation**: @mozilla/readability library (open source)
+- **Features**:
+  - Extract clean article content (remove ads, sidebars)
+  - Adjust font size, line height, width
+  - Dark mode optimized
+  - Save reading position
+  - Estimate read time
+- **UI**:
+  - "📖 Reader View" button on article cards
+  - Full-screen immersive reading
+  - Progress bar (% read)
+- **Cost**: $0 (open source library)
+
+**Feature Set 5: Content Sharing (MVP - Phase 1)**
+
+**Share to Social Media:**
+- **Platforms**: Twitter/X, Facebook, LinkedIn, Telegram, WhatsApp
+- **Implementation**: Web Share API (built into browsers)
+```javascript
+const shareArticle = async (article) => {
+  await navigator.share({
+    title: article.title,
+    text: article.description,
+    url: article.url + '?ref=web3news'
+  })
+  
+  // Award 5 points for sharing (tracked via UTM)
+}
+```
+- **Referral Tracking**: UTM parameters (award points when referral clicks)
+- **Cost**: $0 (native browser API)
+
 ---
 
 ## 4. NON-FUNCTIONAL REQUIREMENTS
