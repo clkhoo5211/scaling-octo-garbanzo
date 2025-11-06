@@ -1,0 +1,80 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output
+*.log
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Production
+*.production
+.vercel
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env*.local
+.env.development
+.env.production
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+
+# Hardhat
+cache/
+artifacts/
+typechain-types/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Build artifacts
+*.tsbuildinfo
+next-env.d.ts
+
+# Flutter (future)
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+pubspec.lock
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Clerk
+.clerk/
+
+# Temporary
+temp/
+tmp/
+*.tmp
+
