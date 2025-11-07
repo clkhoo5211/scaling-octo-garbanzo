@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import {
   useConversations,
-  useCreateConversation,
 } from "@/lib/hooks/useMessages";
 import { useAppStore } from "@/lib/stores/appStore";
 import { formatDistanceToNow } from "date-fns";

@@ -13,7 +13,6 @@ import {
   useUserBids,
 } from './useAuctions';
 import * as supabaseApi from '@/lib/api/supabaseApi';
-import { useAppStore } from '@/lib/stores/appStore';
 import { useAppKitAccount } from '@reown/appkit/react';
 
 // Mock dependencies
@@ -23,7 +22,7 @@ jest.mock('@/lib/stores/appStore', () => {
     userId: 'test-user-id',
   };
   const useAppStoreMock = jest.fn(() => mockStore);
-  (useAppStoreMock as any).getState = jest.fn(() => mockStore);
+  (useAppStoreMock as unknown as { getState: jest.Mock }).getState = jest.fn(() => mockStore);
   return {
     useAppStore: useAppStoreMock,
   };

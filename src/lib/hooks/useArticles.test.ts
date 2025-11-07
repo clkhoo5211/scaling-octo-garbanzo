@@ -10,15 +10,12 @@ import {
   useArticles,
   useBookmarks,
   useBookmarkArticle,
-  useRemoveBookmark,
   useLikeArticle,
-  useUnlikeArticle,
   useArticleLikes,
 } from './useArticles';
 import * as contentAggregator from '@/lib/services/contentAggregator';
 import * as indexedDBCache from '@/lib/services/indexedDBCache';
 import * as supabaseApi from '@/lib/api/supabaseApi';
-import { useAppStore } from '@/lib/stores/appStore';
 
 // Mock dependencies
 jest.mock('@/lib/services/contentAggregator', () => ({
@@ -40,7 +37,7 @@ jest.mock('@/lib/stores/appStore', () => {
     unfollowUser: jest.fn(),
   };
   const useAppStoreMock = jest.fn(() => mockStore);
-  (useAppStoreMock as any).getState = jest.fn(() => mockStore);
+  (useAppStoreMock as unknown as { getState: jest.Mock }).getState = jest.fn(() => mockStore);
   return {
     useAppStore: useAppStoreMock,
   };

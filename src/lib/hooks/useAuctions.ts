@@ -8,7 +8,6 @@ import {
   getAuctions,
   getAuctionBids,
   createAuctionBid,
-  updateAuction,
   type Auction,
   type AuctionBid,
 } from "@/lib/api/supabaseApi";

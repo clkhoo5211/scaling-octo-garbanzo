@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
  * Clerk's useUser uses server actions, so we create a client-side alternative
  */
 export function useClerkUser() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; emailAddresses?: Array<{ emailAddress: string }> } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {

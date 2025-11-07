@@ -23,7 +23,7 @@ jest.mock('@/lib/stores/appStore', () => {
     userId: 'test-user-id',
   };
   const useAppStoreMock = jest.fn(() => mockStore);
-  (useAppStoreMock as any).getState = jest.fn(() => mockStore);
+  (useAppStoreMock as unknown as { getState: jest.Mock }).getState = jest.fn(() => mockStore);
   return {
     useAppStore: useAppStoreMock,
   };
@@ -192,7 +192,7 @@ describe('useVote', () => {
     };
     const useAppStoreMock = useAppStore as jest.Mock;
     useAppStoreMock.mockReturnValue(mockStoreWithoutUser);
-    (useAppStoreMock as any).getState = jest.fn(() => mockStoreWithoutUser);
+    (useAppStoreMock as unknown as { getState: jest.Mock }).getState = jest.fn(() => mockStoreWithoutUser);
 
     const { result } = renderHook(() => useVote(), {
       wrapper: createWrapper(),

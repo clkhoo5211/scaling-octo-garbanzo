@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { contentAggregator } from "@/lib/services/contentAggregator";
 import { indexedDBCache } from "@/lib/services/indexedDBCache";
-import type { Article } from "@/lib/services/indexedDBCache";
 import {
   getBookmarks,
   createBookmark,

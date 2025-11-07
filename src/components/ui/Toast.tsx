@@ -72,7 +72,9 @@ function ToastContainer({
   );
 }
 
-function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
+export function Toast({ toast, onClose }: { toast: Toast; onClose: () => void }) {
+  return <ToastItem toast={toast} onClose={onClose} />;
+}
   const typeStyles = {
     success: "bg-green-500 text-white",
     error: "bg-red-500 text-white",

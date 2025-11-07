@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Article } from "@/lib/services/indexedDBCache";
 
 interface UserPreferences {
   theme: "light" | "dark" | "system";
@@ -50,12 +49,12 @@ interface AppState {
   offlineQueue: Array<{
     id: string;
     type: "like" | "bookmark" | "follow" | "message" | "bid";
-    payload: any;
+    payload: unknown;
     timestamp: number;
   }>;
   addToOfflineQueue: (action: {
     type: "like" | "bookmark" | "follow" | "message" | "bid";
-    payload: any;
+    payload: unknown;
   }) => void;
   removeFromOfflineQueue: (id: string) => void;
   clearOfflineQueue: () => void;
@@ -186,10 +185,10 @@ export const useAppStore = create<AppState>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Restore Sets and Maps from arrays
-          state.bookmarks = new Set(state.bookmarks as any);
-          state.likedArticles = new Set(state.likedArticles as any);
-          state.following = new Set(state.following as any);
-          state.readingProgress = new Map(state.readingProgress as any);
+          state.bookmarks = new Set(state.bookmarks as string[]);
+          state.likedArticles = new Set(state.likedArticles as string[]);
+          state.following = new Set(state.following as string[]);
+          state.readingProgress = new Map(state.readingProgress as [string, number][]);
         }
       },
     }

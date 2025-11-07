@@ -178,7 +178,7 @@ export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProp
         className={`min-h-screen bg-white dark:bg-gray-900 ${theme === "dark" ? "dark" : ""}`}
       >
         <Suspense fallback={null}>
-          <ReadingProgress progress={readingProgress} />
+          <ReadingProgress />
         </Suspense>
 
         {/* Article Header */}
@@ -265,20 +265,19 @@ export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProp
           </Suspense>
 
           {/* Reader Controls */}
-          <Suspense fallback={null}>
-            <ReaderControls
-              articleId={article.id}
-              articleUrl={article.url}
-              articleTitle={article.title}
-              isBookmarked={isBookmarked}
-              onBookmarkToggle={handleBookmark}
-              onShare={handleShare}
-              fontSize={fontSize}
-              onFontSizeChange={setFontSize}
-              theme={theme}
-              onThemeToggle={handleThemeToggle}
-            />
-          </Suspense>
+              <Suspense fallback={null}>
+                <ReaderControls
+                  articleId={article.id}
+                  articleUrl={article.url}
+                  isBookmarked={isBookmarked}
+                  onBookmarkToggle={handleBookmark}
+                  onShare={handleShare}
+                  fontSize={fontSize}
+                  onFontSizeChange={setFontSize}
+                  theme={theme}
+                  onThemeToggle={handleThemeToggle}
+                />
+              </Suspense>
         </div>
 
         {/* External Link Notice */}

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useWriteContract } from "@reown/appkit/react";
+import { useState, useEffect } from "react";
 import { CheckCircle, XCircle, Minus, Loader2 } from "lucide-react";
 import { TransactionStatus } from "@/components/web3/TransactionStatus";
 
@@ -10,7 +9,7 @@ interface VoteButtonProps {
   voteOption: "yes" | "no" | "abstain";
   disabled?: boolean;
   contractAddress?: string;
-  abi?: any[];
+  abi?: unknown[];
   onVote?: (
     proposalId: string,
     voteOption: "yes" | "no" | "abstain"
@@ -25,39 +24,21 @@ export function VoteButton({
   proposalId,
   voteOption,
   disabled = false,
-  contractAddress,
-  abi,
   onVote,
 }: VoteButtonProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txHash, setTxHash] = useState<string | undefined>();
-
-  const { writeContract, isPending, data: hash } = useWriteContract();
-
-  useState(() => {
-    if (hash) setTxHash(hash);
-  });
 
   const handleVote = async () => {
     setIsSubmitting(true);
     setTxHash(undefined);
 
     try {
-      if (contractAddress && abi) {
-        writeContract({
-          address: contractAddress as `0x${string}`,
-          abi,
-          functionName: "vote",
-          args: [
-            proposalId,
-            voteOption === "yes" ? 0 : voteOption === "no" ? 1 : 2,
-          ],
-        });
-      } else if (onVote) {
+      if (onVote) {
         await onVote(proposalId, voteOption);
         setIsSubmitting(false);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Vote failed:", error);
       setIsSubmitting(false);
     }
@@ -96,7 +77,7 @@ export function VoteButton({
     }
   };
 
-  const isLoading = isSubmitting || isPending;
+  const isLoading = isSubmitting;
 
   return (
     <>

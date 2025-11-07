@@ -5,9 +5,7 @@
 
 import { supabase } from "../services/supabase";
 import type { Database } from "@/types/supabase";
-import { handleError, AppError, safeAsync } from "./errorHandler";
-
-type Tables = Database["public"]["Tables"];
+import { safeAsync } from "./errorHandler";
 
 // ============================================================================
 // BOOKMARKS API

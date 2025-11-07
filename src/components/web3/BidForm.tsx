@@ -11,7 +11,7 @@ interface BidFormProps {
   minBid: string;
   onBid: (amount: string, tenure: string) => Promise<void>;
   contractAddress?: string;
-  abi?: any[];
+  abi?: unknown[];
 }
 
 /**
@@ -19,11 +19,8 @@ interface BidFormProps {
  * Form for placing bids on ad auctions
  */
 export function BidForm({
-  auctionId,
   minBid,
   onBid,
-  contractAddress,
-  abi,
 }: BidFormProps) {
   const [bidAmount, setBidAmount] = useState("");
   const [tenure, setTenure] = useState("1week");
@@ -47,8 +44,7 @@ export function BidForm({
   }, [address, fetchBalance]);
   
   // Remove useWriteContract for now - not available in AppKit
-  const [isPending, setIsPending] = useState(false);
-  const [hash, setHash] = useState<string | undefined>();
+  const [isPending] = useState(false);
 
   const validateBid = (amount: string): string | null => {
     const amountNum = parseFloat(amount);
@@ -86,8 +82,9 @@ export function BidForm({
       // For now, use callback only - contract interaction needs wagmi setup
       await onBid(bidAmount, tenure);
       setIsSubmitting(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to place bid");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to place bid";
+      setError(errorMessage);
       setIsSubmitting(false);
     }
   };

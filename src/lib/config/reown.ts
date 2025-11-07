@@ -38,7 +38,12 @@ export const appKit = createAppKit({
     socials: ["google", "twitter", "discord", "github"],
     emailShowWallets: true,
   },
-  networks: networks as any,
+  networks: networks as Array<{
+    id: number;
+    name: string;
+    nativeCurrency: { name: string; symbol: string; decimals: number };
+    rpcUrls: { default: { http: string[] } };
+  }>,
   themeMode: "dark",
   themeVariables: {
     "--w3m-accent": "#6366F1",
