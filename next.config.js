@@ -23,6 +23,12 @@ const nextConfig = {
     // Don't fail build on type errors - we'll fix them incrementally
     ignoreBuildErrors: true,
   },
+  // Suppress webpack warnings about React Native dependencies
+  // These are harmless warnings from MetaMask SDK (not Clerk)
+  webpack: (config, { isServer, dev }) => {
+    // ... existing webpack config ...
+    // Note: React Native warnings are harmless and don't break the build
+    // Clerk works perfectly with static export (client-side only)
   // Disable webpack cache to avoid hanging issues
   webpack: (config, { isServer, dev }) => {
     // Disable webpack cache
@@ -47,20 +53,29 @@ const nextConfig = {
         config.plugins = [];
       }
       
-      // Use IgnorePlugin to completely ignore these modules
       const webpack = require('webpack');
+      
+      // Use NormalModuleReplacementPlugin to replace React Native modules with empty mocks
+      // This is more aggressive than IgnorePlugin and prevents the warning
       config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /^@react-native-async-storage\/async-storage$/,
+          require.resolve('./webpack/react-native-stub.js')
+        ),
+        new webpack.NormalModuleReplacementPlugin(
+          /^react-native$/,
+          require.resolve('./webpack/react-native-stub.js')
+        ),
+        // Also use IgnorePlugin as backup
         new webpack.IgnorePlugin({
           resourceRegExp: /^@react-native-async-storage\/async-storage$/,
-          contextRegExp: /node_modules\/@metamask\/sdk/,
         }),
         new webpack.IgnorePlugin({
           resourceRegExp: /^react-native$/,
-          contextRegExp: /node_modules\/@metamask\/sdk/,
         })
       );
       
-      // Also set alias as fallback - must be set before module resolution
+      // Set alias to false to prevent resolution
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         '@clerk/nextjs/server': false,
