@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Article } from "@/lib/services/indexedDBCache";
 import { formatRelativeTime, truncate } from "@/lib/utils";
 import { useAppStore } from "@/lib/stores/appStore";
@@ -9,8 +10,10 @@ import {
   useUnlikeArticle,
   useArticleLikes,
 } from "@/lib/hooks/useArticles";
+import { useClerkUser } from "@/lib/hooks/useClerkUser";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ArticlePreviewModal } from "@/components/article/ArticlePreviewModal";
+import { Modal } from "@/components/ui/Modal";
 
 export interface ArticleCardProps {
   article: Article;
@@ -31,11 +34,14 @@ export const ArticleCard = memo(function ArticleCard({
   onSelect,
   previewMode = "both", // Default to both modal and fullpage
 }: ArticleCardProps) {
+  const router = useRouter();
+  const { user, isLoaded: authLoaded, isSignedIn } = useClerkUser();
   const { isLiked, isBookmarked, addBookmark, removeBookmark } = useAppStore();
   const likeMutation = useLikeArticle();
   const unlikeMutation = useUnlikeArticle();
   const { data: likesCount = 0 } = useArticleLikes(article.id);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const liked = isLiked(article.id);
   const bookmarked = isBookmarked(article.id);
@@ -70,10 +76,24 @@ export const ArticleCard = memo(function ArticleCard({
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Check if user is logged in
+    if (!authLoaded) {
+      // Still loading auth state, wait
+      return;
+    }
+
+    if (!isSignedIn) {
+      // User not logged in - show login prompt
+      setShowLoginPrompt(true);
+      return;
+    }
+
+    // User is logged in - proceed with preview
     // Handle preview mode first - modal takes precedence
     if (previewMode === "modal" || previewMode === "both") {
-      e.preventDefault();
-      e.stopPropagation();
       setShowPreviewModal(true);
       // Call onSelect if provided (for tracking/analytics) but don't navigate
       onSelect?.(article);
@@ -83,14 +103,17 @@ export const ArticleCard = memo(function ArticleCard({
     // If previewMode is "fullpage", navigate to full page
     if (previewMode === "fullpage") {
       if (onSelect) {
-        e.preventDefault();
-        e.stopPropagation();
         onSelect(article);
       } else {
-        window.location.href = `/article?url=${encodeURIComponent(article.url)}`;
+        router.push(`/article?url=${encodeURIComponent(article.url)}`);
       }
       return;
     }
+  };
+
+  const handleLogin = () => {
+    setShowLoginPrompt(false);
+    router.push("/auth");
   };
 
   return (
@@ -173,10 +196,39 @@ export const ArticleCard = memo(function ArticleCard({
                 <span className="text-sm text-gray-500">
                   {article.comments} comments
                 </span>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </article>
+
+      {/* Login Prompt Modal */}
+      <Modal
+        isOpen={showLoginPrompt}
+        onClose={() => setShowLoginPrompt(false)}
+        title="Sign In Required"
+        size="md"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600 dark:text-gray-400">
+            Please sign in to view articles and access all features.
+          </p>
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setShowLoginPrompt(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleLogin}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Article Preview Modal */}
       {previewMode === "modal" || previewMode === "both" ? (
@@ -185,7 +237,7 @@ export const ArticleCard = memo(function ArticleCard({
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}
           onOpenFullPage={() => {
-            window.location.href = `/article?url=${encodeURIComponent(article.url)}`;
+            router.push(`/article?url=${encodeURIComponent(article.url)}`);
           }}
         />
       ) : null}
