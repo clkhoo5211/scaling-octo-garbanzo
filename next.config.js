@@ -14,6 +14,16 @@ const nextConfig = {
   trailingSlash: true,
   reactStrictMode: true,
   swcMinify: true,
+  // CRITICAL: Increase timeout for static page generation
+  // Some pages may take longer to generate during build
+  staticPageGenerationTimeout: 300, // 5 minutes
+  // Skip trailing slash redirects for static export
+  skipTrailingSlashRedirect: true,
+  // Disable static optimization for pages that use client-side data fetching
+  // This prevents build hangs from data fetching during static generation
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
+  },
   experimental: {
     optimizePackageImports: ["@reown/appkit"],
   },

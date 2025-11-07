@@ -30,6 +30,7 @@ export function useArticles(
 ) {
   return useQuery({
     queryKey: ["articles", category, "realtime"], // Always real-time
+    enabled: typeof window !== 'undefined', // CRITICAL: Only enable on client-side (skip during build)
     queryFn: async () => {
       console.log(`Fetching real-time articles for ${category}...`);
       
