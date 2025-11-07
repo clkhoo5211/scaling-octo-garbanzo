@@ -254,16 +254,16 @@ export function useArticles(
         Promise.resolve(rssArticlesResult.status === 'fulfilled' ? rssArticlesResult.value : []),
         (async () => {
           // Categories that have contentAggregator support (non-RSS sources)
-          const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
-            ? category as "tech" | "crypto" | "social" | "general"
-            : undefined;
+      const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
+        ? category as "tech" | "crypto" | "social" | "general"
+        : undefined;
           
           if (supportedCategory) {
             // Use contentAggregator for categories with non-RSS sources
             return fetchWithRetry(
               () => contentAggregator.aggregateSources(supportedCategory, {
-                usePagination: options?.usePagination ?? false,
-                extractLinks: options?.extractLinks ?? true,
+            usePagination: options?.usePagination ?? false,
+            extractLinks: options?.extractLinks ?? true,
               }),
               2, // maxRetries: 2
               2000, // baseDelay: 2 seconds

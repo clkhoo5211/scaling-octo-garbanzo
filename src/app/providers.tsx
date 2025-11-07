@@ -40,16 +40,16 @@ export function Providers({ children }: { children: ReactNode }) {
       {/* AppKitProvider uses the appKit instance from context/index.tsx via context */}
       {mounted ? (
         <AppKitProvider>
-          <ClerkProvider
-            publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ""}
-            // No sign-in/sign-up URLs - Clerk is ONLY for user management
-            // All authentication handled by Reown (PRIMARY)
-            // Using @clerk/clerk-react avoids server-actions import
-          >
-            <ReownClerkIntegration>
-              <ToastProvider>{children}</ToastProvider>
-            </ReownClerkIntegration>
-          </ClerkProvider>
+      <ClerkProvider
+        publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ""}
+        // No sign-in/sign-up URLs - Clerk is ONLY for user management
+        // All authentication handled by Reown (PRIMARY)
+        // Using @clerk/clerk-react avoids server-actions import
+      >
+        <ReownClerkIntegration>
+          <ToastProvider>{children}</ToastProvider>
+        </ReownClerkIntegration>
+      </ClerkProvider>
         </AppKitProvider>
       ) : (
         <ClerkProvider

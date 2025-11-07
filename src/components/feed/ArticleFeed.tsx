@@ -86,10 +86,10 @@ export function ArticleFeed({ articles, onSelectArticle }: ArticleFeedProps) {
               animationDelay: isNew ? `${Math.min(index * 0.05, 0.5)}s` : '0s',
             }}
           >
-            <ArticleCard
-              article={article}
-              onSelect={onSelectArticle}
-            />
+        <ArticleCard
+          article={article}
+          onSelect={onSelectArticle}
+        />
           </div>
         );
       })}

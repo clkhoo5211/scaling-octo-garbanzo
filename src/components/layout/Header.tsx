@@ -16,8 +16,8 @@ export function Header() {
               </span>
             </div>
                   <span className="text-xl font-bold text-gray-900">
-                      Web3News
-                  </span>
+              Web3News
+            </span>
           </Link>
 
           {/* Search Bar (Desktop) */}

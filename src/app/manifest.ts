@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
-  const basePath = process.env.GITHUB_REPOSITORY_NAME
-    ? `/${process.env.GITHUB_REPOSITORY_NAME}`
-    : "";
+  // CRITICAL: Use NEXT_PUBLIC_BASE_PATH for client-side access
+  // During build, GITHUB_REPOSITORY_NAME is available, but at runtime we need NEXT_PUBLIC_BASE_PATH
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || 
+    (process.env.GITHUB_REPOSITORY_NAME ? `/${process.env.GITHUB_REPOSITORY_NAME}` : "");
   
   return {
     name: "Web3News - Decentralized News Aggregation",

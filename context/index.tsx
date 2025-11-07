@@ -57,20 +57,20 @@ function initializeAppKit() {
     
     if (adapter) {
       // Client-side: use real adapter
-      appKitInstance = createAppKit({
-        adapters: [adapter],
-        projectId,
-        networks: [mainnet, polygon],
-        defaultNetwork: mainnet,
-        metadata: metadata,
-        features: {
-          analytics: true,
-          email: true,
-          socials: ['google', 'x', 'github', 'discord', 'apple'],
-          onramp: true,
-          swaps: true,
-        },
-      });
+    appKitInstance = createAppKit({
+      adapters: [adapter],
+  projectId,
+  networks: [mainnet, polygon],
+  defaultNetwork: mainnet,
+  metadata: metadata,
+  features: {
+        analytics: true,
+        email: true,
+        socials: ['google', 'x', 'github', 'discord', 'apple'],
+        onramp: true,
+        swaps: true,
+  },
+});
       return appKitInstance;
     }
   } catch (error) {
@@ -101,7 +101,7 @@ function initializeAppKit() {
         swaps: true,
       },
     });
-    return appKitInstance;
+  return appKitInstance;
   } catch (error) {
     console.error('Failed to initialize AppKit:', error);
     // Return null - hooks will handle gracefully
@@ -120,9 +120,9 @@ function ContextProvider({ children, cookies }: { children: ReactNode; cookies: 
   // CRITICAL: Initialize Wagmi config
   useEffect(() => {
     setIsClient(true);
-    const adapter = getWagmiAdapter();
-    if (adapter) {
-      setWagmiConfig(adapter.wagmiConfig as Config);
+      const adapter = getWagmiAdapter();
+      if (adapter) {
+        setWagmiConfig(adapter.wagmiConfig as Config);
     }
   }, []);
   

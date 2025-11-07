@@ -147,9 +147,9 @@ export function Autocomplete({
               onClick={() => handleSelect(article)}
                     className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
                       index === selectedIndex ? "bg-gray-50" : ""
-                    } ${index === 0 ? "rounded-t-lg" : ""} ${
-                      index === filteredArticles.length - 1 ? "rounded-b-lg" : ""
-                    }`}
+              } ${index === 0 ? "rounded-t-lg" : ""} ${
+                index === filteredArticles.length - 1 ? "rounded-b-lg" : ""
+              }`}
             >
                     <div className="font-medium text-sm text-gray-900 truncate">
                 {article.title}

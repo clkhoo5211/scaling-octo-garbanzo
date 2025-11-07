@@ -54,13 +54,13 @@ export function ArticlePreviewModal({
   const foundArticle = useMemo(() => {
     if (!articles || !articleUrl || !isOpen) return null;
     
-    // Normalize URLs for comparison (remove trailing slashes, lowercase)
-    const normalizedUrl = articleUrl.toLowerCase().replace(/\/$/, "");
+      // Normalize URLs for comparison (remove trailing slashes, lowercase)
+      const normalizedUrl = articleUrl.toLowerCase().replace(/\/$/, "");
     return articles.find((a) => {
-      const articleUrlNormalized = a.url.toLowerCase().replace(/\/$/, "");
-      return articleUrlNormalized === normalizedUrl || 
-             articleUrlNormalized.includes(normalizedUrl) ||
-             normalizedUrl.includes(articleUrlNormalized);
+        const articleUrlNormalized = a.url.toLowerCase().replace(/\/$/, "");
+        return articleUrlNormalized === normalizedUrl || 
+               articleUrlNormalized.includes(normalizedUrl) ||
+               normalizedUrl.includes(articleUrlNormalized);
     }) || null;
   }, [articles, articleUrl, isOpen]);
 
@@ -87,10 +87,10 @@ export function ArticlePreviewModal({
     }
   }, [isOpen]);
 
-  // Fetch full article content if article found
+      // Fetch full article content if article found
   useEffect(() => {
     if (article && !article.content && !contentFetchedRef.current && isOpen) {
-      setIsLoadingContent(true);
+        setIsLoadingContent(true);
       contentFetchedRef.current = true;
       
       // CRITICAL: Wrap async code in async IIFE since useEffect callback cannot be async
@@ -150,9 +150,9 @@ export function ArticlePreviewModal({
           });
       })();
     } else if (article?.content && !contentFetchedRef.current && isOpen) {
-      // Sanitize cached content
+        // Sanitize cached content
       const sanitized = sanitizeArticleHtml(article.content);
-      setParsedContent(sanitized);
+        setParsedContent(sanitized);
       contentFetchedRef.current = true;
     }
   }, [article, isOpen]);

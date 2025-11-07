@@ -133,13 +133,13 @@ export default function HomePage() {
 
         {/* Category Tabs - Only render after mount to prevent hydration mismatch */}
         {mounted && (
-          <CategoryTabs
+        <CategoryTabs
             selectedCategory={selectedCategory || "tech"}
             onSelectCategory={(category) => {
               setSelectedCategory(category);
               setShowAllArticles(false);
             }}
-          />
+        />
         )}
 
         {/* Article Feed */}
