@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { modularRSSAggregator } from "@/lib/sources/modularRSSAggregator";
 import { contentAggregator } from "@/lib/services/contentAggregator";
-import { indexedDBCache } from "@/lib/services/indexedDBCache";
 import {
   getBookmarks,
   createBookmark,
@@ -18,45 +18,59 @@ import {
 import { useAppStore } from "@/lib/stores/appStore";
 
 /**
- * Hook to fetch articles with caching and enhanced aggregation
- * Now includes link extraction and pagination support
+ * Hook to fetch articles - Real-time only, no caching
+ * Uses modular RSS sources with adaptive rate limiting
+ * Also includes non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
  */
 export function useArticles(
   category?: "tech" | "crypto" | "social" | "general",
-  options?: { usePagination?: boolean; extractLinks?: boolean; forceRefresh?: boolean }
+  options?: { usePagination?: boolean; extractLinks?: boolean }
 ) {
   return useQuery({
-    queryKey: ["articles", category, options],
+    queryKey: ["articles", category, "realtime"], // Always real-time
     queryFn: async () => {
-      // Check cache first (unless force refresh)
-      if (!options?.forceRefresh) {
-        const cached = await indexedDBCache.getArticles(category);
-        if (cached.length > 0) {
-          console.log(`Using cached articles for ${category || "all"}: ${cached.length} articles`);
-          return cached;
-        }
-      }
-
-      console.log(`Fetching fresh articles for ${category || "all"}...`);
+      console.log(`Fetching real-time articles for ${category || "all"}...`);
       
-      // Fetch from sources with enhanced options
-      const articles = await contentAggregator.aggregateSources(category, {
+      // Fetch RSS sources using modular aggregator (no caching)
+      const rssArticles = category
+        ? await modularRSSAggregator.fetchByCategory(category)
+        : await modularRSSAggregator.fetchAllSources();
+
+      // Fetch non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
+      // Only fetch if category matches or no category specified
+      const nonRSSArticles = await contentAggregator.aggregateSources(category, {
         usePagination: options?.usePagination ?? false,
         extractLinks: options?.extractLinks ?? true,
       });
 
-      console.log(`Fetched ${articles.length} articles for ${category || "all"}`);
+      // Combine and deduplicate
+      const allArticles = [...rssArticles, ...nonRSSArticles];
+      const uniqueArticles = deduplicateArticles(allArticles);
 
-      // Cache articles
-      if (articles.length > 0) {
-        await indexedDBCache.setArticles(articles, category);
-      }
+      console.log(`Fetched ${uniqueArticles.length} real-time articles for ${category || "all"}`);
 
-      return articles;
+      return uniqueArticles;
     },
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
-    retry: 2, // Retry failed requests
+    staleTime: 0, // Always fetch fresh (no caching)
+    gcTime: 0, // No cache time
+    retry: 2,
+    refetchOnMount: true, // Always refetch on mount
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+  });
+}
+
+/**
+ * Deduplicate articles by URL
+ */
+function deduplicateArticles(articles: any[]): any[] {
+  const seen = new Set<string>();
+  return articles.filter((article) => {
+    const normalizedUrl = article.url.toLowerCase().replace(/\/$/, "");
+    if (seen.has(normalizedUrl)) {
+      return false;
+    }
+    seen.add(normalizedUrl);
+    return true;
   });
 }
 
