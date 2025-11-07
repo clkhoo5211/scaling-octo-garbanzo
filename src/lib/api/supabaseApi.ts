@@ -156,6 +156,13 @@ export async function getArticleLikes(articleId: string): Promise<{
 // USER FOLLOWS API
 // ============================================================================
 
+export interface UserFollow {
+  id: string;
+  follower_id: string;
+  following_id: string;
+  created_at: string;
+}
+
 export async function followUser(
   userId: string,
   followingId: string
