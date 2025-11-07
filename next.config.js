@@ -34,6 +34,20 @@ const nextConfig = {
     // Disable webpack cache
     config.cache = false;
 
+    // Suppress React Native dependency warnings from MetaMask SDK
+    // These are false positives - MetaMask SDK works fine without React Native packages
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      {
+        module: /node_modules\/@metamask\/sdk/,
+        message: /Can't resolve '@react-native-async-storage\/async-storage'/,
+      },
+      {
+        module: /node_modules\/@metamask\/sdk/,
+        message: /Can't resolve 'react-native'/,
+      },
+    ];
+
     // Required for Reown AppKit SSR compatibility
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
 
@@ -70,24 +84,32 @@ const nextConfig = {
       const asyncStorageStub = path.resolve(__dirname, 'webpack/async-storage-stub.js');
       const reactNativeStub = path.resolve(__dirname, 'webpack/react-native-stub.js');
       
+      // Use NormalModuleReplacementPlugin BEFORE IgnorePlugin for better matching
       config.plugins.push(
-        // Replace @react-native-async-storage/async-storage with stub
+        // Replace @react-native-async-storage/async-storage with stub (match any import path)
         new webpack.NormalModuleReplacementPlugin(
-          /^@react-native-async-storage\/async-storage$/,
+          /@react-native-async-storage\/async-storage/,
           asyncStorageStub
         ),
-        // Replace react-native with stub
+        // Replace react-native with stub (match any import path)
         new webpack.NormalModuleReplacementPlugin(
           /^react-native$/,
           reactNativeStub
         ),
-        // Also use IgnorePlugin as backup for any missed imports
+        // Aggressive IgnorePlugin to catch any remaining attempts
         new webpack.IgnorePlugin({
           resourceRegExp: /^@react-native-async-storage\/async-storage$/,
-          contextRegExp: /node_modules\/@metamask\/sdk/,
         }),
         new webpack.IgnorePlugin({
           resourceRegExp: /^react-native$/,
+        }),
+        // Context-specific ignore for MetaMask SDK
+        new webpack.IgnorePlugin({
+          resourceRegExp: /@react-native-async-storage\/async-storage/,
+          contextRegExp: /node_modules\/@metamask\/sdk/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /react-native/,
           contextRegExp: /node_modules\/@metamask\/sdk/,
         })
       );
