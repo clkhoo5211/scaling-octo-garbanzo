@@ -1,120 +1,104 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { useEffect, useState, useCallback } from "react";
+import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
+import { useUser, useAuth } from "@clerk/nextjs";
 
 /**
- * Client-side only useUser hook for static export
- * Integrates with Reown AppKit for authentication (PRIMARY)
- * Also supports admin key for development
+ * Enhanced useClerkUser Hook
+ * Integrates Reown AppKit (PRIMARY) with Clerk (SECONDARY)
+ * Priority: Reown authentication → Clerk user management
  */
 export function useClerkUser() {
   const { address, isConnected } = useAppKitAccount();
-  const [user, setUser] = useState<{
-    id: string;
-    emailAddresses?: Array<{ emailAddress: string }>;
-    primaryEmailAddress?: { emailAddress: string };
-    username?: string;
-    createdAt?: number | string;
-  } | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
+  const { isSignedIn } = useAuth();
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  // Load user from localStorage on mount (for admin key)
+  // Sync Reown address to Clerk metadata when both are available
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("clerk_user");
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (e) {
-          // Ignore parse errors
-        }
-      }
-      setIsLoaded(true);
-    }
-  }, []);
+    if (
+      clerkLoaded &&
+      clerkUser &&
+      isSignedIn &&
+      isConnected &&
+      address &&
+      !isSyncing
+    ) {
+      const currentReownAddress = clerkUser.publicMetadata?.reown_address as
+        | string
+        | undefined;
 
-  // Sync Reown AppKit authentication state
-  useEffect(() => {
-    if (isLoaded) {
-      if (isConnected && address) {
-        // User is authenticated via Reown AppKit
-        // Check if we already have a user object, otherwise create one from Reown
-        const storedUser = localStorage.getItem("clerk_user");
-        if (!storedUser) {
-          // Create user object from Reown account
-          const reownUser = {
-            id: address.toLowerCase(), // Use address as ID
-            emailAddresses: [], // Reown doesn't expose email directly
-            primaryEmailAddress: { emailAddress: `${address.slice(0, 6)}...@reown.app` }, // Placeholder
-            username: address.slice(0, 8),
-            createdAt: Date.now(),
-          };
-          // Store in localStorage for persistence
-          localStorage.setItem("clerk_user", JSON.stringify(reownUser));
-          setUser(reownUser);
-        } else {
-          // User already exists in localStorage, use it
-          try {
-            setUser(JSON.parse(storedUser));
-          } catch (e) {
-            // If parse fails, create from Reown
-            const reownUser = {
-              id: address.toLowerCase(),
-              emailAddresses: [],
-              primaryEmailAddress: { emailAddress: `${address.slice(0, 6)}...@reown.app` },
-              username: address.slice(0, 8),
-              createdAt: Date.now(),
-            };
-            localStorage.setItem("clerk_user", JSON.stringify(reownUser));
-            setUser(reownUser);
-          }
-        }
-      } else {
-        // Not connected via Reown - check if admin key user exists
-        const storedUser = localStorage.getItem("clerk_user");
-        if (storedUser) {
-          try {
-            const parsed = JSON.parse(storedUser);
-            // Only keep admin key user if it's the admin user
-            if (parsed.id === "admin-dev-user") {
-              setUser(parsed);
-            } else {
-              // Clear non-admin user when Reown disconnects
-              localStorage.removeItem("clerk_user");
-              setUser(null);
-            }
-          } catch (e) {
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-        }
+      // Update Clerk metadata if Reown address is missing or different
+      if (!currentReownAddress || currentReownAddress !== address) {
+        setIsSyncing(true);
+        clerkUser
+          .update({
+            publicMetadata: {
+              ...clerkUser.publicMetadata,
+              reown_address: address,
+              smart_account_address: address,
+            },
+          })
+          .then(() => {
+            console.log("Synced Reown address to Clerk metadata");
+          })
+          .catch((error) => {
+            console.error("Failed to sync Reown address:", error);
+          })
+          .finally(() => {
+            setIsSyncing(false);
+          });
       }
     }
-  }, [isConnected, address, isLoaded]);
+  }, [
+    address,
+    isConnected,
+    clerkUser,
+    clerkLoaded,
+    isSignedIn,
+    isSyncing,
+  ]);
 
-  // Function to set mock user (for admin key development)
-  const setMockUser = useCallback((mockUser: {
-    id: string;
-    emailAddresses?: Array<{ emailAddress: string }>;
-    primaryEmailAddress?: { emailAddress: string };
-    username?: string;
-    createdAt?: number | string;
-  }) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("clerk_user", JSON.stringify(mockUser));
-      setUser(mockUser);
-    }
-  }, []);
+  // Return Clerk user if available, otherwise return Reown-based user object
+  if (clerkUser && isSignedIn) {
+    return {
+      user: clerkUser,
+      isLoaded: clerkLoaded,
+      isSignedIn: true,
+      reownAddress: address,
+      isReownConnected: isConnected,
+    };
+  }
 
-  // isSignedIn: true if Reown is connected OR admin key user exists
-  const isSignedIn = (isConnected && address) || !!user;
+  // Fallback: Return Reown-based user object if Clerk user doesn't exist yet
+  if (isConnected && address) {
+    return {
+      user: {
+        id: address.toLowerCase(),
+        emailAddresses: clerkUser?.emailAddresses || [],
+        primaryEmailAddress:
+          clerkUser?.primaryEmailAddress ||
+          ({ emailAddress: `${address.slice(0, 8)}@reown.app` } as any),
+        username: address.slice(0, 8),
+        createdAt: Date.now(),
+        publicMetadata: {
+          reown_address: address,
+          smart_account_address: address,
+        },
+      },
+      isLoaded: clerkLoaded,
+      isSignedIn: false, // Not signed in to Clerk yet
+      reownAddress: address,
+      isReownConnected: true,
+    };
+  }
 
   return {
-    user,
-    isLoaded,
-    isSignedIn,
-    setMockUser, // Expose for admin key feature
+    user: null,
+    isLoaded: clerkLoaded,
+    isSignedIn: false,
+    reownAddress: null,
+    isReownConnected: false,
   };
 }
