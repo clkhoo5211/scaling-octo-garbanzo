@@ -5,6 +5,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
+import React from 'react';
 import {
   useAuctions,
   useAuctionBids,
@@ -13,12 +14,37 @@ import {
 } from './useAuctions';
 import * as supabaseApi from '@/lib/api/supabaseApi';
 import { useAppStore } from '@/lib/stores/appStore';
-import { useAccount } from '@reown/appkit/react';
+import { useAppKitAccount } from '@reown/appkit/react';
 
 // Mock dependencies
 jest.mock('@/lib/api/supabaseApi');
-jest.mock('@/lib/stores/appStore');
-jest.mock('@reown/appkit/react');
+jest.mock('@/lib/stores/appStore', () => {
+  const mockStore = {
+    userId: 'test-user-id',
+  };
+  const useAppStoreMock = jest.fn(() => mockStore);
+  (useAppStoreMock as any).getState = jest.fn(() => mockStore);
+  return {
+    useAppStore: useAppStoreMock,
+  };
+});
+jest.mock('@reown/appkit/react', () => ({
+  useAppKitAccount: jest.fn(() => ({
+    address: undefined,
+    isConnected: false,
+  })),
+  useConnect: () => ({
+    connect: jest.fn(),
+    connectors: [],
+  }),
+  useDisconnect: () => ({
+    disconnect: jest.fn(),
+  }),
+  useAppKit: () => ({
+    open: jest.fn(),
+  }),
+  AppKitProvider: ({ children }) => children,
+}));
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -28,9 +54,11 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  const Wrapper = ({ children }: { children: ReactNode }) => {
+    return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  };
+  
+  return Wrapper;
 };
 
 describe('useAuctions', () => {
@@ -129,10 +157,7 @@ describe('useAuctionBids', () => {
 describe('usePlaceBid', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useAppStore.getState as jest.Mock).mockReturnValue({
-      userId: 'test-user-id',
-    });
-    (useAccount as jest.Mock).mockReturnValue({
+    (useAppKitAccount as jest.Mock).mockReturnValue({
       address: '0x123',
       isConnected: true,
     });
@@ -162,7 +187,7 @@ describe('usePlaceBid', () => {
   });
 
   it('should throw error if wallet not connected', async () => {
-    (useAccount as jest.Mock).mockReturnValue({
+    (useAppKitAccount as jest.Mock).mockReturnValue({
       address: null,
       isConnected: false,
     });
@@ -177,7 +202,7 @@ describe('usePlaceBid', () => {
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.error).toEqual(new Error('Wallet not connected'));
+    expect(result.current.error?.message).toBe('Wallet not connected');
   });
 });
 
@@ -235,8 +260,9 @@ describe('useUserBids', () => {
       wrapper: createWrapper(),
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual([]);
+    // When userAddress is null, query is disabled, so data is undefined
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isLoading).toBe(false);
     expect(supabaseApi.getAuctions).not.toHaveBeenCalled();
   });
 });

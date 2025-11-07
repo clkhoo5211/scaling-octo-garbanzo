@@ -42,7 +42,8 @@ describe("Modal", () => {
       </Modal>
     );
 
-    const backdrop = screen.getByRole("dialog").parentElement;
+    const dialog = screen.getByRole("dialog");
+    const backdrop = dialog.parentElement;
     if (backdrop) {
       fireEvent.click(backdrop);
       expect(handleClose).toHaveBeenCalled();
@@ -55,7 +56,8 @@ describe("Modal", () => {
         Content
       </Modal>
     );
-    expect(screen.getByRole("dialog")).toHaveClass("max-w-md");
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveClass("max-w-md");
 
     rerender(
       <Modal isOpen={true} onClose={jest.fn()} title="Test" size="lg">

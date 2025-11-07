@@ -5,7 +5,7 @@ import {
   formatLargeNumber,
   isValidUrl,
   generateExcerpt,
-} from "../src/lib/utils";
+} from "@/lib/utils";
 
 describe("formatRelativeTime", () => {
   beforeEach(() => {

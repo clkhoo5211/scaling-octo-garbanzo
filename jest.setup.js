@@ -27,7 +27,7 @@ jest.mock('next/navigation', () => ({
 
 // Mock Reown AppKit
 jest.mock('@reown/appkit/react', () => ({
-  useAccount: () => ({
+  useAppKitAccount: () => ({
     address: undefined,
     isConnected: false,
   }),
@@ -41,7 +41,7 @@ jest.mock('@reown/appkit/react', () => ({
   useAppKit: () => ({
     open: jest.fn(),
   }),
-  AppKitProvider: ({ children }: { children: React.ReactNode }) => children,
+  AppKitProvider: ({ children }) => children,
 }));
 
 // Mock Clerk
@@ -50,7 +50,7 @@ jest.mock('@clerk/nextjs', () => ({
     user: null,
     isLoaded: true,
   }),
-  ClerkProvider: ({ children }: { children: React.ReactNode }) => children,
+  ClerkProvider: ({ children }) => children,
 }));
 
 // Mock Supabase
@@ -82,7 +82,7 @@ jest.mock('@/lib/services/supabase', () => ({
 // Mock IndexedDB
 global.indexedDB = {
   open: jest.fn(),
-} as any;
+};
 
 // Mock localStorage
 const localStorageMock = {
@@ -91,7 +91,7 @@ const localStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn(),
 };
-global.localStorage = localStorageMock as any;
+global.localStorage = localStorageMock;
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -117,7 +117,7 @@ global.IntersectionObserver = class IntersectionObserver {
     return [];
   }
   unobserve() {}
-} as any;
+};
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -125,5 +125,5 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-} as any;
+};
 

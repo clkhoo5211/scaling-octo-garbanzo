@@ -5,6 +5,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
+import React from 'react';
 import {
   useArticles,
   useBookmarks,
@@ -20,10 +21,30 @@ import * as supabaseApi from '@/lib/api/supabaseApi';
 import { useAppStore } from '@/lib/stores/appStore';
 
 // Mock dependencies
-jest.mock('@/lib/services/contentAggregator');
-jest.mock('@/lib/services/indexedDBCache');
+jest.mock('@/lib/services/contentAggregator', () => ({
+  aggregateSources: jest.fn(),
+}));
+jest.mock('@/lib/services/indexedDBCache', () => ({
+  getArticles: jest.fn(),
+  setArticles: jest.fn(),
+}));
 jest.mock('@/lib/api/supabaseApi');
-jest.mock('@/lib/stores/appStore');
+jest.mock('@/lib/stores/appStore', () => {
+  const mockStore = {
+    userId: 'test-user-id',
+    addBookmark: jest.fn(),
+    removeBookmark: jest.fn(),
+    likeArticle: jest.fn(),
+    unlikeArticle: jest.fn(),
+    followUser: jest.fn(),
+    unfollowUser: jest.fn(),
+  };
+  const useAppStoreMock = jest.fn(() => mockStore);
+  (useAppStoreMock as any).getState = jest.fn(() => mockStore);
+  return {
+    useAppStore: useAppStoreMock,
+  };
+});
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -33,17 +54,16 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  const Wrapper = ({ children }: { children: ReactNode }) => {
+    return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  };
+  
+  return Wrapper;
 };
 
 describe('useArticles', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useAppStore.getState as jest.Mock).mockReturnValue({
-      userId: 'test-user-id',
-    });
   });
 
   it('should fetch articles from cache first', async () => {
@@ -88,7 +108,15 @@ describe('useArticles', () => {
       wrapper: createWrapper(),
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(result.current.isSuccess || result.current.isError).toBe(true);
+    }, { timeout: 5000 });
+    
+    if (result.current.isError) {
+      console.error('Query error:', result.current.error);
+    }
+    
+    expect(result.current.isSuccess).toBe(true);
     expect(result.current.data).toEqual(mockArticles);
     expect(contentAggregator.aggregateSources).toHaveBeenCalled();
     expect(indexedDBCache.setArticles).toHaveBeenCalledWith(mockArticles, 'tech');
@@ -130,8 +158,9 @@ describe('useBookmarks', () => {
       wrapper: createWrapper(),
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual([]);
+    // When userId is null, query is disabled, so data is undefined
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isLoading).toBe(false);
     expect(supabaseApi.getBookmarks).not.toHaveBeenCalled();
   });
 });
@@ -139,10 +168,6 @@ describe('useBookmarks', () => {
 describe('useBookmarkArticle', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useAppStore.getState as jest.Mock).mockReturnValue({
-      userId: 'test-user-id',
-      addBookmark: jest.fn(),
-    });
   });
 
   it('should create a bookmark', async () => {
@@ -173,10 +198,6 @@ describe('useBookmarkArticle', () => {
 describe('useLikeArticle', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useAppStore.getState as jest.Mock).mockReturnValue({
-      userId: 'test-user-id',
-      likeArticle: jest.fn(),
-    });
   });
 
   it('should like an article', async () => {
