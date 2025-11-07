@@ -1,11 +1,12 @@
 'use client';
 
-import { wagmiAdapter, projectId, getWagmiAdapter } from '@/config';
+import { projectId, getWagmiAdapter } from '@/config';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createAppKit } from '@reown/appkit/react';
 import { mainnet, polygon } from '@reown/appkit/networks';
 import React, { type ReactNode, useEffect, useState } from 'react';
-import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi';
+import { cookieToInitialState, WagmiProvider, createConfig, http } from 'wagmi';
+import type { Config } from 'wagmi';
 
 // Set up queryClient
 const queryClient = new QueryClient();
@@ -22,6 +23,24 @@ const metadata = {
   icons: ['/icon-192x192.png', '/icon-512x512.png'],
 };
 
+// CRITICAL: Create a safe stub config for build/SSR (lazy-loaded)
+// This allows WagmiProvider to render during static generation without errors
+function getStubConfig(): Config {
+  if (typeof window === 'undefined') {
+    // During build, return a minimal stub that won't cause hangs
+    // We'll use dynamic import to avoid accessing browser APIs
+    const { createConfig, http } = require('wagmi');
+    return createConfig({
+      chains: [mainnet],
+      transports: {
+        [mainnet.id]: http(),
+      },
+    }) as Config;
+  }
+  // On client-side, this won't be used (real config will be available)
+  return null as any;
+}
+
 // CRITICAL FIX: Lazy-load AppKit ONLY on client-side
 // This prevents build hangs from trying to initialize Web3 connections during static generation
 let appKitInstance: ReturnType<typeof createAppKit> | null = null;
@@ -33,8 +52,14 @@ function getAppKit() {
   }
   
   if (!appKitInstance) {
+    const adapter = getWagmiAdapter();
+    // Double-check adapter is valid (not null stub from build)
+    if (!adapter) {
+      return null;
+    }
+    
     appKitInstance = createAppKit({
-      adapters: [getWagmiAdapter()],
+      adapters: [adapter],
       projectId,
       networks: [mainnet, polygon],
       defaultNetwork: mainnet,
@@ -54,29 +79,35 @@ function getAppKit() {
 
 function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
   const [wagmiConfig, setWagmiConfig] = useState<Config | null>(null);
+  const [isClient, setIsClient] = useState(false);
   
   // CRITICAL: Only initialize Wagmi config on client-side
   useEffect(() => {
+    setIsClient(true);
     if (typeof window !== 'undefined') {
       const adapter = getWagmiAdapter();
-      setWagmiConfig(adapter.wagmiConfig as Config);
-      // Initialize AppKit (side effect)
-      getAppKit();
+      if (adapter) {
+        setWagmiConfig(adapter.wagmiConfig as Config);
+        // Initialize AppKit (side effect)
+        getAppKit();
+      }
     }
   }, []);
   
-  // CRITICAL: For static export, skip cookie-based initialState during build
-  const initialState = typeof window !== 'undefined' && cookies && wagmiConfig
+  // CRITICAL: Always render WagmiProvider (use stub during build, real config on client)
+  // This prevents Reown hooks from failing during static generation
+  const config = wagmiConfig || (typeof window === 'undefined' ? getStubConfig() : null);
+  const initialState = isClient && typeof window !== 'undefined' && cookies && wagmiConfig
     ? cookieToInitialState(wagmiConfig, cookies)
     : undefined;
   
-  // Don't render WagmiProvider until config is ready (client-side only)
-  if (!wagmiConfig) {
+  // If no config available (shouldn't happen, but safety check)
+  if (!config) {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
   }
   
   return (
-    <WagmiProvider config={wagmiConfig} initialState={initialState}>
+    <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );

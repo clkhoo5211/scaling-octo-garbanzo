@@ -18,7 +18,9 @@ let wagmiAdapterInstance: WagmiAdapter | null = null;
 export function getWagmiAdapter(): WagmiAdapter {
   // Only initialize on client-side (not during build/SSR)
   if (typeof window === 'undefined') {
-    throw new Error('WagmiAdapter can only be initialized on the client side');
+    // During build/SSR, return a stub that won't cause hangs
+    // This prevents Next.js from trying to initialize Web3 connections during static generation
+    return null as any; // Type assertion to satisfy TypeScript - this will never be used during build
   }
   
   if (!wagmiAdapterInstance) {
@@ -39,9 +41,13 @@ export function getWagmiAdapter(): WagmiAdapter {
   return wagmiAdapterInstance;
 }
 
-// For backward compatibility, export a getter (but it will throw during build - that's OK)
+// For backward compatibility, export a getter (safe for build - returns undefined during SSR)
 export const wagmiAdapter = {
   get wagmiConfig() {
+    // Safe during build - return undefined if not on client-side
+    if (typeof window === 'undefined') {
+      return undefined as any;
+    }
     return getWagmiAdapter().wagmiConfig;
   }
 };
@@ -49,6 +55,9 @@ export const wagmiAdapter = {
 // CRITICAL: Don't export config at module level - it will trigger initialization during build
 // Use getWagmiAdapter().wagmiConfig instead, or access via wagmiAdapter.wagmiConfig getter
 export function getConfig() {
+  if (typeof window === 'undefined') {
+    return undefined as any;
+  }
   return getWagmiAdapter().wagmiConfig;
 }
 

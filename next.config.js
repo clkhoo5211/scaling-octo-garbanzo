@@ -24,8 +24,11 @@ const nextConfig = {
   generateBuildId: async () => {
     return 'build-' + Date.now();
   },
-  experimental: {
-    optimizePackageImports: ["@reown/appkit"],
+  // Suppress Server Actions warning for static export
+  // This is expected - we're using client-side only features
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
   },
   eslint: {
     // Don't fail build on lint errors - we'll fix them incrementally

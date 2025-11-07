@@ -21,6 +21,12 @@ export function Providers({ children }: { children: ReactNode }) {
     <ContextProvider cookies={null}>
       <ClerkProvider
         publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ""}
+        // CRITICAL: Disable all server-side features for static export
+        // This prevents "Server Actions are not supported" error
+        signInUrl={undefined}
+        signUpUrl={undefined}
+        afterSignInUrl={undefined}
+        afterSignUpUrl={undefined}
         // No sign-in/sign-up URLs - Clerk is ONLY for user management
         // All authentication handled by Reown (PRIMARY)
         // IMPORTANT: Clerk configured for client-side only (no Server Actions)
