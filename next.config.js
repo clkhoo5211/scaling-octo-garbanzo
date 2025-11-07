@@ -44,8 +44,18 @@ const nextConfig = {
         tls: false,
       };
       
-      // Exclude React Native dependencies for browser builds
-      // MetaMask SDK has React Native peer dependencies that aren't needed for Next.js static export
+      // CRITICAL: Reown AppKit → WagmiAdapter → MetaMask SDK → React Native dependencies
+      // MetaMask SDK checks for React Native packages even in browser builds (not needed)
+      // We must prevent webpack from resolving these modules at all
+      
+      // Set alias FIRST to prevent resolution attempts
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        '@clerk/nextjs/server': false,
+        '@react-native-async-storage/async-storage': false,
+        'react-native': false,
+      };
+      
       // Initialize plugins array if it doesn't exist
       if (!config.plugins) {
         config.plugins = [];
@@ -53,10 +63,18 @@ const nextConfig = {
       
       const webpack = require('webpack');
       
-      // Use IgnorePlugin to ignore React Native modules
-      // NormalModuleReplacementPlugin can cause issues if stub file path resolution fails
-      // IgnorePlugin is safer and sufficient for suppressing warnings
+      // Use IgnorePlugin with contextRegExp to catch ALL import attempts
+      // This includes imports from node_modules/@metamask/sdk
       config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^@react-native-async-storage\/async-storage$/,
+          contextRegExp: /node_modules\/@metamask\/sdk/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^react-native$/,
+          contextRegExp: /node_modules\/@metamask\/sdk/,
+        }),
+        // Also ignore globally (backup)
         new webpack.IgnorePlugin({
           resourceRegExp: /^@react-native-async-storage\/async-storage$/,
         }),
@@ -64,14 +82,6 @@ const nextConfig = {
           resourceRegExp: /^react-native$/,
         })
       );
-      
-      // Set alias to false to prevent resolution
-      config.resolve.alias = {
-        ...(config.resolve.alias || {}),
-        '@clerk/nextjs/server': false,
-        '@react-native-async-storage/async-storage': false,
-        'react-native': false,
-      };
       
       // Add to externals to prevent bundling
       if (!config.externals) {
