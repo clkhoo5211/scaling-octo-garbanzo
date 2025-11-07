@@ -78,81 +78,94 @@ export async function fetchArticleContent(
     return cached.content;
   }
 
-  // Try each CORS proxy in order
-  for (const proxyBase of CORS_PROXIES) {
-    try {
-      const proxyUrl = `${proxyBase}${encodeURIComponent(url)}`;
-      console.log(`Fetching article content via proxy: ${proxyBase.substring(0, 30)}...`);
+  // CRITICAL: Add overall timeout wrapper to prevent infinite loading
+  const overallTimeout = new Promise<ParsedArticle | null>((resolve) => {
+    setTimeout(() => {
+      console.warn(`Article content fetch timed out after 15 seconds: ${url.substring(0, 50)}...`);
+      resolve(null);
+    }, 15000); // 15 second overall timeout
+  });
 
-      // Fetch with 10-second timeout
-      const response = await fetchWithTimeout(proxyUrl, 10000);
+  const fetchPromise = (async () => {
+    // Try each CORS proxy in order
+    for (const proxyBase of CORS_PROXIES) {
+      try {
+        const proxyUrl = `${proxyBase}${encodeURIComponent(url)}`;
+        console.log(`Fetching article content via proxy: ${proxyBase.substring(0, 30)}...`);
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch article: ${response.statusText}`);
-      }
+        // Fetch with 8-second timeout per proxy
+        const response = await fetchWithTimeout(proxyUrl, 8000);
 
-      const data = await response.json();
-      // Handle different proxy response formats
-      const html = data.contents || data.content || (typeof data === "string" ? data : null);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch article: ${response.statusText}`);
+        }
 
-      if (!html || typeof html !== "string") {
-        throw new Error("Invalid HTML content received");
-      }
+        const data = await response.json();
+        // Handle different proxy response formats
+        const html = data.contents || data.content || (typeof data === "string" ? data : null);
 
-      // Parse HTML with DOMParser (client-side only)
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
+        if (!html || typeof html !== "string") {
+          throw new Error("Invalid HTML content received");
+        }
 
-      // Use Readability to extract clean content
-      const reader = new Readability(doc);
-      const article = reader.parse();
+        // Parse HTML with DOMParser (client-side only)
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
 
-      if (!article) {
-        console.warn("Readability failed to parse article content");
-        // Fallback: return basic HTML structure
-        const fallbackContent = {
-          title: doc.title || "Untitled",
-          content: `<div>${html.substring(0, 5000)}</div>`, // Truncate if too long
-          textContent: doc.body?.textContent || "",
-          excerpt: doc.querySelector("meta[name='description']")?.getAttribute("content") || "",
-          length: doc.body?.textContent?.length || 0,
+        // Use Readability to extract clean content
+        const reader = new Readability(doc);
+        const article = reader.parse();
+
+        if (!article) {
+          console.warn("Readability failed to parse article content");
+          // Fallback: return basic HTML structure
+          const fallbackContent = {
+            title: doc.title || "Untitled",
+            content: `<div>${html.substring(0, 5000)}</div>`, // Truncate if too long
+            textContent: doc.body?.textContent || "",
+            excerpt: doc.querySelector("meta[name='description']")?.getAttribute("content") || "",
+            length: doc.body?.textContent?.length || 0,
+          };
+          // Cache fallback content
+          contentCache.set(url, { content: fallbackContent, timestamp: Date.now() });
+          return fallbackContent;
+        }
+
+        console.log(`Successfully parsed article: ${article.title.substring(0, 50)}...`);
+
+        const parsedContent = {
+          title: article.title,
+          content: article.content, // This is HTML string from Readability
+          textContent: article.textContent,
+          excerpt: article.excerpt || "",
+          byline: article.byline || undefined,
+          length: article.length,
+          siteName: article.siteName || undefined,
         };
-        // Cache fallback content
-        contentCache.set(url, { content: fallbackContent, timestamp: Date.now() });
-        return fallbackContent;
+
+        // Cache successful fetch
+        contentCache.set(url, { content: parsedContent, timestamp: Date.now() });
+
+        return parsedContent;
+      } catch (error) {
+        console.warn(`Proxy ${proxyBase.substring(0, 30)} failed:`, error);
+        // Try next proxy
+        continue;
       }
-
-      console.log(`Successfully parsed article: ${article.title.substring(0, 50)}...`);
-
-      const parsedContent = {
-        title: article.title,
-        content: article.content, // This is HTML string from Readability
-        textContent: article.textContent,
-        excerpt: article.excerpt || "",
-        byline: article.byline || undefined,
-        length: article.length,
-        siteName: article.siteName || undefined,
-      };
-
-      // Cache successful fetch
-      contentCache.set(url, { content: parsedContent, timestamp: Date.now() });
-
-      return parsedContent;
-    } catch (error) {
-      console.warn(`Proxy ${proxyBase.substring(0, 30)} failed:`, error);
-      // Try next proxy
-      continue;
     }
-  }
 
-  // All proxies failed - return cached content even if expired
-  if (cached) {
-    console.warn("All proxies failed, using expired cache");
-    return cached.content;
-  }
+    // All proxies failed - return cached content even if expired
+    if (cached) {
+      console.warn("All proxies failed, using expired cache");
+      return cached.content;
+    }
 
-  console.error("All CORS proxies failed for:", url);
-  return null;
+    console.error("All CORS proxies failed for:", url);
+    return null;
+  })();
+
+  // Race between fetch and timeout
+  return Promise.race([fetchPromise, overallTimeout]);
 }
 
 /**

@@ -52,16 +52,32 @@ export function ArticlePreviewModal({
       // Fetch full article content if article found
       if (found && !found.content) {
         setIsLoadingContent(true);
-        fetchArticleContent(found.url)
+        // CRITICAL: Add timeout wrapper to prevent infinite loading
+        const timeoutPromise = new Promise<ParsedArticle | null>((resolve) => {
+          setTimeout(() => {
+            console.warn("Article content fetch timed out");
+            resolve(null);
+          }, 20000); // 20 second timeout
+        });
+
+        Promise.race([
+          fetchArticleContent(found.url),
+          timeoutPromise
+        ])
           .then((parsed) => {
             if (parsed) {
               // Sanitize the HTML content
               const sanitized = sanitizeArticleHtml(parsed.content);
               setParsedContent(sanitized);
+            } else {
+              // If fetch failed or timed out, show excerpt instead
+              console.warn("Article content fetch failed, showing excerpt");
+              setParsedContent(null);
             }
           })
           .catch((error) => {
             console.error("Failed to fetch article content:", error);
+            setParsedContent(null);
           })
           .finally(() => {
             setIsLoadingContent(false);
