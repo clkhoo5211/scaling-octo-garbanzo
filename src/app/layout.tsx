@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { ManifestLink } from "@/components/ManifestLink";
 import { CookieConsentBanner } from "@/components/compliance";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -50,6 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
+        <ManifestLink />
         <Providers>
           <Header />
           <main className="min-h-screen pb-16 md:pb-0 bg-gray-100">{children}</main>
