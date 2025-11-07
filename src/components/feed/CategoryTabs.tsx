@@ -35,7 +35,7 @@ export function CategoryTabs({
           className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
             selectedCategory === category.id
               ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
-              : "bg-dark-surface text-dark-text-secondary hover:bg-dark-border hover:text-dark-text-primary border border-dark-border"
+              : "bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-700"
           }`}
         >
           {category.label}

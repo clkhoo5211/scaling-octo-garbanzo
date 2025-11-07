@@ -133,6 +133,19 @@ async function fetchRedditFallback(category: NewsCategory): Promise<Article[]> {
  * Also includes non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
  * Category is required - no "All" option for faster loading
  */
+/**
+ * Fetch with timeout - prevents hanging forever
+ */
+async function fetchWithTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number = 5000
+): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs)
+  );
+  return Promise.race([promise, timeout]);
+}
+
 export function useArticles(
   category: NewsCategory,
   options?: { usePagination?: boolean; extractLinks?: boolean }
@@ -145,51 +158,52 @@ export function useArticles(
   }, []);
 
   return useQuery({
-    queryKey: ["articles", category, "realtime"], // Always real-time
-    // CRITICAL: Only enable query on client-side to prevent hydration mismatch
+    queryKey: ["articles", category, "realtime"],
     enabled: isClient,
     queryFn: async () => {
       console.log(`Fetching real-time articles for ${category}...`);
       
-      // Fetch RSS sources using modular aggregator (no caching)
-      // CRITICAL: Use Promise.allSettled to fetch sources in parallel for faster loading
-      const rssArticles = await modularRSSAggregator.fetchByCategory(category);
+      // CRITICAL: Add timeout to prevent hanging forever
+      // Fetch RSS and non-RSS sources in parallel with 5s timeout each
+      const [rssArticles, nonRSSArticles] = await Promise.allSettled([
+        fetchWithTimeout(modularRSSAggregator.fetchByCategory(category), 5000).catch(() => []),
+        (async () => {
+          const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
+            ? category as "tech" | "crypto" | "social" | "general"
+            : undefined;
+          
+          if (supportedCategory) {
+            return fetchWithTimeout(
+              contentAggregator.aggregateSources(supportedCategory, {
+                usePagination: options?.usePagination ?? false,
+                extractLinks: options?.extractLinks ?? true,
+              }),
+              5000
+            ).catch(() => []);
+          } else {
+            return fetchWithTimeout(fetchRedditFallback(category), 5000).catch(() => []);
+          }
+        })(),
+      ]);
 
-      // Fetch non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
-      // Only pass supported categories to contentAggregator
-      const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
-        ? category as "tech" | "crypto" | "social" | "general"
-        : undefined;
-      let nonRSSArticles: Article[] = [];
-      
-      if (supportedCategory) {
-        // Use contentAggregator for supported categories
-        nonRSSArticles = await contentAggregator.aggregateSources(supportedCategory, {
-          usePagination: options?.usePagination ?? false,
-          extractLinks: options?.extractLinks ?? true,
-        });
-      } else {
-        // For categories without contentAggregator support, add Reddit fallback
-        // This provides articles even when RSS feeds fail
-        nonRSSArticles = await fetchRedditFallback(category);
-      }
+      const rss = rssArticles.status === "fulfilled" ? rssArticles.value : [];
+      const nonRSS = nonRSSArticles.status === "fulfilled" ? nonRSSArticles.value : [];
 
       // Combine and deduplicate
-      const allArticles = [...rssArticles, ...nonRSSArticles];
+      const allArticles = [...rss, ...nonRSS];
       const uniqueArticles = deduplicateArticles(allArticles);
 
-      console.log(`✅ Fetched ${uniqueArticles.length} real-time articles for ${category} (RSS: ${rssArticles.length}, Non-RSS: ${nonRSSArticles.length})`);
+      console.log(`✅ Fetched ${uniqueArticles.length} articles for ${category} (RSS: ${rss.length}, Non-RSS: ${nonRSS.length})`);
 
       return uniqueArticles;
     },
-    staleTime: 0, // No stale time - always fetch fresh data
-    gcTime: 5 * 60 * 1000, // 5 minutes - keep in cache
-    retry: 0, // No retries - fail fast
-    refetchOnMount: true, // Always refetch on mount
-    refetchOnWindowFocus: false, // Don't refetch on focus
-    refetchOnReconnect: false, // Don't refetch on reconnect
-    // CRITICAL: Don't use placeholderData or initialData - let React Query handle loading state naturally
-    // This ensures data updates properly when query completes
+    staleTime: 2 * 60 * 1000, // 2 minutes - use cached data
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1, // Retry once on failure
+    retryDelay: 1000, // 1 second delay
+    refetchOnMount: false, // Don't refetch if we have cached data
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 

@@ -51,7 +51,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <Providers>
           <Header />
-          <main className="min-h-screen pb-16 md:pb-0 bg-dark-bg">{children}</main>
+          <main className="min-h-screen pb-16 md:pb-0 bg-[#0F172A]">{children}</main>
           <BottomNavLazy />
           <ServiceWorkerRegistration />
         </Providers>
