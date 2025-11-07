@@ -180,11 +180,80 @@ export function ArticlePreviewModal({
         {isLoadingContent ? (
           <LoadingState message="Loading article content..." />
         ) : parsedContent ? (
-          <div
-            className="prose dark:prose-invert max-w-none mb-8"
-            style={{ fontSize: `${fontSize}px` }}
-            dangerouslySetInnerHTML={{ __html: parsedContent }}
-          />
+          <div className="mb-8">
+            {/* CRITICAL: Use iframe with srcdoc for better security and isolation */}
+            {/* This prevents XSS attacks even if sanitization fails */}
+            <iframe
+              srcDoc={`
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                      * { margin: 0; padding: 0; box-sizing: border-box; }
+                      body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                        font-size: ${fontSize}px;
+                        line-height: 1.6;
+                        color: #1f2937;
+                        padding: 1rem;
+                        max-width: 100%;
+                      }
+                      @media (prefers-color-scheme: dark) {
+                        body { color: #f3f4f6; background: #111827; }
+                      }
+                      p { margin-bottom: 1rem; }
+                      h1, h2, h3, h4, h5, h6 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
+                      img { max-width: 100%; height: auto; display: block; margin: 1rem 0; }
+                      a { color: #2563eb; text-decoration: underline; }
+                      @media (prefers-color-scheme: dark) {
+                        a { color: #60a5fa; }
+                      }
+                      blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; margin: 1rem 0; font-style: italic; }
+                      @media (prefers-color-scheme: dark) {
+                        blockquote { border-left-color: #4b5563; }
+                      }
+                      code { background: #f3f4f6; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: 'Courier New', monospace; }
+                      @media (prefers-color-scheme: dark) {
+                        code { background: #374151; }
+                      }
+                      pre { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; }
+                      @media (prefers-color-scheme: dark) {
+                        pre { background: #374151; }
+                      }
+                      ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+                      table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+                      th, td { border: 1px solid #e5e7eb; padding: 0.5rem; text-align: left; }
+                      @media (prefers-color-scheme: dark) {
+                        th, td { border-color: #4b5563; }
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    ${parsedContent}
+                  </body>
+                </html>
+              `}
+              className="w-full border-0 rounded-lg"
+              style={{ 
+                minHeight: '400px',
+                height: 'auto',
+                maxHeight: '70vh',
+                overflow: 'auto'
+              }}
+              sandbox="allow-same-origin allow-scripts"
+              title={`Article content: ${article.title}`}
+              onLoad={() => {
+                // Adjust iframe height to content after load
+                const iframe = document.querySelector(`iframe[title*="${article.title}"]`) as HTMLIFrameElement;
+                if (iframe?.contentWindow?.document?.body) {
+                  const height = iframe.contentWindow.document.body.scrollHeight;
+                  iframe.style.height = `${Math.min(height + 20, window.innerHeight * 0.7)}px`;
+                }
+              }}
+            />
+          </div>
         ) : article.excerpt ? (
           <div className="prose dark:prose-invert max-w-none mb-8">
             <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
