@@ -8,6 +8,9 @@ import { ReactNode } from "react";
 /**
  * Reown-Clerk Integration Component
  * 
+ * ✅ 100% CLIENT-SIDE ONLY - No server-side API routes required
+ * Perfect for static export (GitHub Pages)
+ * 
  * Implements the authentication flow as specified in:
  * - docs/PROJECT_INIT_PROMPT_WEB3_AGGREGATOR.md (lines 335-372)
  * - integration-specifications-20251107-003428.md
@@ -20,10 +23,10 @@ import { ReactNode } from "react";
  *   → Reown authenticates user
  *   → Reown automatically creates ERC-4337 Smart Account ✅
  * 
- * STEP 2: Clerk User Creation (AUTOMATIC)
+ * STEP 2: Clerk User Creation (AUTOMATIC - Client-Side)
  *   → Detect new Reown login
  *   → Extract email from Reown social login (or prompt user)
- *   → Create Clerk user programmatically via client-side SDK
+ *   → Create Clerk user programmatically via Clerk's CLIENT-SIDE SDK (signUp.create())
  *   → Store in Clerk publicMetadata:
  *     {
  *       reown_address: "0x123...",
@@ -33,18 +36,22 @@ import { ReactNode } from "react";
  *       referral_code: "USER123"
  *     }
  * 
- * STEP 3: Email Verification (Clerk)
- *   → Clerk sends magic link to user's email
+ * STEP 3: Email Verification (Clerk - Client-Side)
+ *   → Clerk sends magic link to user's email (via signUp.prepareEmailAddressVerification())
  *   → User clicks link → Email verified
  *   → Full access granted
  * 
- * NOTE: Since this is a static export (GitHub Pages), we use Clerk's client-side SDK
- * instead of server-side API routes. For email extraction:
+ * CLIENT-SIDE ONLY IMPLEMENTATION:
+ * - Uses Clerk's client-side SDK: useAuth(), useUser(), signUp.create()
+ * - No server-side API routes (no /api/clerk/create-user.ts)
+ * - No clerkClient server-side calls
+ * - Works perfectly with static export (GitHub Pages)
+ * 
+ * For email extraction:
  * - Email login via Reown: Email is available directly
  * - Social logins: Reown doesn't expose email in client SDK, so we:
  *   1. Try to get email from localStorage (if user entered it previously)
- *   2. Prompt user for email if not available
- *   3. Use placeholder email as fallback (user can update later)
+ *   2. Use placeholder email as fallback (user can update via Clerk profile)
  */
 export function ReownClerkIntegration({ children }: { children: ReactNode }) {
   const { address, isConnected } = useAppKitAccount();
