@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     title: "Web3News",
   },
   icons: {
-    icon: "/icon-192x192.png",
-    apple: "/icon-192x192.png",
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
   },
 };
 

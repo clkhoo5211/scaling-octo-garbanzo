@@ -9,6 +9,8 @@ const MAX_ARTICLES_CACHED = 100;
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
+  '/favicon.ico',
+  '/apple-icon.png',
   '/icon-192x192.png',
   '/icon-512x512.png',
 ];
