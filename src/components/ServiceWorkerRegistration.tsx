@@ -9,8 +9,11 @@ export function ServiceWorkerRegistration() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+      const swPath = `${basePath}/sw.js`;
+      
       navigator.serviceWorker
-        .register("/sw.js")
+        .register(swPath)
         .then((reg) => {
           console.log("Service Worker registered:", reg);
           setRegistration(reg);

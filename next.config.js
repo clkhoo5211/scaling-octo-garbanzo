@@ -40,6 +40,15 @@ const nextConfig = {
         tls: false,
       };
     }
+    
+    // Exclude Clerk server-side code for static export
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@clerk/nextjs/server': false,
+      };
+    }
+    
     return config;
   },
 };
