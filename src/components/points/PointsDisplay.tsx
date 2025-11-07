@@ -3,9 +3,7 @@
 import { Coins, TrendingUp, TrendingDown, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
-import { usePointsTransactions } from "@/lib/hooks/useArticles";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/services/supabase";
 
 interface PointsDisplayProps {
   points?: number;
@@ -15,7 +13,8 @@ interface PointsDisplayProps {
 
 /**
  * PointsDisplay Component
- * Displays user points with optional USDT conversion
+ * Displays user points from Clerk publicMetadata (not Supabase)
+ * Per requirements: All user data stored in Clerk metadata
  */
 export function PointsDisplay({
   points: propPoints,
@@ -23,39 +22,28 @@ export function PointsDisplay({
   showConversion = false,
 }: PointsDisplayProps) {
   const { user } = useUser();
-  const { data: transactions = [] } = usePointsTransactions(user?.id || null);
 
-  const { data: points } = useQuery({
-    queryKey: ["user-points", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return 0;
-      const { data, error } = await supabase
-        .from("points_transactions")
-        .select("points_amount, transaction_type")
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-      return (
-        (data as Array<{ transaction_type: string; points_amount: number }>)?.reduce((total, tx) => {
-          return tx.transaction_type === "earn"
-            ? total + tx.points_amount
-            : total - tx.points_amount;
-        }, 0) || 0
-      );
-    },
-    enabled: !!user?.id,
-    initialData: propPoints,
-  });
+  // Read points from Clerk publicMetadata (per requirements)
+  const pointsFromMetadata = (user?.publicMetadata?.points as number) || 0;
+  const displayPoints = propPoints !== undefined ? propPoints : pointsFromMetadata;
 
   const conversionRate = 1000; // 1000 points = 1 USDT
   const usdtValue =
     propUsdtValue !== undefined
       ? propUsdtValue
-      : points
-        ? points / conversionRate
-        : 0;
+      : displayPoints / conversionRate;
 
-  const displayPoints = propPoints !== undefined ? propPoints : points || 0;
+  // Get transaction history from Clerk metadata (if stored)
+  // Note: Transaction history can be stored in Supabase for historical records
+  // but current balance comes from Clerk metadata
+  const transactions = (user?.publicMetadata?.points_transactions as Array<{
+    id: string;
+    type: "earn" | "spend" | "convert";
+    points: number;
+    usdt?: number;
+    source?: string;
+    createdAt: string;
+  }>) || [];
 
   return (
     <div className="space-y-8">
@@ -64,7 +52,7 @@ export function PointsDisplay({
           Points & Rewards
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Track your points balance and transaction history
+          Track your points balance from Clerk metadata
         </p>
       </div>
 
@@ -88,24 +76,23 @@ export function PointsDisplay({
             )}
           </div>
         </div>
+        <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+          <p>Points stored in Clerk publicMetadata</p>
+          <p className="text-xs mt-1">
+            Reown Address: {user?.publicMetadata?.reown_address as string || "Not connected"}
+          </p>
+        </div>
       </div>
 
       {/* Transaction History */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          Transaction History
-        </h2>
-        <TransactionHistory
-          transactions={transactions.map((tx) => ({
-            id: tx.id,
-            type: tx.transaction_type as "earn" | "spend" | "convert",
-            points: tx.points_amount,
-            usdt: tx.usdt_amount || undefined,
-            source: tx.source || undefined,
-            createdAt: tx.created_at,
-          }))}
-        />
-      </div>
+      {transactions.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Recent Transactions
+          </h2>
+          <TransactionHistory transactions={transactions} />
+        </div>
+      )}
     </div>
   );
 }
