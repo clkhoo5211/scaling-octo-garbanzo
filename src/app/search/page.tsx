@@ -15,7 +15,8 @@ import { Search } from "lucide-react";
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
-  const [selectedCategory] = useState<NewsCategory | undefined>(undefined);
+  // Use "general" category for search - searches across all sources
+  const [selectedCategory] = useState<NewsCategory>("general");
 
   const { data: articles, isLoading } = useArticles(selectedCategory, {
     usePagination: true,

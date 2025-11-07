@@ -15,7 +15,8 @@ import type { NewsCategory } from "@/lib/sources/types";
 const ARTICLES_PER_PAGE = 10; // Top 10 for guests
 
 export default function HomePage() {
-  const [selectedCategory, setSelectedCategory] = useState<NewsCategory | undefined>(undefined);
+  // Default to "tech" category - no "All" option for faster loading
+  const [selectedCategory, setSelectedCategory] = useState<NewsCategory>("tech");
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
   const [showAllArticles, setShowAllArticles] = useState(false);
@@ -83,7 +84,7 @@ export default function HomePage() {
   };
 
   // Reset showAllArticles when category changes
-  const handleCategoryChange = (category: NewsCategory | undefined) => {
+  const handleCategoryChange = (category: NewsCategory) => {
     setSelectedCategory(category);
     setShowAllArticles(false);
   };

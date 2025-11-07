@@ -16,9 +16,9 @@ export default function SocialPage() {
   const { data: following, isLoading: isLoadingFollowing } =
     useFollowing(userId);
 
-  // Get articles from users you follow
+  // Get articles from users you follow - use "social" category
   const { data: followingArticles, isLoading: isLoadingFeed } = useArticles(
-    undefined,
+    "social",
     {
       usePagination: true,
     }

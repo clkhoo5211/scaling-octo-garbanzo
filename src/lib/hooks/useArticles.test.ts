@@ -134,50 +134,6 @@ describe("useArticles", () => {
       extractLinks: true,
     });
   });
-
-  it("should fetch all sources when no category is specified", async () => {
-    const mockArticles = [
-      {
-        id: "1",
-        title: "Test Article",
-        url: "https://example.com/article",
-        source: "Test Source",
-        publishedAt: Date.now(),
-        category: "tech" as const,
-        cachedAt: Date.now(),
-        urlHash: "hash1",
-      },
-    ];
-
-    (
-      modularRSSAggregator.modularRSSAggregator.fetchAllSources as jest.Mock
-    ).mockResolvedValue(mockArticles);
-    (
-      contentAggregator.contentAggregator.aggregateSources as jest.Mock
-    ).mockResolvedValue([]);
-
-    const { result } = renderHook(() => useArticles(), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(
-      () => {
-        expect(result.current.isSuccess || result.current.isError).toBe(true);
-      },
-      { timeout: 10000 }
-    );
-
-    expect(result.current.isSuccess).toBe(true);
-    expect(
-      modularRSSAggregator.modularRSSAggregator.fetchAllSources
-    ).toHaveBeenCalled();
-    expect(
-      contentAggregator.contentAggregator.aggregateSources
-    ).toHaveBeenCalledWith(undefined, {
-      usePagination: false,
-      extractLinks: true,
-    });
-  });
 });
 
 describe("useBookmarks", () => {

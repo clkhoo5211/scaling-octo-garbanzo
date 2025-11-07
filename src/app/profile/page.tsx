@@ -4,7 +4,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
-import { useAppKit } from "@reown/appkit/react";
+import { useAppKitAccount } from "@reown/appkit/react";
 import { User, Wallet, Bookmark, Heart, MessageCircle } from "lucide-react";
 import { useBookmarks } from "@/lib/hooks/useArticles";
 import { usePointsTransactions } from "@/lib/hooks/useArticles";
@@ -12,7 +12,7 @@ import { formatDistanceToNow } from "date-fns";
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
-  const { address, isConnected } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
 
   const { data: bookmarks = [], isLoading: bookmarksLoading } = useBookmarks(
     user?.id || null

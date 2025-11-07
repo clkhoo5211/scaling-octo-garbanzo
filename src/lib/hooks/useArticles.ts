@@ -22,23 +22,21 @@ import { useAppStore } from "@/lib/stores/appStore";
  * Hook to fetch articles - Real-time only, no caching
  * Uses modular RSS sources with adaptive rate limiting
  * Also includes non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
+ * Category is required - no "All" option for faster loading
  */
 export function useArticles(
-  category?: NewsCategory,
+  category: NewsCategory,
   options?: { usePagination?: boolean; extractLinks?: boolean }
 ) {
   return useQuery({
     queryKey: ["articles", category, "realtime"], // Always real-time
     queryFn: async () => {
-      console.log(`Fetching real-time articles for ${category || "all"}...`);
+      console.log(`Fetching real-time articles for ${category}...`);
       
       // Fetch RSS sources using modular aggregator (no caching)
-      const rssArticles = category
-        ? await modularRSSAggregator.fetchByCategory(category)
-        : await modularRSSAggregator.fetchAllSources();
+      const rssArticles = await modularRSSAggregator.fetchByCategory(category);
 
       // Fetch non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
-      // Only fetch if category matches or no category specified
       const nonRSSArticles = await contentAggregator.aggregateSources(category, {
         usePagination: options?.usePagination ?? false,
         extractLinks: options?.extractLinks ?? true,
@@ -48,7 +46,7 @@ export function useArticles(
       const allArticles = [...rssArticles, ...nonRSSArticles];
       const uniqueArticles = deduplicateArticles(allArticles);
 
-      console.log(`Fetched ${uniqueArticles.length} real-time articles for ${category || "all"}`);
+      console.log(`Fetched ${uniqueArticles.length} real-time articles for ${category}`);
 
       return uniqueArticles;
     },

@@ -3,8 +3,8 @@
 import type { NewsCategory } from "@/lib/sources/types";
 
 interface CategoryTabsProps {
-  selectedCategory?: NewsCategory;
-  onSelectCategory?: (category: NewsCategory | undefined) => void;
+  selectedCategory: NewsCategory;
+  onSelectCategory?: (category: NewsCategory) => void;
 }
 
 export function CategoryTabs({
@@ -12,10 +12,9 @@ export function CategoryTabs({
   onSelectCategory,
 }: CategoryTabsProps) {
   const categories: Array<{
-    id: NewsCategory | undefined;
+    id: NewsCategory;
     label: string;
   }> = [
-    { id: undefined, label: "All" },
     { id: "tech", label: "Tech" },
     { id: "crypto", label: "Crypto" },
     { id: "business", label: "Business" },
@@ -31,7 +30,7 @@ export function CategoryTabs({
     <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
       {categories.map((category) => (
         <button
-          key={category.id || "all"}
+          key={category.id}
           onClick={() => onSelectCategory?.(category.id)}
           className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
             selectedCategory === category.id

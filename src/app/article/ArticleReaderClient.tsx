@@ -54,7 +54,8 @@ export function ArticleReaderClient({
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const { userId } = useAppStore();
 
-  const { data: articles, isLoading } = useArticles(undefined, {
+  // Use "general" category to find article by URL
+  const { data: articles, isLoading } = useArticles("general", {
     usePagination: false,
     extractLinks: true,
   });

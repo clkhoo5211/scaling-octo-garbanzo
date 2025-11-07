@@ -38,7 +38,8 @@ export function ArticlePreviewModal({
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [fontSize, setFontSize] = useState(16);
 
-  const { data: articles, isLoading } = useArticles(undefined, {
+  // Use "general" category to find article by URL
+  const { data: articles, isLoading } = useArticles("general", {
     usePagination: false,
     extractLinks: true,
   });
