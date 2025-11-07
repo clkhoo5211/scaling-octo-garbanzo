@@ -1,7 +1,7 @@
 /**
  * Reown AppKit Configuration
  * Web3 wallet connection and authentication (PRIMARY)
- * Using default AppKit configuration with social logins enabled
+ * Social logins and email enabled
  */
 
 import { createAppKit } from "@reown/appkit/react";
@@ -33,8 +33,10 @@ export const appKit = createAppKit({
         : "https://web3news.xyz",
     icons: ["/icon-192x192.png", "/icon-512x512.png"],
   },
-  // Use AppKit defaults - features are controlled by dashboard settings
-  // Social logins enabled by default
+  features: {
+    email: true, // Enable email login
+    socials: ["google", "x", "github", "discord", "apple"], // Enable social logins
+  },
   networks: networks as Array<{
     id: number;
     name: string;
