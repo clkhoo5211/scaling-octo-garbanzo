@@ -538,24 +538,10 @@ class ContentAggregator {
         cachedAt: 0,
       }));
 
-      // Extract links from GitHub repos (learn-anything pattern)
-      const enrichedArticles = await Promise.all(
-        articles.map(async (article: Article) => {
-          try {
-            const links = await linkExtractor.extractFromGitHubRepo(
-              article.url
-            );
-            return {
-              ...article,
-              links: links.length > 0 ? links : undefined,
-            };
-          } catch {
-            return article;
-          }
-        })
-      );
-
-      return enrichedArticles;
+      // CRITICAL: Disable link extraction from GitHub READMEs - causes 100+ slow requests
+      // This was causing massive slowdown (fetching README files from every repo)
+      // Return articles directly without link extraction
+      return articles;
     } catch (error) {
       console.error("Error fetching GitHub Trending:", error);
       return [];
