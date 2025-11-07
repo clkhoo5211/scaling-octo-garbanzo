@@ -4,6 +4,7 @@ import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { WalletConnect } from "@/components/web3/WalletConnect";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 /**
  * AuthStatus Component
@@ -43,15 +44,34 @@ export function AuthStatus() {
       {/* User Info - Only show if wallet is NOT connected and Clerk user exists */}
       {/* When wallet is connected, WalletConnect shows the address, so we hide user info to avoid duplication */}
       {user && !isConnected && (
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+        <Link 
+          href="/profile" 
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          title="View Profile"
+        >
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium cursor-pointer">
             {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() ||
               "U"}
           </div>
           <span className="text-sm font-medium hidden sm:inline">
             {user.primaryEmailAddress?.emailAddress?.split("@")[0]}
           </span>
-        </div>
+        </Link>
+      )}
+
+      {/* Profile Link for Desktop - Show when wallet is connected */}
+      {user && isConnected && (
+        <Link
+          href="/profile"
+          className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          title="View Profile"
+        >
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+            {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() ||
+              "U"}
+          </div>
+          <span className="text-sm font-medium">Profile</span>
+        </Link>
       )}
 
       {/* Wallet/Sign In - WalletConnect handles both */}
