@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 /**
  * Client-side only useUser hook for static export
@@ -13,6 +13,7 @@ export function useClerkUser() {
   } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Load user from localStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       // For static export, check localStorage for user data
@@ -29,9 +30,21 @@ export function useClerkUser() {
     }
   }, []);
 
+  // Function to set mock user (for admin key development)
+  const setMockUser = useCallback((mockUser: {
+    id: string;
+    emailAddresses?: Array<{ emailAddress: string }>;
+  }) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("clerk_user", JSON.stringify(mockUser));
+      setUser(mockUser);
+    }
+  }, []);
+
   return {
     user,
     isLoaded,
     isSignedIn: !!user,
+    setMockUser, // Expose for admin key feature
   };
 }
