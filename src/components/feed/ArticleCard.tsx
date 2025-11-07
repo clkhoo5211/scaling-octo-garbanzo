@@ -71,18 +71,24 @@ export const ArticleCard = memo(function ArticleCard({
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    if (onSelect) {
+    // Handle preview mode first - modal takes precedence
+    if (previewMode === "modal" || previewMode === "both") {
       e.preventDefault();
-      onSelect(article);
+      e.stopPropagation();
+      setShowPreviewModal(true);
+      // Call onSelect if provided (for tracking/analytics) but don't navigate
+      onSelect?.(article);
       return;
     }
 
-    // Handle preview mode
-    if (previewMode === "modal" || previewMode === "both") {
+    // If previewMode is "fullpage" or not set, use onSelect or default navigation
+    if (onSelect) {
       e.preventDefault();
-      setShowPreviewModal(true);
+      e.stopPropagation();
+      onSelect(article);
+      return;
     }
-    // If previewMode is "fullpage", let the Link handle navigation
+    // If no onSelect and not modal, let Link handle navigation
   };
 
   return (

@@ -201,6 +201,116 @@ class ContentAggregator {
         category: "general",
         enabled: true,
       },
+      // Additional Tech Sources
+      {
+        name: "HackerNoon",
+        type: "rss",
+        endpoint: "https://hackernoon.com/feed",
+        category: "tech",
+        enabled: true,
+      },
+      {
+        name: "Wired",
+        type: "rss",
+        endpoint: "https://www.wired.com/feed/rss",
+        category: "tech",
+        enabled: true,
+      },
+      {
+        name: "MIT Technology Review",
+        type: "rss",
+        endpoint: "https://www.technologyreview.com/feed/",
+        category: "tech",
+        enabled: true,
+      },
+      {
+        name: "The Next Web",
+        type: "rss",
+        endpoint: "https://thenextweb.com/feed",
+        category: "tech",
+        enabled: true,
+      },
+      // Additional Crypto Sources
+      {
+        name: "CryptoCompare",
+        type: "rest",
+        endpoint: "https://min-api.cryptocompare.com",
+        category: "crypto",
+        enabled: true,
+      },
+      {
+        name: "CoinMarketCap",
+        type: "rss",
+        endpoint: "https://coinmarketcap.com/headlines/news/",
+        category: "crypto",
+        enabled: true,
+      },
+      {
+        name: "CryptoSlate",
+        type: "rss",
+        endpoint: "https://cryptoslate.com/feed/",
+        category: "crypto",
+        enabled: true,
+      },
+      // Additional Social Sources
+      {
+        name: "LinkedIn Tech",
+        type: "rss",
+        endpoint: "https://www.linkedin.com/feed/update/",
+        category: "social",
+        enabled: false, // Requires authentication
+      },
+      {
+        name: "Reddit Crypto",
+        type: "rest",
+        endpoint: "https://www.reddit.com",
+        category: "social",
+        enabled: true,
+      },
+      // Additional General Sources
+      {
+        name: "CNN",
+        type: "rss",
+        endpoint: "http://rss.cnn.com/rss/cnn_topstories.rss",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "Associated Press",
+        type: "rss",
+        endpoint: "https://apnews.com/apf-topnews",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "The New York Times",
+        type: "rss",
+        endpoint: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "Wired General",
+        type: "rss",
+        endpoint: "https://www.wired.com/feed/rss",
+        category: "general",
+        enabled: false, // Already added to tech
+      },
+      // YouTube Sources (RSS feeds)
+      {
+        name: "YouTube Tech",
+        type: "rss",
+        endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q", // VergeTech
+        category: "tech",
+        enabled: true,
+      },
+      {
+        name: "YouTube Crypto",
+        type: "rss",
+        endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCqNCLd2r19wpWWQE6yDLOeQ", // Coin Bureau
+        category: "crypto",
+        enabled: true,
+      },
     ];
   }
 
@@ -542,6 +652,49 @@ class ContentAggregator {
   }
 
   /**
+   * Fetch from CryptoCompare API
+   */
+  private async fetchCryptoCompare(limit = 20): Promise<Article[]> {
+    await this.rateLimiter.wait("cryptocompare");
+
+    try {
+      // CryptoCompare News API (free tier)
+      const response = await fetch(
+        `https://min-api.cryptocompare.com/data/v2/news/?lang=EN&limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Apikey ${process.env.NEXT_PUBLIC_CRYPTOCOMPARE_API_KEY || ""}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`CryptoCompare API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const newsItems = data.Data || [];
+
+      return newsItems.map((item: any) => ({
+        id: `cc-${item.id}`,
+        title: item.title,
+        url: item.url,
+        source: item.source || "CryptoCompare",
+        category: "crypto" as const,
+        publishedAt: item.published_on * 1000,
+        author: item.source_info?.name,
+        excerpt: item.body?.substring(0, 200),
+        thumbnail: item.imageurl,
+        urlHash: "",
+        cachedAt: 0,
+      }));
+    } catch (error) {
+      console.error("Error fetching CryptoCompare:", error);
+      return [];
+    }
+  }
+
+  /**
    * Fetch from RSS feed
    */
   private async fetchRSSFeed(
@@ -637,12 +790,32 @@ class ContentAggregator {
           return await this.fetchRSSFeed(source.endpoint, "Bitcoin Magazine", source.category);
         case "The Block":
           return await this.fetchRSSFeed(source.endpoint, "The Block", source.category);
-        case "BBC News":
-        case "Reuters":
-        case "The Guardian":
-        case "TechCrunch":
-        case "The Verge":
-        case "Ars Technica":
+        case "Reddit Crypto":
+          // Fetch from crypto subreddits
+          const cryptoSubreddits = ["cryptocurrency", "bitcoin", "ethereum", "CryptoCurrency"];
+          const cryptoArticles = await Promise.allSettled(
+            cryptoSubreddits.map((sub) =>
+              usePagination
+                ? this.fetchRedditAllPages(sub, 3, source.category)
+                : this.fetchReddit(sub, 25, undefined, source.category).then((r) => r.articles)
+            )
+          );
+          return cryptoArticles
+            .filter((r) => r.status === "fulfilled")
+            .flatMap((r) => (r as PromiseFulfilledResult<Article[]>).value);
+        case "CryptoCompare":
+          return await this.fetchCryptoCompare();
+        case "HackerNoon":
+        case "Wired":
+        case "MIT Technology Review":
+        case "The Next Web":
+        case "CoinMarketCap":
+        case "CryptoSlate":
+        case "CNN":
+        case "Associated Press":
+        case "The New York Times":
+        case "YouTube Tech":
+        case "YouTube Crypto":
           return await this.fetchRSSFeed(source.endpoint, source.name, source.category);
         default:
           return [];
