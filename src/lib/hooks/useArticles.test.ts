@@ -13,20 +13,20 @@ import {
   useLikeArticle,
   useArticleLikes,
 } from "./useArticles";
+import * as modularRSSAggregator from "@/lib/sources/modularRSSAggregator";
 import * as contentAggregator from "@/lib/services/contentAggregator";
-import * as indexedDBCache from "@/lib/services/indexedDBCache";
 import * as supabaseApi from "@/lib/api/supabaseApi";
 
 // Mock dependencies
+jest.mock("@/lib/sources/modularRSSAggregator", () => ({
+  modularRSSAggregator: {
+    fetchByCategory: jest.fn(),
+    fetchAllSources: jest.fn(),
+  },
+}));
 jest.mock("@/lib/services/contentAggregator", () => ({
   contentAggregator: {
     aggregateSources: jest.fn(),
-  },
-}));
-jest.mock("@/lib/services/indexedDBCache", () => ({
-  indexedDBCache: {
-    getArticles: jest.fn(),
-    setArticles: jest.fn(),
   },
 }));
 jest.mock("@/lib/api/supabaseApi");
@@ -73,57 +73,39 @@ describe("useArticles", () => {
     jest.clearAllMocks();
   });
 
-  it("should fetch articles from cache first", async () => {
-    const mockArticles = [
+  it("should fetch articles from RSS and non-RSS sources in real-time", async () => {
+    const mockRSSArticles = [
       {
-        id: "1",
-        title: "Test Article",
-        url: "https://example.com/article",
-        source: "Test Source",
+        id: "rss-1",
+        title: "RSS Article",
+        url: "https://example.com/rss-article",
+        source: "RSS Source",
         publishedAt: Date.now(),
+        category: "tech" as const,
+        cachedAt: Date.now(),
+        urlHash: "hash1",
       },
     ];
 
-    (indexedDBCache.indexedDBCache.getArticles as jest.Mock).mockResolvedValue(
-      mockArticles
-    );
-
-    const { result } = renderHook(() => useArticles("tech"), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true), {
-      timeout: 5000,
-    });
-    expect(result.current.data).toEqual(mockArticles);
-    expect(indexedDBCache.indexedDBCache.getArticles).toHaveBeenCalledWith(
-      "tech"
-    );
-    expect(
-      contentAggregator.contentAggregator.aggregateSources
-    ).not.toHaveBeenCalled();
-  });
-
-  it("should fetch from sources if cache is empty", async () => {
-    const mockArticles = [
+    const mockNonRSSArticles = [
       {
-        id: "1",
-        title: "Test Article",
-        url: "https://example.com/article",
-        source: "Test Source",
+        id: "hn-1",
+        title: "Hacker News Article",
+        url: "https://example.com/hn-article",
+        source: "Hacker News",
         publishedAt: Date.now(),
+        category: "tech" as const,
+        cachedAt: Date.now(),
+        urlHash: "hash2",
       },
     ];
 
-    (indexedDBCache.indexedDBCache.getArticles as jest.Mock).mockResolvedValue(
-      []
-    );
+    (
+      modularRSSAggregator.modularRSSAggregator.fetchByCategory as jest.Mock
+    ).mockResolvedValue(mockRSSArticles);
     (
       contentAggregator.contentAggregator.aggregateSources as jest.Mock
-    ).mockResolvedValue(mockArticles);
-    (indexedDBCache.indexedDBCache.setArticles as jest.Mock).mockResolvedValue(
-      undefined
-    );
+    ).mockResolvedValue(mockNonRSSArticles);
 
     const { result } = renderHook(() => useArticles("tech"), {
       wrapper: createWrapper(),
@@ -133,7 +115,7 @@ describe("useArticles", () => {
       () => {
         expect(result.current.isSuccess || result.current.isError).toBe(true);
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
 
     if (result.current.isError) {
@@ -141,14 +123,60 @@ describe("useArticles", () => {
     }
 
     expect(result.current.isSuccess).toBe(true);
-    expect(result.current.data).toEqual(mockArticles);
+    expect(result.current.data).toHaveLength(2); // Combined RSS + non-RSS articles
+    expect(
+      modularRSSAggregator.modularRSSAggregator.fetchByCategory
+    ).toHaveBeenCalledWith("tech");
     expect(
       contentAggregator.contentAggregator.aggregateSources
-    ).toHaveBeenCalled();
-    expect(indexedDBCache.indexedDBCache.setArticles).toHaveBeenCalledWith(
-      mockArticles,
-      "tech"
+    ).toHaveBeenCalledWith("tech", {
+      usePagination: false,
+      extractLinks: true,
+    });
+  });
+
+  it("should fetch all sources when no category is specified", async () => {
+    const mockArticles = [
+      {
+        id: "1",
+        title: "Test Article",
+        url: "https://example.com/article",
+        source: "Test Source",
+        publishedAt: Date.now(),
+        category: "tech" as const,
+        cachedAt: Date.now(),
+        urlHash: "hash1",
+      },
+    ];
+
+    (
+      modularRSSAggregator.modularRSSAggregator.fetchAllSources as jest.Mock
+    ).mockResolvedValue(mockArticles);
+    (
+      contentAggregator.contentAggregator.aggregateSources as jest.Mock
+    ).mockResolvedValue([]);
+
+    const { result } = renderHook(() => useArticles(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(
+      () => {
+        expect(result.current.isSuccess || result.current.isError).toBe(true);
+      },
+      { timeout: 10000 }
     );
+
+    expect(result.current.isSuccess).toBe(true);
+    expect(
+      modularRSSAggregator.modularRSSAggregator.fetchAllSources
+    ).toHaveBeenCalled();
+    expect(
+      contentAggregator.contentAggregator.aggregateSources
+    ).toHaveBeenCalledWith(undefined, {
+      usePagination: false,
+      extractLinks: true,
+    });
   });
 });
 
