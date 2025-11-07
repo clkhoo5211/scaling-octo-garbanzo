@@ -28,11 +28,14 @@ export function LoadingState({
 
   const content = (
     <div className="flex flex-col items-center justify-center gap-4 p-8">
-      {mounted ? (
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-      ) : (
-        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
-      )}
+      {/* CRITICAL: Always render same structure, just change content inside */}
+      <div className="w-8 h-8" suppressHydrationWarning>
+        {mounted ? (
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        ) : (
+          <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
+        )}
+      </div>
       {message && (
         <p className="text-sm text-gray-600 dark:text-gray-400">{message}</p>
       )}
