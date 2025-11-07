@@ -30,14 +30,46 @@ export function AuthStatus() {
     setMounted(true);
   }, []);
 
-  // Show loading state during SSR/hydration - but ALWAYS show WalletConnect
-  if (!mounted || !clerkLoaded) {
-    return (
-      <div className="flex items-center gap-2">
-        <WalletConnect />
-      </div>
-    );
-  }
+  // Show loading state during SSR/hydration - but ALWAYS show WalletConnect button
+  // Don't wait for mounted/clerkLoaded - show button immediately
+  return (
+    <div className="flex items-center gap-3">
+      {/* User Info - Only show if wallet is NOT connected and Clerk user exists */}
+      {mounted && clerkLoaded && user && !isConnected && (
+        <Link 
+          href="/profile" 
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          title="View Profile"
+        >
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium cursor-pointer">
+            {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() ||
+              "U"}
+          </div>
+          <span className="text-sm font-medium hidden sm:inline">
+            {user.primaryEmailAddress?.emailAddress?.split("@")[0]}
+          </span>
+        </Link>
+      )}
+
+      {/* Profile Link for Desktop - Show when wallet is connected */}
+      {mounted && clerkLoaded && user && isConnected && (
+        <Link
+          href="/profile"
+          className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          title="View Profile"
+        >
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+            {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() ||
+              "U"}
+          </div>
+          <span className="text-sm font-medium">Profile</span>
+        </Link>
+      )}
+
+      {/* Wallet/Sign In - WalletConnect handles both - ALWAYS show */}
+      <WalletConnect />
+    </div>
+  );
 
   return (
     <div className="flex items-center gap-3">
