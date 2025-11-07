@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { useMessages, useMarkMessageRead } from '@/lib/hooks/useMessages';
-import { MessageBubble } from './MessageBubble';
-import { MessageInput } from './MessageInput';
-import { useAppStore } from '@/lib/stores/appStore';
-import { ArrowLeft, User } from 'lucide-react';
+import { useEffect, useRef } from "react";
+import { useMessages, useMarkMessageRead } from "@/lib/hooks/useMessages";
+import { MessageBubble } from "./MessageBubble";
+import { MessageInput } from "./MessageInput";
+import { useAppStore } from "@/lib/stores/appStore";
+import { ArrowLeft, User } from "lucide-react";
 
 interface MessagesViewProps {
   conversationId: string;
@@ -31,7 +31,7 @@ export function MessagesView({
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Mark messages as read when viewing
@@ -96,17 +96,12 @@ export function MessagesView({
           <User className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         </div>
         <div className="flex-1">
-          <h2 className="font-medium text-sm">
-            {otherUserId.slice(0, 8)}...
-          </h2>
+          <h2 className="font-medium text-sm">{otherUserId.slice(0, 8)}...</h2>
         </div>
       </div>
 
       {/* Messages List */}
-      <div
-        ref={containerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-2"
-      >
+      <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-2">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-500">
             <p className="text-sm">No messages yet</p>
@@ -130,4 +125,3 @@ export function MessagesView({
     </div>
   );
 }
-

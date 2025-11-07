@@ -1,17 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useWriteContract } from '@reown/appkit/react';
-import { CheckCircle, XCircle, Minus, Loader2 } from 'lucide-react';
-import { TransactionStatus } from '@/components/web3/TransactionStatus';
+import { useState } from "react";
+import { useWriteContract } from "@reown/appkit/react";
+import { CheckCircle, XCircle, Minus, Loader2 } from "lucide-react";
+import { TransactionStatus } from "@/components/web3/TransactionStatus";
 
 interface VoteButtonProps {
   proposalId: string;
-  voteOption: 'yes' | 'no' | 'abstain';
+  voteOption: "yes" | "no" | "abstain";
   disabled?: boolean;
   contractAddress?: string;
   abi?: any[];
-  onVote?: (proposalId: string, voteOption: 'yes' | 'no' | 'abstain') => Promise<void>;
+  onVote?: (
+    proposalId: string,
+    voteOption: "yes" | "no" | "abstain"
+  ) => Promise<void>;
 }
 
 /**
@@ -44,24 +47,27 @@ export function VoteButton({
         writeContract({
           address: contractAddress as `0x${string}`,
           abi,
-          functionName: 'vote',
-          args: [proposalId, voteOption === 'yes' ? 0 : voteOption === 'no' ? 1 : 2],
+          functionName: "vote",
+          args: [
+            proposalId,
+            voteOption === "yes" ? 0 : voteOption === "no" ? 1 : 2,
+          ],
         });
       } else if (onVote) {
         await onVote(proposalId, voteOption);
         setIsSubmitting(false);
       }
     } catch (error: any) {
-      console.error('Vote failed:', error);
+      console.error("Vote failed:", error);
       setIsSubmitting(false);
     }
   };
 
   const getIcon = () => {
     switch (voteOption) {
-      case 'yes':
+      case "yes":
         return <CheckCircle className="w-4 h-4" />;
-      case 'no':
+      case "no":
         return <XCircle className="w-4 h-4" />;
       default:
         return <Minus className="w-4 h-4" />;
@@ -70,23 +76,23 @@ export function VoteButton({
 
   const getLabel = () => {
     switch (voteOption) {
-      case 'yes':
-        return 'Vote Yes';
-      case 'no':
-        return 'Vote No';
+      case "yes":
+        return "Vote Yes";
+      case "no":
+        return "Vote No";
       default:
-        return 'Abstain';
+        return "Abstain";
     }
   };
 
   const getColor = () => {
     switch (voteOption) {
-      case 'yes':
-        return 'bg-green-500 hover:bg-green-600 text-white';
-      case 'no':
-        return 'bg-red-500 hover:bg-red-600 text-white';
+      case "yes":
+        return "bg-green-500 hover:bg-green-600 text-white";
+      case "no":
+        return "bg-red-500 hover:bg-red-600 text-white";
       default:
-        return 'bg-gray-500 hover:bg-gray-600 text-white';
+        return "bg-gray-500 hover:bg-gray-600 text-white";
     }
   };
 
@@ -121,4 +127,3 @@ export function VoteButton({
     </>
   );
 }
-

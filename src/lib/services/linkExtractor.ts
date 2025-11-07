@@ -1,4 +1,4 @@
-import type { Article } from './indexedDBCache';
+import type { Article } from "./indexedDBCache";
 
 /**
  * Link Extractor - Extracts and normalizes links from content
@@ -15,7 +15,7 @@ export class LinkExtractor {
 
     // 1. Extract markdown links: [text](url)
     const markdownLinks = content.match(/\[([^\]]+)\]\(([^)]+)\)/g) || [];
-    markdownLinks.forEach(match => {
+    markdownLinks.forEach((match) => {
       const url = match.match(/\(([^)]+)\)/)?.[1];
       if (url && this.isValidUrl(url)) {
         links.push(url);
@@ -29,9 +29,9 @@ export class LinkExtractor {
 
     // 3. Extract HTML links: <a href="url">
     const htmlLinks = content.match(/href=["']([^"']+)["']/g) || [];
-    htmlLinks.forEach(match => {
+    htmlLinks.forEach((match) => {
       const url = match.match(/["']([^"']+)["']/)?.[1];
-      if (url && url.startsWith('http') && this.isValidUrl(url)) {
+      if (url && url.startsWith("http") && this.isValidUrl(url)) {
         links.push(url);
       }
     });
@@ -49,37 +49,37 @@ export class LinkExtractor {
 
       // Remove tracking parameters
       const trackingParams = [
-        'utm_source',
-        'utm_medium',
-        'utm_campaign',
-        'utm_term',
-        'utm_content',
-        'ref',
-        'fbclid',
-        'gclid',
-        'source',
-        'medium',
-        'campaign',
-        'term',
-        'content',
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_term",
+        "utm_content",
+        "ref",
+        "fbclid",
+        "gclid",
+        "source",
+        "medium",
+        "campaign",
+        "term",
+        "content",
       ];
-      trackingParams.forEach(param => parsed.searchParams.delete(param));
+      trackingParams.forEach((param) => parsed.searchParams.delete(param));
 
       // Normalize protocol (always HTTPS)
-      parsed.protocol = 'https:';
+      parsed.protocol = "https:";
 
       // Normalize www subdomain
-      if (parsed.hostname.startsWith('www.')) {
+      if (parsed.hostname.startsWith("www.")) {
         parsed.hostname = parsed.hostname.substring(4);
       }
 
       // Remove trailing slash (except root)
-      if (parsed.pathname !== '/' && parsed.pathname.endsWith('/')) {
+      if (parsed.pathname !== "/" && parsed.pathname.endsWith("/")) {
         parsed.pathname = parsed.pathname.slice(0, -1);
       }
 
       // Remove fragment (hash)
-      parsed.hash = '';
+      parsed.hash = "";
 
       return parsed.toString();
     } catch {
@@ -92,8 +92,8 @@ export class LinkExtractor {
    */
   normalizeAndDeduplicate(links: string[]): string[] {
     const normalized = links
-      .map(link => this.normalizeUrl(link))
-      .filter(link => this.isValidUrl(link));
+      .map((link) => this.normalizeUrl(link))
+      .filter((link) => this.isValidUrl(link));
     return Array.from(new Set(normalized));
   }
 
@@ -103,7 +103,7 @@ export class LinkExtractor {
   private isValidUrl(url: string): boolean {
     try {
       const parsed = new URL(url);
-      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
     } catch {
       return false;
     }
@@ -115,23 +115,25 @@ export class LinkExtractor {
   async extractFromGitHubRepo(repoUrl: string): Promise<string[]> {
     try {
       // Convert GitHub repo URL to raw README URL
-      const readmeUrl = repoUrl
-        .replace('github.com/', 'raw.githubusercontent.com/')
-        .replace(/\/$/, '') + '/main/README.md';
+      const readmeUrl =
+        repoUrl
+          .replace("github.com/", "raw.githubusercontent.com/")
+          .replace(/\/$/, "") + "/main/README.md";
 
       const response = await fetch(readmeUrl, {
         headers: {
-          'Accept': 'text/plain',
+          Accept: "text/plain",
         },
       });
 
       if (!response.ok) {
         // Try alternative branch names
-        const branches = ['master', 'develop', 'dev'];
+        const branches = ["master", "develop", "dev"];
         for (const branch of branches) {
-          const altUrl = repoUrl
-            .replace('github.com/', 'raw.githubusercontent.com/')
-            .replace(/\/$/, '') + `/${branch}/README.md`;
+          const altUrl =
+            repoUrl
+              .replace("github.com/", "raw.githubusercontent.com/")
+              .replace(/\/$/, "") + `/${branch}/README.md`;
           try {
             const altResponse = await fetch(altUrl);
             if (altResponse.ok) {
@@ -148,7 +150,10 @@ export class LinkExtractor {
       const content = await response.text();
       return this.extractLinks(content);
     } catch (error) {
-      console.error(`Failed to extract links from GitHub repo ${repoUrl}:`, error);
+      console.error(
+        `Failed to extract links from GitHub repo ${repoUrl}:`,
+        error
+      );
       return [];
     }
   }
@@ -158,11 +163,14 @@ export class LinkExtractor {
    */
   async extractFromRedditPost(postId: string): Promise<string[]> {
     try {
-      const response = await fetch(`https://www.reddit.com/r/all/comments/${postId}.json`, {
-        headers: {
-          'User-Agent': 'Web3News/1.0',
-        },
-      });
+      const response = await fetch(
+        `https://www.reddit.com/r/all/comments/${postId}.json`,
+        {
+          headers: {
+            "User-Agent": "Web3News/1.0",
+          },
+        }
+      );
 
       if (!response.ok) return [];
 
@@ -175,7 +183,7 @@ export class LinkExtractor {
           if (post.selftext) {
             links.push(...this.extractLinks(post.selftext));
           }
-          if (post.url && post.url.startsWith('http')) {
+          if (post.url && post.url.startsWith("http")) {
             links.push(post.url);
           }
         });
@@ -183,7 +191,10 @@ export class LinkExtractor {
 
       return this.normalizeAndDeduplicate(links);
     } catch (error) {
-      console.error(`Failed to extract links from Reddit post ${postId}:`, error);
+      console.error(
+        `Failed to extract links from Reddit post ${postId}:`,
+        error
+      );
       return [];
     }
   }
@@ -200,15 +211,14 @@ export class LinkExtractor {
     if (article.summary) contentParts.push(article.summary);
     if (article.content) {
       // Remove HTML tags if present
-      const textContent = article.content.replace(/<[^>]*>/g, ' ');
+      const textContent = article.content.replace(/<[^>]*>/g, " ");
       contentParts.push(textContent);
     }
 
-    const allContent = contentParts.join(' ');
+    const allContent = contentParts.join(" ");
     return this.extractLinks(allContent);
   }
 }
 
 // Export singleton instance
 export const linkExtractor = new LinkExtractor();
-

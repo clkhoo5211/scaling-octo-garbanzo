@@ -1,4 +1,5 @@
 # 🎯 Product Strategy
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -15,6 +16,7 @@
 #### Competitive Analysis
 
 **Competitor 1: Folo (35.7k GitHub Stars)**
+
 - **Strengths:**
   - Proven product-market fit (35.7k stars)
   - Multi-platform (Browser + iOS + Android + Desktop)
@@ -32,6 +34,7 @@
 - **Target Audience:** Tech-savvy readers, content curators
 
 **Competitor 2: NewsNow**
+
 - **Strengths:**
   - Clean, elegant UI/UX
   - Fast content aggregation
@@ -46,6 +49,7 @@
 - **Target Audience:** Casual news readers
 
 **Competitor 3: Artifact (by Instagram founders)**
+
 - **Strengths:**
   - AI-powered personalization
   - Clean mobile-first design
@@ -60,6 +64,7 @@
 - **Target Audience:** Mobile-first news consumers
 
 **Competitor 4: Flipboard**
+
 - **Strengths:**
   - Magazine-style layout
   - Social curation
@@ -74,6 +79,7 @@
 - **Target Audience:** Casual readers, social media users
 
 **Competitor 5: Feedly**
+
 - **Strengths:**
   - RSS feed management
   - Enterprise features
@@ -92,18 +98,21 @@
 #### Market Sizing
 
 **TAM (Total Addressable Market):**
+
 - Global news aggregator market: ~$2.5B (2024)
 - Crypto/Web3 content consumers: ~50M globally
 - Tech news readers: ~200M globally
 - **TAM Estimate:** $500M - $1B (Web3-native content aggregation)
 
 **SAM (Serviceable Addressable Market):**
+
 - Crypto-native users interested in aggregation: ~10M
 - Tech enthusiasts seeking Web3 rewards: ~5M
 - Content creators seeking monetization: ~2M
 - **SAM Estimate:** $50M - $100M
 
 **SOM (Serviceable Obtainable Market):**
+
 - Year 1 target: 10,000 DAU
 - Year 2 target: 50,000 DAU
 - Year 3 target: 200,000 DAU
@@ -113,6 +122,7 @@
 #### User Personas
 
 **Persona 1: Crypto Enthusiast (Sarah)**
+
 - **Demographics:** Age 25-40, tech-savvy, crypto-native
 - **Goals:** One platform for all crypto news, earn rewards for engagement
 - **Pain Points:** Scattered sources, no rewards, ad-heavy platforms
@@ -120,6 +130,7 @@
 - **Value Prop:** Unified crypto news + earn USDT for engagement
 
 **Persona 2: Content Creator (Mike)**
+
 - **Demographics:** Age 28-45, crypto analyst, content producer
 - **Goals:** Monetize content, build audience, earn from quality submissions
 - **Pain Points:** Low monetization, limited reach, no direct rewards
@@ -127,6 +138,7 @@
 - **Value Prop:** Earn points/USDT for quality content, analytics dashboard
 
 **Persona 3: Advertiser (BlockchainCo)**
+
 - **Demographics:** Age 30-50, marketing manager, crypto project
 - **Goals:** Reach crypto-native audience, transparent ad pricing, multi-chain payments
 - **Pain Points:** Opaque ad pricing, high fees, limited crypto payment options
@@ -134,6 +146,7 @@
 - **Value Prop:** Transparent auctions, USDT payments, crypto-native audience
 
 **Persona 4: Casual Reader (Alex)**
+
 - **Demographics:** Age 20-35, occasional crypto interest, mobile-first
 - **Goals:** Quick news updates, offline reading, free access
 - **Pain Points:** Too many apps, paywalls, complex interfaces
@@ -141,6 +154,7 @@
 - **Value Prop:** Free tier, PWA install, offline support, clean UI
 
 **Persona 5: DAO Member (Emma)**
+
 - **Demographics:** Age 25-40, long-term crypto user, governance participant
 - **Goals:** Influence platform direction, earn governance rewards, premium features
 - **Pain Points:** Limited governance, low voting power, no rewards for participation
@@ -160,6 +174,7 @@ Based on **150+ requirements** from Init Agent:
 #### Core Features (MVP - Phase 1)
 
 **Feature 1: Content Aggregation (20+ Sources)**
+
 - **Priority:** Must Have
 - **Business Value:** High (core product)
 - **User Impact:** High (primary use case)
@@ -168,6 +183,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 8.5 (Reach: 10, Impact: 9, Confidence: 0.9, Effort: 10)
 
 **Feature 2: Reown Social Login + Smart Accounts**
+
 - **Priority:** Must Have
 - **Business Value:** High (Web3 differentiation)
 - **User Impact:** High (seamless onboarding)
@@ -176,6 +192,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 9.0 (Reach: 10, Impact: 9, Confidence: 0.9, Effort: 9)
 
 **Feature 3: Ad Auction System**
+
 - **Priority:** Must Have
 - **Business Value:** High (revenue generation)
 - **User Impact:** Medium (advertisers only)
@@ -184,6 +201,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 7.5 (Reach: 3, Impact: 10, Confidence: 0.8, Effort: 10)
 
 **Feature 4: Points Earning System**
+
 - **Priority:** Must Have
 - **Business Value:** High (user engagement)
 - **User Impact:** High (gamification)
@@ -192,6 +210,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 8.0 (Reach: 10, Impact: 8, Confidence: 0.9, Effort: 9)
 
 **Feature 5: Points → USDT Conversion**
+
 - **Priority:** Must Have
 - **Business Value:** High (user retention)
 - **User Impact:** High (real value)
@@ -200,6 +219,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 8.5 (Reach: 8, Impact: 10, Confidence: 0.85, Effort: 9)
 
 **Feature 6: PWA Installation**
+
 - **Priority:** Must Have
 - **Business Value:** Medium (user retention)
 - **User Impact:** High (mobile experience)
@@ -208,6 +228,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 9.5 (Reach: 10, Impact: 8, Confidence: 0.95, Effort: 5)
 
 **Feature 7: Reader View Mode (Folo-Inspired)**
+
 - **Priority:** Should Have
 - **Business Value:** Medium (differentiation)
 - **User Impact:** High (reading experience)
@@ -216,6 +237,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 9.0 (Reach: 10, Impact: 7, Confidence: 0.9, Effort: 4)
 
 **Feature 8: Social Sharing (Folo-Inspired)**
+
 - **Priority:** Should Have
 - **Business Value:** Medium (viral growth)
 - **User Impact:** Medium (engagement)
@@ -224,6 +246,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 8.5 (Reach: 10, Impact: 6, Confidence: 0.9, Effort: 4)
 
 **Feature 9: Curated Lists (Folo-Inspired)**
+
 - **Priority:** Should Have
 - **Business Value:** High (community curation)
 - **User Impact:** High (personalization)
@@ -234,6 +257,7 @@ Based on **150+ requirements** from Init Agent:
 #### Beta Features (Phase 2)
 
 **Feature 10: Social Features (Follow, Like, DM)**
+
 - **Priority:** Should Have
 - **Business Value:** High (engagement)
 - **User Impact:** High (community)
@@ -242,6 +266,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 7.5 (Reach: 9, Impact: 8, Confidence: 0.8, Effort: 10)
 
 **Feature 11: DAO Governance**
+
 - **Priority:** Should Have
 - **Business Value:** High (differentiation)
 - **User Impact:** Medium (governance participants)
@@ -250,6 +275,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 7.0 (Reach: 5, Impact: 9, Confidence: 0.7, Effort: 10)
 
 **Feature 12: AI Translation (Folo-Inspired)**
+
 - **Priority:** Could Have
 - **Business Value:** Medium (global reach)
 - **User Impact:** High (international users)
@@ -258,6 +284,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 8.5 (Reach: 7, Impact: 8, Confidence: 0.85, Effort: 5)
 
 **Feature 13: AI Summaries (Folo-Inspired)**
+
 - **Priority:** Could Have
 - **Business Value:** Medium (engagement)
 - **User Impact:** High (time-saving)
@@ -266,6 +293,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 8.0 (Reach: 9, Impact: 7, Confidence: 0.8, Effort: 5)
 
 **Feature 14: Video Content (YouTube)**
+
 - **Priority:** Could Have
 - **Business Value:** Medium (content variety)
 - **User Impact:** Medium (richer content)
@@ -274,6 +302,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 7.0 (Reach: 8, Impact: 6, Confidence: 0.7, Effort: 7)
 
 **Feature 15: Podcast Support**
+
 - **Priority:** Could Have
 - **Business Value:** Low (niche audience)
 - **User Impact:** Medium (audio content)
@@ -282,6 +311,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 6.5 (Reach: 5, Impact: 6, Confidence: 0.65, Effort: 7)
 
 **Feature 16: Dune Analytics Dashboard**
+
 - **Priority:** Should Have
 - **Business Value:** High (transparency)
 - **User Impact:** Medium (premium users)
@@ -292,6 +322,7 @@ Based on **150+ requirements** from Init Agent:
 #### Production Features (Phase 3)
 
 **Feature 17: Subscription System (Pro + Premium)**
+
 - **Priority:** Must Have
 - **Business Value:** High (recurring revenue)
 - **User Impact:** High (premium features)
@@ -300,6 +331,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 8.0 (Reach: 7, Impact: 9, Confidence: 0.8, Effort: 8)
 
 **Feature 18: AI Recommendations (OpenAI)**
+
 - **Priority:** Should Have
 - **Business Value:** High (engagement)
 - **User Impact:** High (personalization)
@@ -308,6 +340,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 7.5 (Reach: 9, Impact: 8, Confidence: 0.75, Effort: 9)
 
 **Feature 19: Multi-Language Support (EN + 中文)**
+
 - **Priority:** Should Have
 - **Business Value:** Medium (global reach)
 - **User Impact:** High (international users)
@@ -316,6 +349,7 @@ Based on **150+ requirements** from Init Agent:
 - **RICE Score:** 7.0 (Reach: 6, Impact: 8, Confidence: 0.7, Effort: 8)
 
 **Feature 20: Mainnet Deployment (6 Chains)**
+
 - **Priority:** Must Have
 - **Business Value:** High (production readiness)
 - **User Impact:** High (real USDT)
@@ -332,6 +366,7 @@ Based on **150+ requirements** from Init Agent:
 #### Quarter 1 (Weeks 1-12) - MVP + Beta
 
 **Phase 1: MVP (Weeks 1-8)**
+
 - **Features:**
   - Content aggregation (15+ sources)
   - Reown social login + smart accounts
@@ -352,6 +387,7 @@ Based on **150+ requirements** from Init Agent:
   - Lighthouse score > 90
 
 **Phase 2: Beta (Weeks 9-12)**
+
 - **Features:**
   - Social features (follow, like, DM)
   - DAO governance
@@ -372,6 +408,7 @@ Based on **150+ requirements** from Init Agent:
 #### Quarter 2 (Weeks 13-16) - Production Launch
 
 **Phase 3: Production (Weeks 13-16)**
+
 - **Features:**
   - Subscription system (Pro + Premium)
   - AI recommendations (OpenAI)
@@ -391,6 +428,7 @@ Based on **150+ requirements** from Init Agent:
 #### Quarter 3-4 (Weeks 17-52) - Growth & Expansion
 
 **Phase 4: Future (6-12 Months)**
+
 - **Features:**
   - Flutter native apps (iOS + Android)
   - Platform governance token (W3N)
@@ -417,9 +455,11 @@ Based on **150+ requirements** from Init Agent:
 #### Value Proposition
 
 **Primary Value Proposition:**
+
 > "Web3News combines Folo's world-class reading experience with blockchain-powered rewards. Read crypto news from 30+ sources, earn USDT for engagement, and govern the platform—all in one beautiful, decentralized PWA."
 
 **Key Differentiators:**
+
 1. **Web3-Native:** First content aggregator with crypto rewards and DAO governance
 2. **Folo-Level UX:** AI translation, summaries, curated lists, reader view (proven UX)
 3. **Transparent Monetization:** Blockchain ad auctions, no hidden fees
@@ -429,16 +469,19 @@ Based on **150+ requirements** from Init Agent:
 #### Target Market
 
 **Primary Market:**
+
 - Crypto-native users (10M globally)
 - Tech enthusiasts seeking Web3 rewards (5M)
 - Content creators seeking monetization (2M)
 
 **Secondary Market:**
+
 - Casual crypto readers (20M)
 - Web3 developers (1M)
 - Crypto advertisers (10k projects)
 
 **Geographic Focus:**
+
 - North America (40%)
 - Europe (30%)
 - Asia-Pacific (25%)
@@ -447,23 +490,27 @@ Based on **150+ requirements** from Init Agent:
 #### Competitive Advantage
 
 **1. Web3-First Architecture**
+
 - Only aggregator with blockchain rewards
 - Transparent ad auctions (smart contracts)
 - DAO governance (community-driven)
 - Multi-chain USDT support
 
 **2. Folo-Inspired UX**
+
 - AI translation (100+ languages)
 - AI summaries (time-saving)
 - Curated lists (community curation)
 - Reader view (distraction-free)
 
 **3. Zero Infrastructure Cost**
+
 - $0/month MVP (vs competitors' $100-1000/month)
 - Free tier services (GitHub Pages, Supabase, Clerk, Reown)
 - Scalable architecture (client-side aggregation)
 
 **4. Crypto-Native Monetization**
+
 - Earn USDT for engagement (unique)
 - Transparent ad auctions (blockchain)
 - Multi-chain payments (6+ chains)
@@ -488,6 +535,7 @@ Based on **150+ requirements** from Init Agent:
    - Expected: $5,000/month (Year 1), $25,000/month (Year 2)
 
 **Total Revenue Projections:**
+
 - Year 1: $65,000/month ($780k/year)
 - Year 2: $275,000/month ($3.3M/year)
 - Year 3: $500,000/month ($6M/year)
@@ -497,24 +545,28 @@ Based on **150+ requirements** from Init Agent:
 **Launch Strategy:**
 
 **Phase 1: Pre-Launch (Weeks 1-4)**
+
 - Build MVP with core features
 - Create landing page with waitlist
 - Social media presence (Twitter, Discord)
 - Content marketing (crypto blogs, Medium)
 
 **Phase 2: Beta Launch (Weeks 5-8)**
+
 - Invite 100 beta users (waitlist)
 - Testnet ad auctions (free participation)
 - Community feedback collection
 - Bug fixes and improvements
 
 **Phase 3: Public Beta (Weeks 9-12)**
+
 - Open registration (1,000 users target)
 - Testnet rewards (points only, no USDT)
 - Influencer partnerships (crypto YouTubers)
 - Press coverage (CoinDesk, CoinTelegraph)
 
 **Phase 4: Production Launch (Weeks 13-16)**
+
 - Mainnet deployment (6 chains)
 - Real USDT rewards
 - Paid ad auctions
@@ -550,21 +602,25 @@ Based on **150+ requirements** from Init Agent:
 #### User Metrics
 
 **Metric 1: Daily Active Users (DAU)**
+
 - Target: 10,000 DAU (Month 4), 50,000 DAU (Month 12)
 - Measurement: Clerk analytics + Supabase tracking
 - Success Threshold: 5,000 DAU (Month 3)
 
 **Metric 2: Monthly Active Users (MAU)**
+
 - Target: 30,000 MAU (Month 4), 150,000 MAU (Month 12)
 - Measurement: Clerk analytics
 - Success Threshold: 15,000 MAU (Month 3)
 
 **Metric 3: User Retention (30-Day)**
+
 - Target: 40% (Month 4), 60% (Month 12)
 - Measurement: Cohort analysis (Clerk + Supabase)
 - Success Threshold: 30% (Month 3)
 
 **Metric 4: PWA Install Rate**
+
 - Target: 20% of users install PWA (Month 4)
 - Measurement: Browser install events
 - Success Threshold: 10% (Month 3)
@@ -572,21 +628,25 @@ Based on **150+ requirements** from Init Agent:
 #### Engagement Metrics
 
 **Metric 5: Articles Read per User**
+
 - Target: 10 articles/user/day (Month 4), 15 articles/user/day (Month 12)
 - Measurement: Supabase analytics
 - Success Threshold: 5 articles/user/day (Month 3)
 
 **Metric 6: Points Earned per User**
+
 - Target: 1,000 points/user/month (Month 4)
 - Measurement: Points transactions (Supabase)
 - Success Threshold: 500 points/user/month (Month 3)
 
 **Metric 7: Social Engagement Rate**
+
 - Target: 30% of users follow/like/share (Month 4)
 - Measurement: Social actions (Supabase)
 - Success Threshold: 15% (Month 3)
 
 **Metric 8: List Creation Rate**
+
 - Target: 5% of users create lists (Month 4)
 - Measurement: List creation (Supabase)
 - Success Threshold: 2% (Month 3)
@@ -594,21 +654,25 @@ Based on **150+ requirements** from Init Agent:
 #### Revenue Metrics
 
 **Metric 9: Ad Auction Revenue**
+
 - Target: $10,000/month (Month 4), $50,000/month (Month 12)
 - Measurement: Smart contract events (Dune Analytics)
 - Success Threshold: $5,000/month (Month 3)
 
 **Metric 10: Subscription Revenue**
+
 - Target: $50,000/month (Month 4), $200,000/month (Month 12)
 - Measurement: Clerk subscription analytics
 - Success Threshold: $25,000/month (Month 3)
 
 **Metric 11: Conversion Rate (Free → Pro)**
+
 - Target: 5% (Month 4), 10% (Month 12)
 - Measurement: Clerk analytics
 - Success Threshold: 3% (Month 3)
 
 **Metric 12: Average Revenue per User (ARPU)**
+
 - Target: $10/user/month (Month 4), $20/user/month (Month 12)
 - Measurement: Total revenue / MAU
 - Success Threshold: $5/user/month (Month 3)
@@ -616,16 +680,19 @@ Based on **150+ requirements** from Init Agent:
 #### Technical Metrics
 
 **Metric 13: Lighthouse Score**
+
 - Target: > 95 (all categories)
 - Measurement: Lighthouse CI/CD
 - Success Threshold: > 90 (all categories)
 
 **Metric 14: Page Load Time**
+
 - Target: < 2s (First Contentful Paint)
 - Measurement: Web Vitals (Google Analytics)
 - Success Threshold: < 3s
 
 **Metric 15: Uptime**
+
 - Target: 99.9% (GitHub Pages SLA)
 - Measurement: Uptime monitoring
 - Success Threshold: 99.5%
@@ -710,20 +777,20 @@ Based on **150+ requirements** from Init Agent:
 
 ### Feature Comparison Matrix
 
-| Feature | Web3News | Folo | NewsNow | Flipboard | Feedly |
-|---------|----------|------|---------|-----------|--------|
-| **Web3 Integration** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **Crypto Rewards** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **DAO Governance** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **AI Translation** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **AI Summaries** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **Curated Lists** | ✅ | ✅ | ❌ | ✅ | ✅ |
-| **Reader View** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **Video Content** | ✅ | ✅ | ❌ | ✅ | ❌ |
-| **Podcast Support** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **Multi-Chain** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **Transparent Ads** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **PWA Support** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Feature              | Web3News | Folo | NewsNow | Flipboard | Feedly |
+| -------------------- | -------- | ---- | ------- | --------- | ------ |
+| **Web3 Integration** | ✅       | ❌   | ❌      | ❌        | ❌     |
+| **Crypto Rewards**   | ✅       | ❌   | ❌      | ❌        | ❌     |
+| **DAO Governance**   | ✅       | ❌   | ❌      | ❌        | ❌     |
+| **AI Translation**   | ✅       | ✅   | ❌      | ❌        | ❌     |
+| **AI Summaries**     | ✅       | ✅   | ❌      | ❌        | ❌     |
+| **Curated Lists**    | ✅       | ✅   | ❌      | ✅        | ✅     |
+| **Reader View**      | ✅       | ✅   | ❌      | ❌        | ❌     |
+| **Video Content**    | ✅       | ✅   | ❌      | ✅        | ❌     |
+| **Podcast Support**  | ✅       | ✅   | ❌      | ❌        | ❌     |
+| **Multi-Chain**      | ✅       | ❌   | ❌      | ❌        | ❌     |
+| **Transparent Ads**  | ✅       | ❌   | ❌      | ❌        | ❌     |
+| **PWA Support**      | ✅       | ✅   | ✅      | ✅        | ✅     |
 
 **Competitive Advantage:** Web3News is the ONLY aggregator combining Folo's UX with Web3 monetization!
 
@@ -732,11 +799,13 @@ Based on **150+ requirements** from Init Agent:
 ## 🚀 NEXT STEPS
 
 **Immediate Actions:**
+
 1. ✅ Product strategy complete
 2. ⏳ User approval required
 3. ⏳ Proceed to Plan Agent (`/plan`)
 
 **Plan Agent Will:**
+
 - Use product strategy for roadmap creation
 - Define technical architecture
 - Create development timeline
@@ -746,4 +815,3 @@ Based on **150+ requirements** from Init Agent:
 
 **Product Agent Status:** ✅ Strategy Complete  
 **Next Agent:** Plan Agent (`/plan`)
-

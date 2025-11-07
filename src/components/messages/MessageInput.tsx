@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2 } from 'lucide-react';
-import { useSendMessage } from '@/lib/hooks/useMessages';
-import { useMessageQueueStats } from '@/lib/hooks/useMessages';
+import { useState, useRef, useEffect } from "react";
+import { Send, Loader2 } from "lucide-react";
+import { useSendMessage } from "@/lib/hooks/useMessages";
+import { useMessageQueueStats } from "@/lib/hooks/useMessages";
 
 interface MessageInputProps {
   conversationId: string;
@@ -15,8 +15,11 @@ interface MessageInputProps {
  * Input field for sending messages with optimistic updates
  * Pattern adapted from Tilly's optimistic UI updates
  */
-export function MessageInput({ conversationId, disabled = false }: MessageInputProps) {
-  const [content, setContent] = useState('');
+export function MessageInput({
+  conversationId,
+  disabled = false,
+}: MessageInputProps) {
+  const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const sendMessage = useSendMessage();
@@ -25,7 +28,7 @@ export function MessageInput({ conversationId, disabled = false }: MessageInputP
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [content]);
@@ -40,12 +43,12 @@ export function MessageInput({ conversationId, disabled = false }: MessageInputP
         conversationId,
         content: content.trim(),
       });
-      setContent('');
+      setContent("");
       if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = "auto";
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error("Failed to send message:", error);
       // Keep content on error so user can retry
     } finally {
       setIsSending(false);
@@ -53,7 +56,7 @@ export function MessageInput({ conversationId, disabled = false }: MessageInputP
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -62,7 +65,10 @@ export function MessageInput({ conversationId, disabled = false }: MessageInputP
   const hasPendingMessages = queueStats.pending > 0 || queueStats.sending > 0;
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-gray-200 dark:border-gray-700 p-4">
+    <form
+      onSubmit={handleSubmit}
+      className="border-t border-gray-200 dark:border-gray-700 p-4"
+    >
       {hasPendingMessages && (
         <div className="mb-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
           <Loader2 className="w-3 h-3 animate-spin" />
@@ -82,7 +88,7 @@ export function MessageInput({ conversationId, disabled = false }: MessageInputP
           disabled={disabled || isSending}
           rows={1}
           className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ minHeight: '40px', maxHeight: '120px' }}
+          style={{ minHeight: "40px", maxHeight: "120px" }}
         />
         <button
           type="submit"
@@ -103,4 +109,3 @@ export function MessageInput({ conversationId, disabled = false }: MessageInputP
     </form>
   );
 }
-

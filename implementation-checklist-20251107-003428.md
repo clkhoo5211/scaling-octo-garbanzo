@@ -1,4 +1,5 @@
 # 📋 Complete Implementation Checklist
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -11,29 +12,34 @@
 ## 📊 REQUIREMENTS EXTRACTION SUMMARY
 
 ### Init Agent Requirements
+
 - **Total Requirements:** 27 requirements (20 functional + 7 non-functional)
 - **User Stories:** 15 comprehensive user stories
 - **Technical Stack:** Next.js 14, TypeScript, Tailwind CSS, Reown AppKit, Clerk, Supabase, IndexedDB
 - **Smart Contracts:** 18 contracts (3 types × 6 chains)
 
 ### Product Agent Requirements
+
 - **Product Features:** 20 features (prioritized with RICE scoring)
 - **Market Research:** Multi-industry positioning (tech + crypto + social + general)
 - **Content Sources:** 30+ sources identified
 
 ### Plan Agent Requirements
+
 - **Roadmap:** 16-week timeline (MVP → Beta → Production)
 - **Requirements:** 27 requirements with acceptance criteria
 - **User Stories:** 15 user stories with detailed acceptance criteria
 - **Risks:** 10 risks identified with mitigation strategies
 
 ### UX Agent Requirements
+
 - **Pages:** 10 pages (from wireframes)
 - **User Flows:** 5 comprehensive flows
 - **UI Components:** 10 core components (50+ total components)
 - **Accessibility:** WCAG 2.1 Level AA compliant
 
 ### Design Agent Requirements
+
 - **System Components:** 10 components
 - **API Functions:** 45+ client-side API wrappers
 - **Database Tables:** 13 tables (Supabase)
@@ -42,6 +48,7 @@
 - **Integrations:** 4 major integrations
 
 ### Data Agent Requirements
+
 - **Data Pipelines:** 4 pipelines (Content Aggregation, IndexedDB Caching, Offline Sync, Analytics)
 - **Analytics:** 3 analytics services (Dune, Supabase, Clerk)
 - **GitHub Actions:** 15+ workflows prepared
@@ -53,6 +60,7 @@
 ### Pages/Screens to Implement (from wireframes/)
 
 **Page 1: Homepage / Feed**
+
 - **Description:** Main content feed with articles from all sources
 - **Components:** Header, CategoryTabs, ArticleFeed, ArticleCard[], InfiniteScroll, BottomNav
 - **Features:** Category filtering, infinite scroll, pull-to-refresh, article actions (upvote, bookmark, share)
@@ -60,6 +68,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 2: Article Reader View**
+
 - **Description:** Distraction-free reading experience
 - **Components:** ReaderView, ReadingProgress, ReaderControls, ActionBar
 - **Features:** Reader mode (@mozilla/readability), reading progress, font controls, action bar (upvote, bookmark, share, translate, summarize)
@@ -67,6 +76,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 3: Search & Discovery**
+
 - **Description:** Search articles, sources, users, topics
 - **Components:** SearchBar, SearchResults, FilterChips, Autocomplete
 - **Features:** Autocomplete, recent searches, trending topics, filters (source, date, category)
@@ -74,6 +84,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 4: Authentication / Onboarding**
+
 - **Description:** Social login with Web3 wallet creation
 - **Components:** WelcomeScreen, ReownModal, EmailVerification, OnboardingFlow
 - **Features:** Social login (Google, Twitter, Email), ERC-4337 smart account creation, email verification, onboarding preferences
@@ -81,6 +92,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 5: Ad Auction Dashboard**
+
 - **Description:** Browse and participate in ad auctions
 - **Components:** AuctionList, AuctionCard[], AuctionDetail, BidForm, TransactionConfirmation
 - **Features:** Auction browsing, filtering, bid placement, transaction confirmation, auction tracking
@@ -88,6 +100,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 6: Points & Rewards**
+
 - **Description:** View points balance, earning history, conversion
 - **Components:** PointsBalance, EarningBreakdown, ConversionCalculator, ConversionForm, TransactionHistory
 - **Features:** Points balance display, earning breakdown, conversion calculator, conversion form, transaction history
@@ -95,6 +108,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 7: Profile & Settings**
+
 - **Description:** User profile, settings, preferences
 - **Components:** ProfileHeader, ProfileStats, ProfileTabs, SettingsForm
 - **Features:** Profile editing, stats display, settings management, preferences
@@ -102,6 +116,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 8: Social Features**
+
 - **Description:** Follow users, like articles, direct messages
 - **Components:** FollowingFeed, UserProfile, FollowButton, LikeButton, MessageList, MessageThread
 - **Features:** Following feed, user profiles, follow/unfollow, like/unlike, direct messaging (real-time)
@@ -109,6 +124,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 9: DAO Governance**
+
 - **Description:** Create proposals, vote, track governance
 - **Components:** ProposalList, ProposalCard[], ProposalDetail, CreateProposalForm, VotingWidget
 - **Features:** Proposal browsing, proposal creation (costs 1,000 points), voting (meritocratic), results tracking
@@ -116,6 +132,7 @@
 - **Accessibility:** WCAG 2.1 AA compliant
 
 **Page 10: Curated Lists**
+
 - **Description:** Create and manage curated lists
 - **Components:** ListGrid, ListCard[], ListDetail, CreateListForm
 - **Features:** List creation, article addition/removal, list sharing, list subscription
@@ -129,6 +146,7 @@
 ### Features to Implement (from requirements.md + roadmap.md + product-strategy.md)
 
 **Feature 1: Content Aggregation System (FR-001)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ 15+ sources aggregating successfully
@@ -138,6 +156,7 @@
   - ✅ Error handling for failed API calls
 
 **Feature 2: Authentication System (FR-002)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Social login working (Google, Twitter, Email)
@@ -147,6 +166,7 @@
   - ✅ Multi-chain wallet support
 
 **Feature 3: Advertisement Auction System (FR-003)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Smart contract deployed (testnet)
@@ -156,6 +176,7 @@
   - ✅ Auto-scheduling working (24 hours before expiry)
 
 **Feature 4: Points Earning System (FR-004)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Points earned for submissions (10+ upvotes)
@@ -165,6 +186,7 @@
   - ✅ Points balance displayed in UI
 
 **Feature 5: Points → USDT Conversion (FR-005)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Conversion ratio working (1,000 points = 1 USDT)
@@ -174,6 +196,7 @@
   - ✅ Cooldown enforced (7 days)
 
 **Feature 6: PWA Installation (FR-006)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ PWA manifest configured
@@ -183,6 +206,7 @@
   - ✅ Offline functionality working
 
 **Feature 7: Reader View Mode (FR-007)**
+
 - **Priority:** Should Have
 - **Acceptance Criteria:**
   - ✅ Reader view functional (@mozilla/readability)
@@ -191,6 +215,7 @@
   - ✅ Reading progress bar working
 
 **Feature 8: AI Translation (FR-008)**
+
 - **Priority:** Should Have
 - **Acceptance Criteria:**
   - ✅ Translation button functional
@@ -199,6 +224,7 @@
   - ✅ Translation cached (no repeat API calls)
 
 **Feature 9: AI Summaries (FR-009)**
+
 - **Priority:** Should Have
 - **Acceptance Criteria:**
   - ✅ "TL;DR" button functional
@@ -207,6 +233,7 @@
   - ✅ Summary cached (no repeat API calls)
 
 **Feature 10: Curated Lists (FR-010)**
+
 - **Priority:** Should Have
 - **Acceptance Criteria:**
   - ✅ List creation functional
@@ -215,6 +242,7 @@
   - ✅ List subscription working
 
 **Feature 11: Social Features (FR-011)**
+
 - **Priority:** Should Have
 - **Acceptance Criteria:**
   - ✅ Follow/unfollow users working
@@ -223,6 +251,7 @@
   - ✅ Following feed working
 
 **Feature 12: DAO Governance (FR-012)**
+
 - **Priority:** Should Have
 - **Acceptance Criteria:**
   - ✅ Proposal creation functional (costs 1,000 points)
@@ -231,6 +260,7 @@
   - ✅ Proposal execution working (if passed)
 
 **Feature 13: Subscription System (FR-013)**
+
 - **Priority:** Could Have
 - **Acceptance Criteria:**
   - ✅ Subscription tiers (Pro, Premium)
@@ -239,6 +269,7 @@
   - ✅ Subscription benefits applied
 
 **Feature 14: Analytics Dashboard (FR-014)**
+
 - **Priority:** Could Have
 - **Acceptance Criteria:**
   - ✅ Content analytics dashboard
@@ -247,6 +278,7 @@
   - ✅ Revenue analytics
 
 **Feature 15: Search Functionality (FR-015)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Search bar functional
@@ -255,6 +287,7 @@
   - ✅ Filters working (source, date, category)
 
 **Feature 16: Bookmark System (FR-016)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Bookmark articles working
@@ -263,6 +296,7 @@
   - ✅ Bookmarks synced (IndexedDB + Supabase)
 
 **Feature 17: Category Filtering (FR-017)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Category tabs functional
@@ -271,6 +305,7 @@
   - ✅ Category counts displayed
 
 **Feature 18: Infinite Scroll (FR-018)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Infinite scroll functional
@@ -279,6 +314,7 @@
   - ✅ Error handling working
 
 **Feature 19: Offline Support (FR-019)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Offline queue functional
@@ -287,6 +323,7 @@
   - ✅ Sync when online working
 
 **Feature 20: Dark Mode (FR-020)**
+
 - **Priority:** Must Have
 - **Acceptance Criteria:**
   - ✅ Dark mode toggle functional
@@ -301,30 +338,35 @@
 ### User Flows to Implement (from user-flows/)
 
 **Flow 1: Onboarding & Authentication**
+
 - **Steps:** Landing → Welcome → Social Login → Reown Modal → Wallet Created → Clerk User Created → Email Verification → Onboarding → Dashboard
 - **Pages:** Landing, Welcome, Auth, Verification, Onboarding, Dashboard
 - **Success Criteria:** User logged in, wallet created, email verified, onboarding complete
 - **Error Paths:** Social login fails → Email fallback, Email verification fails → Resend link
 
 **Flow 2: Content Discovery & Reading**
+
 - **Steps:** Homepage → Browse Feed → Filter Category → Tap Article → Reader View → Read → Upvote → Bookmark → Share → Related Articles
 - **Pages:** Homepage, Reader View, Related Articles
 - **Success Criteria:** Article read, engagement tracked, points earned
 - **Error Paths:** Article fails to load → Cached version, Offline → Cached articles
 
 **Flow 3: Ad Auction Participation**
+
 - **Steps:** Ad Auctions → Browse → Filter → Select Auction → Check Balance → Top Up (if needed) → Place Bid → Confirm → Track Status
 - **Pages:** Ad Auctions, Auction Detail, Bid Form, Confirmation, Status
 - **Success Criteria:** Bid placed, transaction confirmed, status tracked
 - **Error Paths:** Insufficient balance → Top-up option, Bid too low → Minimum bid requirement
 
 **Flow 4: Points Earning & Conversion**
+
 - **Steps:** Submit Article → Receive Upvotes → Daily Login → View Balance → Accumulate Points → Convert → Wait Cooldown → Withdraw
 - **Pages:** Points Dashboard, Conversion Calculator, Confirmation, Transaction History
 - **Success Criteria:** Points earned, converted, USDT withdrawn
 - **Error Paths:** Insufficient points → Minimum requirement, Cooldown active → Countdown timer
 
 **Flow 5: DAO Governance Participation**
+
 - **Steps:** DAO → Browse Proposals → Filter → Read Proposal → Check Voting Power → Vote → Track Results → Earn Rewards
 - **Pages:** DAO, Proposal List, Proposal Detail, Voting, Results
 - **Success Criteria:** Vote cast, results tracked, rewards earned
@@ -337,6 +379,7 @@
 ### API Endpoints to Implement (from api-specifications/)
 
 **External Content APIs (15+ functions):**
+
 - ✅ `fetchHackerNews(limit?)` - Hacker News Firebase API
 - ✅ `fetchProductHunt(limit?)` - Product Hunt GraphQL API
 - ✅ `fetchGitHubTrending(language?)` - GitHub REST API
@@ -354,6 +397,7 @@
 - ✅ `fetchTheBlock()` - The Block RSS feed
 
 **Supabase Client APIs (20+ functions):**
+
 - ✅ `getSubmissions(filters?)` - Get user submissions
 - ✅ `createSubmission(data)` - Create submission
 - ✅ `getBookmarks(userId)` - Get user bookmarks
@@ -376,6 +420,7 @@
 - ✅ `getAuctionBids(auctionId)` - Get auction bids
 
 **Smart Contract APIs (10+ functions):**
+
 - ✅ `joinAuction(auctionId, chainId)` - Join auction (pay 1 USDT)
 - ✅ `placeBid(auctionId, amount, chainId)` - Place bid
 - ✅ `getAuction(auctionId, chainId)` - Get auction details
@@ -394,60 +439,70 @@
 ### Database Components (from database-schema.sql)
 
 **Table 1: submissions**
+
 - **Purpose:** User-submitted articles
 - **Columns:** id, user_id, title, url, source, category, upvotes, created_at, updated_at
 - **Indexes:** user_id, category, created_at, upvotes, url
 - **RLS Policies:** Public read, Authenticated insert, Owner update/delete
 
 **Table 2: bookmarks**
+
 - **Purpose:** User bookmarks
 - **Columns:** id, user_id, article_id, article_title, article_source, created_at
 - **Indexes:** user_id, created_at, article_id, unique(user_id, article_id)
 - **RLS Policies:** Owner read/insert/delete
 
 **Table 3: advertisements**
+
 - **Purpose:** Ad content
 - **Columns:** id, advertiser_id, slot_type, slot_location, content_url, link_url, start_date, end_date, is_active, created_at
 - **Indexes:** slot_location, is_active, end_date, advertiser_id
 - **RLS Policies:** Public read active ads, Authenticated insert, Owner update
 
 **Table 4: auction_participants**
+
 - **Purpose:** Auction participants
 - **Columns:** id, auction_id, participant_address, participation_fee_paid, transaction_hash, created_at
 - **Indexes:** auction_id, participant_address, unique(auction_id, participant_address)
 - **RLS Policies:** Public read, Authenticated insert
 
 **Table 5: auction_bids**
+
 - **Purpose:** Bid history
 - **Columns:** id, auction_id, bidder_address, bid_amount, transaction_hash, block_number, created_at
 - **Indexes:** auction_id, bidder_address, bid_amount, created_at
 - **RLS Policies:** Public read, Authenticated insert
 
 **Table 6: points_transactions**
+
 - **Purpose:** Points earning and conversion history
 - **Columns:** id, user_id, transaction_type, points_amount, usdt_amount, source, transaction_hash, created_at
 - **Indexes:** user_id, transaction_type, created_at
 - **RLS Policies:** Owner read, System insert
 
 **Table 7: user_follows**
+
 - **Purpose:** Social follows
 - **Columns:** id, follower_id, following_id, created_at
 - **Indexes:** follower_id, following_id, unique(follower_id, following_id)
 - **RLS Policies:** Public read, Authenticated insert, Owner delete
 
 **Table 8: article_likes**
+
 - **Purpose:** Article likes
 - **Columns:** id, article_id, user_id, created_at
 - **Indexes:** article_id, user_id, unique(article_id, user_id)
 - **RLS Policies:** Public read, Authenticated insert, Owner delete
 
 **Table 9: conversations**
+
 - **Purpose:** Direct message conversations
 - **Columns:** id, participant_1_id, participant_2_id, last_message_at, created_at
 - **Indexes:** participant_1_id, participant_2_id, unique(participants)
 - **RLS Policies:** Participants read, Authenticated insert
 
 **Table 10: messages**
+
 - **Purpose:** Direct messages
 - **Columns:** id, conversation_id, sender_id, content, is_read, created_at
 - **Indexes:** conversation_id, sender_id, created_at
@@ -455,18 +510,21 @@
 - **Realtime:** Enabled
 
 **Table 11: proposals**
+
 - **Purpose:** DAO governance proposals
 - **Columns:** id, proposal_id, creator_id, title, description, category, status, yes_votes, no_votes, abstain_votes, quorum_met, start_date, end_date, created_at
 - **Indexes:** status, category, end_date, creator_id
 - **RLS Policies:** Public read, Authenticated insert
 
 **Table 12: votes**
+
 - **Purpose:** Governance votes
 - **Columns:** id, proposal_id, voter_id, vote_option, voting_power, transaction_hash, created_at
 - **Indexes:** proposal_id, voter_id, unique(proposal_id, voter_id)
 - **RLS Policies:** Public read, Authenticated insert
 
 **Table 13: notifications**
+
 - **Purpose:** User notifications
 - **Columns:** id, user_id, type, title, message, link_url, is_read, created_at
 - **Indexes:** user_id, is_read, created_at
@@ -476,6 +534,7 @@
 **TOTAL TABLES: 13 tables**
 
 **IndexedDB Object Stores (4 stores):**
+
 - ✅ `articles` - Cached articles (30-min TTL, 2,000 limit)
 - ✅ `bookmarks` - User bookmarks (persistent)
 - ✅ `preferences` - User preferences (persistent)
@@ -486,36 +545,42 @@
 ### UI Components (from design-system/ + component-specifications/)
 
 **Layout Components (4 components):**
+
 - ✅ `Header` - Logo, search, profile, notifications
 - ✅ `Footer` - Links, copyright
 - ✅ `BottomNav` - Home, Search, Bookmarks, Profile (mobile)
 - ✅ `Sidebar` - Filters, navigation (desktop)
 
 **Feed Components (4 components):**
+
 - ✅ `ArticleCard` - Article preview (compact, expanded, featured variants)
 - ✅ `ArticleFeed` - Article feed container
 - ✅ `CategoryTabs` - Category navigation (swipeable on mobile)
 - ✅ `InfiniteScroll` - Virtual scrolling for performance
 
 **Article Components (4 components):**
+
 - ✅ `ReaderView` - Distraction-free reading
 - ✅ `ReadingProgress` - Reading progress bar
 - ✅ `ReaderControls` - Font size, line height, theme controls
 - ✅ `ActionBar` - Upvote, bookmark, share, translate, summarize
 
 **Search Components (4 components):**
+
 - ✅ `SearchBar` - Search input with autocomplete
 - ✅ `SearchResults` - Search results display
 - ✅ `FilterChips` - Source, date, category filters
 - ✅ `Autocomplete` - Search suggestions
 
 **Auth Components (4 components):**
+
 - ✅ `LoginModal` - Login modal wrapper
 - ✅ `ReownModal` - Reown AppKit modal integration
 - ✅ `EmailVerification` - Email verification prompt
 - ✅ `OnboardingFlow` - Onboarding preferences flow
 
 **Web3 Components (7 components):**
+
 - ✅ `AuctionCard` - Auction preview card
 - ✅ `AuctionDetail` - Auction detail view
 - ✅ `BidForm` - Bid placement form
@@ -525,6 +590,7 @@
 - ✅ `VotingWidget` - Voting interface
 
 **Social Components (5 components):**
+
 - ✅ `UserProfile` - User profile display
 - ✅ `FollowButton` - Follow/unfollow button
 - ✅ `LikeButton` - Like/unlike button
@@ -532,6 +598,7 @@
 - ✅ `MessageThread` - Conversation thread
 
 **UI Components (5 components):**
+
 - ✅ `Button` - Button component (primary, secondary, outline, ghost variants)
 - ✅ `Input` - Input component (text, number, textarea, select variants)
 - ✅ `Modal` - Modal/dialog component
@@ -539,6 +606,7 @@
 - ✅ `Toast` - Toast notification component
 
 **Shared Components (3 components):**
+
 - ✅ `BookmarkButton` - Bookmark toggle button
 - ✅ `ShareButton` - Share button (Web Share API)
 - ✅ `PointsBadge` - Points badge display
@@ -550,21 +618,25 @@
 ### Data Pipelines (from data-pipeline/)
 
 **Pipeline 1: Content Aggregation Pipeline**
+
 - **Purpose:** Aggregate content from 30+ sources
 - **Flow:** Extract → Transform → Load
 - **Features:** Parallel fetching, rate limiting, deduplication, caching
 
 **Pipeline 2: IndexedDB Caching Pipeline**
+
 - **Purpose:** Client-side caching with TTL
 - **Flow:** Check Cache → Store → Cleanup
 - **Features:** 30-min TTL, 2,000 limit, auto-cleanup
 
 **Pipeline 3: Offline Sync Pipeline**
+
 - **Purpose:** Sync pending actions when online
 - **Flow:** Queue → Background Sync → Process → Remove
 - **Features:** FIFO queue, retry logic, error handling
 
 **Pipeline 4: Analytics Pipeline**
+
 - **Purpose:** Track user behavior and metrics
 - **Flow:** Track Event → Route → Aggregate
 - **Features:** Multi-source analytics (Dune, Supabase, Clerk)
@@ -576,14 +648,17 @@
 ### Analytics Features (from analytics/)
 
 **Dashboard 1: Content Analytics**
+
 - **Metrics:** Total articles, sources, categories, cache hit rate, freshness
 - **Visualization:** Line chart, pie chart, bar chart, gauge
 
 **Dashboard 2: User Engagement Analytics**
+
 - **Metrics:** DAU, MAU, engagement rate, session duration, bounce rate
 - **Visualization:** Line chart, bar chart, heatmap, funnel
 
 **Dashboard 3: On-Chain Analytics (Dune)**
+
 - **Metrics:** Ad auctions, revenue, subscriptions, governance, conversions
 - **Visualization:** Line chart, bar chart, pie chart, table
 
@@ -594,21 +669,25 @@
 ### Integration Requirements (from project-requirements.md)
 
 **Integration 1: Reown AppKit**
+
 - **Purpose:** Web3 authentication (PRIMARY)
 - **Features:** Social login, ERC-4337 smart accounts, multi-chain, on-ramp
 - **Implementation:** Provider setup, hooks, wallet management
 
 **Integration 2: Clerk**
+
 - **Purpose:** User management (SECONDARY)
 - **Features:** User metadata, subscriptions, email verification, session management
 - **Implementation:** Provider setup, hooks, metadata management
 
 **Integration 3: Supabase**
+
 - **Purpose:** Content database
 - **Features:** PostgreSQL database, Row Level Security, Realtime subscriptions
 - **Implementation:** Client setup, queries, mutations, realtime
 
 **Integration 4: External Content APIs**
+
 - **Purpose:** Content aggregation (30+ sources)
 - **Features:** Hacker News, Product Hunt, GitHub, Reddit, RSS feeds, price APIs
 - **Implementation:** API wrappers, rate limiting, error handling, CORS proxy
@@ -620,6 +699,7 @@
 ### Testing Requirements
 
 **Unit Tests:**
+
 - ✅ Business logic functions (>80% coverage)
 - ✅ Utility functions (100% coverage)
 - ✅ Component logic (hooks, helpers)
@@ -627,6 +707,7 @@
 - ✅ State management (Zustand stores)
 
 **Integration Tests:**
+
 - ✅ API endpoint integration
 - ✅ Database operations (Supabase)
 - ✅ IndexedDB operations
@@ -634,6 +715,7 @@
 - ✅ Authentication flows
 
 **E2E Tests:**
+
 - ✅ Flow 1: Onboarding & Authentication
 - ✅ Flow 2: Content Discovery & Reading
 - ✅ Flow 3: Ad Auction Participation
@@ -641,12 +723,14 @@
 - ✅ Flow 5: DAO Governance Participation
 
 **Accessibility Tests:**
+
 - ✅ WCAG 2.1 Level AA compliance (all pages)
 - ✅ Keyboard navigation (all interactive elements)
 - ✅ Screen reader support (all content)
 - ✅ Color contrast (all text)
 
 **Performance Tests:**
+
 - ✅ Page load time (< 3s)
 - ✅ API response time (< 1s)
 - ✅ Cache hit rate (> 80%)
@@ -659,22 +743,26 @@
 ### Security Requirements (from architecture.md + requirements.md)
 
 **Authentication:**
+
 - ✅ Reown AppKit (PRIMARY) - OAuth + ERC-4337
 - ✅ Clerk (SECONDARY) - JWT tokens
 - ✅ Email verification (magic links)
 
 **Authorization:**
+
 - ✅ Row Level Security (RLS) policies
 - ✅ Role-based access control (free, pro, premium, admin)
 - ✅ Owner-only data access
 
 **Input Validation:**
+
 - ✅ All API endpoints validated
 - ✅ Form inputs validated
 - ✅ URL parameters validated
 - ✅ Smart contract parameters validated
 
 **Security Headers:**
+
 - ✅ Content Security Policy (CSP)
 - ✅ X-Frame-Options
 - ✅ X-Content-Type-Options
@@ -682,6 +770,7 @@
 - ✅ Permissions-Policy
 
 **OWASP Top 10:**
+
 - ✅ Injection prevention (prepared statements, input validation)
 - ✅ Broken authentication (secure auth flow)
 - ✅ Sensitive data exposure (encryption, HTTPS)
@@ -700,23 +789,27 @@
 ### Compliance Requirements (from project-requirements.md)
 
 **GDPR Compliance:**
+
 - ✅ User data anonymization
 - ✅ Right to deletion
 - ✅ Data minimization
 - ✅ Consent management
 
 **Privacy Controls:**
+
 - ✅ Privacy settings
 - ✅ Data export
 - ✅ Account deletion
 - ✅ Cookie consent
 
 **Data Retention:**
+
 - ✅ IndexedDB: 30 days (auto-cleanup)
 - ✅ Supabase: Indefinite (user data), 90 days (analytics)
 - ✅ Analytics: 1 year (aggregated)
 
 **Audit Logging:**
+
 - ✅ User actions logged
 - ✅ Admin actions logged
 - ✅ Security events logged
@@ -748,6 +841,7 @@
 **ESTIMATED IMPLEMENTATION TIME:** 8-12 weeks (MVP phase per roadmap)
 
 **IMPLEMENTATION PHASES:**
+
 - **Phase 1 (Weeks 1-2):** Foundation & PWA Setup (Next.js, PWA manifest, Service Worker, Auth)
 - **Phase 2 (Weeks 3-4):** Content Aggregation (15+ sources, IndexedDB caching, Feed UI)
 - **Phase 3 (Weeks 5-6):** Web3 Features (Smart contracts, Ad auctions, Points system)
@@ -758,6 +852,7 @@
 ## ⚠️ CRITICAL CHECKPOINT - USER VERIFICATION REQUIRED
 
 I've created a comprehensive implementation checklist with **200+ items** extracted from:
+
 - Init Agent (27 requirements, 15 user stories)
 - Product Agent (20 features, market research)
 - Plan Agent (16-week roadmap, requirements specification)
@@ -774,8 +869,8 @@ I've created a comprehensive implementation checklist with **200+ items** extrac
 5. ✅ Are the time estimates realistic for your timeline?
 
 **Please reply with:**
+
 - **"APPROVED - Proceed with implementation"** (if checklist is complete and accurate)
 - **OR** list any missing items, changes, or concerns
 
 **Note**: Once you approve, I will implement 100% of this checklist and track progress continuously before claiming completion.
-

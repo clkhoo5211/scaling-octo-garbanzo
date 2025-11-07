@@ -3,7 +3,7 @@
  * Fetches and parses article content using @mozilla/readability
  */
 
-import { Readability } from '@mozilla/readability';
+import { Readability } from "@mozilla/readability";
 
 export interface ParsedArticle {
   title: string;
@@ -19,8 +19,10 @@ export interface ParsedArticle {
  * Fetch article content and parse with Readability
  * Note: This is a client-side only function due to CORS restrictions
  */
-export async function fetchArticleContent(url: string): Promise<ParsedArticle | null> {
-  if (typeof window === 'undefined') {
+export async function fetchArticleContent(
+  url: string
+): Promise<ParsedArticle | null> {
+  if (typeof window === "undefined") {
     // Server-side: return null (will be fetched on client)
     return null;
   }
@@ -28,7 +30,7 @@ export async function fetchArticleContent(url: string): Promise<ParsedArticle | 
   try {
     // Use CORS proxy for cross-origin requests
     const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    
+
     const response = await fetch(proxyUrl);
     if (!response.ok) {
       throw new Error(`Failed to fetch article: ${response.statusText}`);
@@ -39,7 +41,7 @@ export async function fetchArticleContent(url: string): Promise<ParsedArticle | 
 
     // Parse HTML with DOMParser (client-side only)
     const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
+    const doc = parser.parseFromString(html, "text/html");
 
     // Use Readability to extract clean content
     const reader = new Readability(doc);
@@ -53,13 +55,13 @@ export async function fetchArticleContent(url: string): Promise<ParsedArticle | 
       title: article.title,
       content: article.content,
       textContent: article.textContent,
-      excerpt: article.excerpt || '',
+      excerpt: article.excerpt || "",
       byline: article.byline || undefined,
       length: article.length,
       siteName: article.siteName || undefined,
     };
   } catch (error) {
-    console.error('Error fetching article content:', error);
+    console.error("Error fetching article content:", error);
     return null;
   }
 }
@@ -67,8 +69,10 @@ export async function fetchArticleContent(url: string): Promise<ParsedArticle | 
 /**
  * Estimate reading time based on word count
  */
-export function estimateReadingTime(textContent: string, wordsPerMinute = 200): number {
+export function estimateReadingTime(
+  textContent: string,
+  wordsPerMinute = 200
+): number {
   const words = textContent.trim().split(/\s+/).length;
   return Math.ceil(words / wordsPerMinute);
 }
-

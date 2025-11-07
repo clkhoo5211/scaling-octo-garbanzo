@@ -1,14 +1,23 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useUser } from '@clerk/nextjs';
-import { List, Plus, Edit2, Trash2, Users, Globe, Lock, ExternalLink } from 'lucide-react';
-import { useState } from 'react';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import {
+  List,
+  Plus,
+  Edit2,
+  Trash2,
+  Users,
+  Globe,
+  Lock,
+  ExternalLink,
+} from "lucide-react";
+import { useState } from "react";
 import {
   useLists,
   useCreateList,
@@ -17,17 +26,17 @@ import {
   useListSubscriptions,
   useSubscribeToList,
   useUnsubscribeFromList,
-} from '@/lib/hooks/useLists';
-import { useToast } from '@/components/ui/Toast';
-import Link from 'next/link';
-import { formatRelativeTime } from '@/lib/utils';
+} from "@/lib/hooks/useLists";
+import { useToast } from "@/components/ui/Toast";
+import Link from "next/link";
+import { formatRelativeTime } from "@/lib/utils";
 
 export default function ListsPage() {
   const { user, isLoaded } = useUser();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingList, setEditingList] = useState<string | null>(null);
-  const [listName, setListName] = useState('');
-  const [listDescription, setListDescription] = useState('');
+  const [listName, setListName] = useState("");
+  const [listDescription, setListDescription] = useState("");
   const [isPublic, setIsPublic] = useState(false);
 
   const { data: lists, isLoading } = useLists(
@@ -63,7 +72,7 @@ export default function ListsPage() {
 
   const handleCreateList = async () => {
     if (!listName.trim()) {
-      addToast({ message: 'List name is required', type: 'error' });
+      addToast({ message: "List name is required", type: "error" });
       return;
     }
 
@@ -73,19 +82,19 @@ export default function ListsPage() {
         description: listDescription.trim() || undefined,
         isPublic,
       });
-      addToast({ message: 'List created successfully', type: 'success' });
+      addToast({ message: "List created successfully", type: "success" });
       setShowCreateModal(false);
-      setListName('');
-      setListDescription('');
+      setListName("");
+      setListDescription("");
       setIsPublic(false);
     } catch (error) {
-      addToast({ message: 'Failed to create list', type: 'error' });
+      addToast({ message: "Failed to create list", type: "error" });
     }
   };
 
   const handleUpdateList = async (listId: string) => {
     if (!listName.trim()) {
-      addToast({ message: 'List name is required', type: 'error' });
+      addToast({ message: "List name is required", type: "error" });
       return;
     }
 
@@ -96,55 +105,55 @@ export default function ListsPage() {
         description: listDescription.trim() || undefined,
         isPublic,
       });
-      addToast({ message: 'List updated successfully', type: 'success' });
+      addToast({ message: "List updated successfully", type: "success" });
       setEditingList(null);
-      setListName('');
-      setListDescription('');
+      setListName("");
+      setListDescription("");
       setIsPublic(false);
     } catch (error) {
-      addToast({ message: 'Failed to update list', type: 'error' });
+      addToast({ message: "Failed to update list", type: "error" });
     }
   };
 
   const handleDeleteList = async (listId: string) => {
-    if (!confirm('Are you sure you want to delete this list?')) return;
+    if (!confirm("Are you sure you want to delete this list?")) return;
 
     try {
       await deleteListMutation.mutateAsync(listId);
-      addToast({ message: 'List deleted successfully', type: 'success' });
+      addToast({ message: "List deleted successfully", type: "success" });
     } catch (error) {
-      addToast({ message: 'Failed to delete list', type: 'error' });
+      addToast({ message: "Failed to delete list", type: "error" });
     }
   };
 
   const handleSubscribe = async (listId: string) => {
     try {
       await subscribeMutation.mutateAsync(listId);
-      addToast({ message: 'Subscribed to list', type: 'success' });
+      addToast({ message: "Subscribed to list", type: "success" });
     } catch (error) {
-      addToast({ message: 'Failed to subscribe', type: 'error' });
+      addToast({ message: "Failed to subscribe", type: "error" });
     }
   };
 
   const handleUnsubscribe = async (listId: string) => {
     try {
       await unsubscribeMutation.mutateAsync(listId);
-      addToast({ message: 'Unsubscribed from list', type: 'success' });
+      addToast({ message: "Unsubscribed from list", type: "success" });
     } catch (error) {
-      addToast({ message: 'Failed to unsubscribe', type: 'error' });
+      addToast({ message: "Failed to unsubscribe", type: "error" });
     }
   };
 
   const openCreateModal = () => {
-    setListName('');
-    setListDescription('');
+    setListName("");
+    setListDescription("");
     setIsPublic(false);
     setShowCreateModal(true);
   };
 
-  const openEditModal = (list: typeof lists![0]) => {
+  const openEditModal = (list: NonNullable<typeof lists>[0]) => {
     setListName(list.name);
-    setListDescription(list.description || '');
+    setListDescription(list.description || "");
     setIsPublic(list.is_public);
     setEditingList(list.id);
   };
@@ -152,8 +161,8 @@ export default function ListsPage() {
   const closeModals = () => {
     setShowCreateModal(false);
     setEditingList(null);
-    setListName('');
-    setListDescription('');
+    setListName("");
+    setListDescription("");
     setIsPublic(false);
   };
 
@@ -222,7 +231,9 @@ export default function ListsPage() {
                     <span>{list.subscriber_count} subscribers</span>
                   </div>
                   <span>•</span>
-                  <span>{formatRelativeTime(new Date(list.created_at).getTime())}</span>
+                  <span>
+                    {formatRelativeTime(new Date(list.created_at).getTime())}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -303,7 +314,10 @@ export default function ListsPage() {
                 onChange={(e) => setIsPublic(e.target.checked)}
                 className="rounded"
               />
-              <label htmlFor="isPublic" className="text-sm text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="isPublic"
+                className="text-sm text-gray-700 dark:text-gray-300"
+              >
                 Make this list public
               </label>
             </div>
@@ -353,7 +367,10 @@ export default function ListsPage() {
                   onChange={(e) => setIsPublic(e.target.checked)}
                   className="rounded"
                 />
-                <label htmlFor="isPublicEdit" className="text-sm text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="isPublicEdit"
+                  className="text-sm text-gray-700 dark:text-gray-300"
+                >
                   Make this list public
                 </label>
               </div>

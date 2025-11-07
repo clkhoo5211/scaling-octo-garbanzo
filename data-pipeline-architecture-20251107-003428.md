@@ -1,4 +1,5 @@
 # 📊 Data Pipeline Architecture
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -28,6 +29,7 @@
 **Destination:** IndexedDB (cache) + Supabase (persistent storage)
 
 **Flow:**
+
 ```
 [User Opens Feed]
     ↓
@@ -78,6 +80,7 @@
 ```
 
 **Implementation:**
+
 ```typescript
 // lib/services/contentAggregator.ts
 class ContentAggregator {
@@ -95,7 +98,7 @@ class ContentAggregator {
     // 2. Fetch from sources (parallel)
     const sources = this.getSourcesForCategory(category);
     const results = await Promise.allSettled(
-      sources.map(source => this.fetchSource(source))
+      sources.map((source) => this.fetchSource(source))
     );
 
     // 3. Transform and deduplicate
@@ -109,16 +112,16 @@ class ContentAggregator {
 
   private async fetchSource(source: SourceConfig): Promise<Article[]> {
     await this.rateLimiter.wait(source.name);
-    
+
     try {
       switch (source.type) {
-        case 'firebase':
+        case "firebase":
           return await this.fetchFirebase(source);
-        case 'graphql':
+        case "graphql":
           return await this.fetchGraphQL(source);
-        case 'rest':
+        case "rest":
           return await this.fetchREST(source);
-        case 'rss':
+        case "rss":
           return await this.fetchRSS(source);
         default:
           return [];
@@ -129,13 +132,15 @@ class ContentAggregator {
     }
   }
 
-  private transformAndDeduplicate(results: PromiseSettledResult<Article[]>[]): Article[] {
+  private transformAndDeduplicate(
+    results: PromiseSettledResult<Article[]>[]
+  ): Article[] {
     const allArticles: Article[] = [];
     const seenUrls = new Set<string>();
 
-    results.forEach(result => {
-      if (result.status === 'fulfilled') {
-        result.value.forEach(article => {
+    results.forEach((result) => {
+      if (result.status === "fulfilled") {
+        result.value.forEach((article) => {
           const urlHash = this.hashUrl(article.url);
           if (!seenUrls.has(urlHash)) {
             seenUrls.add(urlHash);
@@ -151,6 +156,7 @@ class ContentAggregator {
 ```
 
 **Performance Targets:**
+
 - Fetch Time: < 5 seconds (parallel fetching)
 - Cache Hit Rate: > 80% (30-min TTL)
 - Deduplication: 100% (no duplicates)
@@ -166,6 +172,7 @@ class ContentAggregator {
 **Destination:** IndexedDB (browser storage)
 
 **Flow:**
+
 ```
 [Article Received]
     ↓
@@ -187,80 +194,83 @@ class ContentAggregator {
 ```
 
 **Implementation:**
+
 ```typescript
 // lib/services/indexedDBCache.ts
 class IndexedDBCache {
   private db: IDBDatabase;
-  private storeName = 'articles';
+  private storeName = "articles";
   private ttl = 30 * 60 * 1000; // 30 minutes
   private maxArticles = 2000;
 
   async getArticles(category?: string): Promise<Article[]> {
-    const transaction = this.db.transaction([this.storeName], 'readonly');
+    const transaction = this.db.transaction([this.storeName], "readonly");
     const store = transaction.objectStore(this.storeName);
-    const index = category ? store.index('category') : store.index('cachedAt');
-    
+    const index = category ? store.index("category") : store.index("cachedAt");
+
     const request = index.getAll();
     const articles = await this.promisifyRequest<Article[]>(request);
-    
+
     // Filter expired articles
     const now = Date.now();
-    const validArticles = articles.filter(article => {
+    const validArticles = articles.filter((article) => {
       const age = now - article.cachedAt;
       return age < this.ttl;
     });
-    
+
     // Remove expired articles
     if (validArticles.length < articles.length) {
-      await this.removeExpiredArticles(articles.filter(a => !validArticles.includes(a)));
+      await this.removeExpiredArticles(
+        articles.filter((a) => !validArticles.includes(a))
+      );
     }
-    
+
     return validArticles;
   }
 
   async setArticles(articles: Article[], category?: string): Promise<void> {
-    const transaction = this.db.transaction([this.storeName], 'readwrite');
+    const transaction = this.db.transaction([this.storeName], "readwrite");
     const store = transaction.objectStore(this.storeName);
-    
+
     const now = Date.now();
-    const articlesToStore = articles.map(article => ({
+    const articlesToStore = articles.map((article) => ({
       ...article,
       cachedAt: now,
       category: category || article.category,
     }));
-    
+
     // Store articles
-    await Promise.all(
-      articlesToStore.map(article => store.put(article))
-    );
-    
+    await Promise.all(articlesToStore.map((article) => store.put(article)));
+
     // Cleanup old articles
     await this.cleanupOldArticles();
   }
 
   private async cleanupOldArticles(): Promise<void> {
-    const transaction = this.db.transaction([this.storeName], 'readwrite');
+    const transaction = this.db.transaction([this.storeName], "readwrite");
     const store = transaction.objectStore(this.storeName);
-    const index = store.index('cachedAt');
-    
+    const index = store.index("cachedAt");
+
     const request = index.getAll();
     const allArticles = await this.promisifyRequest<Article[]>(request);
-    
+
     if (allArticles.length > this.maxArticles) {
       // Sort by cachedAt (oldest first)
       allArticles.sort((a, b) => a.cachedAt - b.cachedAt);
-      
+
       // Remove oldest articles
-      const toRemove = allArticles.slice(0, allArticles.length - this.maxArticles);
-      await Promise.all(
-        toRemove.map(article => store.delete(article.url))
+      const toRemove = allArticles.slice(
+        0,
+        allArticles.length - this.maxArticles
       );
+      await Promise.all(toRemove.map((article) => store.delete(article.url)));
     }
   }
 }
 ```
 
 **Cache Strategy:**
+
 - **TTL:** 30 minutes (configurable)
 - **Max Articles:** 2,000 (configurable)
 - **Cleanup:** Automatic (on read/write)
@@ -276,6 +286,7 @@ class IndexedDBCache {
 **Destination:** Supabase + Smart Contracts
 
 **Flow:**
+
 ```
 [User Action (Offline)]
     ↓
@@ -300,6 +311,7 @@ class IndexedDBCache {
 ```
 
 **Implementation:**
+
 ```typescript
 // lib/services/offlineSync.ts
 class OfflineSync {
@@ -316,11 +328,11 @@ class OfflineSync {
 
   async syncQueue(): Promise<void> {
     const queue = await this.queueStore.keys();
-    
+
     for (const key of queue) {
       const action = await this.queueStore.getItem<OfflineAction>(key);
       if (!action) continue;
-      
+
       try {
         await this.processAction(action);
         await this.queueStore.removeItem(key);
@@ -332,39 +344,42 @@ class OfflineSync {
 
   private async processAction(action: OfflineAction): Promise<void> {
     switch (action.type) {
-      case 'like':
-        await supabase.from('article_likes').insert({
+      case "like":
+        await supabase.from("article_likes").insert({
           article_id: action.payload.articleId,
           user_id: action.payload.userId,
         });
         break;
-      case 'bookmark':
-        await supabase.from('bookmarks').insert({
+      case "bookmark":
+        await supabase.from("bookmarks").insert({
           article_id: action.payload.articleId,
           user_id: action.payload.userId,
         });
         break;
-      case 'follow':
-        await supabase.from('user_follows').insert({
+      case "follow":
+        await supabase.from("user_follows").insert({
           follower_id: action.payload.followerId,
           following_id: action.payload.followingId,
         });
         break;
-      case 'message':
-        await supabase.from('messages').insert({
+      case "message":
+        await supabase.from("messages").insert({
           conversation_id: action.payload.conversationId,
           sender_id: action.payload.senderId,
           content: action.payload.content,
         });
         break;
-      case 'bid':
+      case "bid":
         // Smart contract interaction
         await this.placeBidOnChain(action.payload);
         break;
     }
   }
 
-  private async handleSyncError(action: OfflineAction, error: any): Promise<void> {
+  private async handleSyncError(
+    action: OfflineAction,
+    error: any
+  ): Promise<void> {
     if (action.retries >= this.maxRetries) {
       // Notify user of persistent failure
       await this.notifyUser(action, error);
@@ -383,10 +398,11 @@ class OfflineSync {
 ```
 
 **Service Worker Integration:**
+
 ```typescript
 // public/sw.js
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-offline-queue') {
+self.addEventListener("sync", (event) => {
+  if (event.tag === "sync-offline-queue") {
     event.waitUntil(syncOfflineQueue());
   }
 });
@@ -407,6 +423,7 @@ async function syncOfflineQueue() {
 **Destinations:** Dune Analytics, Supabase Analytics, Clerk Analytics
 
 **Flow:**
+
 ```
 [User Event]
     ↓
@@ -440,6 +457,7 @@ async function syncOfflineQueue() {
 ```
 
 **Implementation:**
+
 ```typescript
 // lib/services/analytics.ts
 class Analytics {
@@ -450,13 +468,13 @@ class Analytics {
   async trackEvent(event: AnalyticsEvent): Promise<void> {
     // Route to appropriate analytics service
     switch (event.type) {
-      case 'onchain':
+      case "onchain":
         await this.trackOnChain(event);
         break;
-      case 'offchain':
+      case "offchain":
         await this.trackOffChain(event);
         break;
-      case 'user':
+      case "user":
         await this.trackUser(event);
         break;
     }
@@ -476,7 +494,7 @@ class Analytics {
 
   private async trackOffChain(event: OffChainEvent): Promise<void> {
     // Supabase Analytics (off-chain metrics)
-    await this.supabaseClient.from('analytics_events').insert({
+    await this.supabaseClient.from("analytics_events").insert({
       event_type: event.type,
       user_id: event.userId,
       article_id: event.articleId,
@@ -497,6 +515,7 @@ class Analytics {
 ```
 
 **Metrics Tracked:**
+
 - **On-Chain:** Ad auctions, subscriptions, governance votes, points conversions
 - **Off-Chain:** Content views, engagement, social interactions, search queries
 - **Users:** Signups, retention, subscription tiers, points balance
@@ -508,6 +527,7 @@ class Analytics {
 ### Data Quality Rules
 
 **Rule 1: Article Validation**
+
 - Title: Required, max 500 characters
 - URL: Required, valid URL format, unique
 - Source: Required, from allowed sources list
@@ -515,21 +535,25 @@ class Analytics {
 - Category: Required, from allowed categories (tech, crypto, social, general)
 
 **Rule 2: Deduplication**
+
 - URL Hash: SHA-256 hash of normalized URL
 - Check: IndexedDB + Supabase before storing
 - Action: Skip duplicate, log warning
 
 **Rule 3: Cache Validity**
+
 - TTL: 30 minutes (configurable)
 - Check: On read, remove expired
 - Action: Fetch fresh if expired
 
 **Rule 4: Rate Limiting**
+
 - Limit: 10 requests/minute per source
 - Check: Before API call
 - Action: Wait if limit exceeded
 
 **Rule 5: Error Handling**
+
 - Retry: 3 attempts with exponential backoff
 - Fallback: Return cached data if available
 - Logging: Log all errors for monitoring
@@ -539,21 +563,25 @@ class Analytics {
 ### Data Governance Policies
 
 **Access Control:**
+
 - **Public:** Articles, proposals (read-only)
 - **Authenticated:** Submissions, bookmarks, likes (read/write own)
 - **System:** Points transactions, notifications (system-only)
 
 **Data Retention:**
+
 - **IndexedDB:** 30 days (auto-cleanup)
 - **Supabase:** Indefinite (user data), 90 days (analytics events)
 - **Analytics:** 1 year (aggregated metrics)
 
 **Data Privacy:**
+
 - **GDPR Compliance:** User data anonymization, right to deletion
 - **Data Minimization:** Only collect necessary data
 - **Consent:** User consent for analytics tracking
 
 **Data Lineage:**
+
 - **Source Tracking:** Track origin of each article
 - **Transformation Log:** Log all data transformations
 - **Audit Trail:** Track all data modifications
@@ -565,6 +593,7 @@ class Analytics {
 ### Dashboard 1: Content Analytics
 
 **Metrics:**
+
 - Total Articles: Count of articles in cache
 - Sources: Articles per source
 - Categories: Articles per category
@@ -572,6 +601,7 @@ class Analytics {
 - Freshness: Average article age
 
 **Visualization:**
+
 - Line chart: Articles over time
 - Pie chart: Articles by source
 - Bar chart: Articles by category
@@ -582,6 +612,7 @@ class Analytics {
 ### Dashboard 2: User Engagement Analytics
 
 **Metrics:**
+
 - Daily Active Users (DAU)
 - Monthly Active Users (MAU)
 - Engagement Rate: (Likes + Bookmarks + Shares) / Views
@@ -589,6 +620,7 @@ class Analytics {
 - Bounce Rate
 
 **Visualization:**
+
 - Line chart: DAU/MAU over time
 - Bar chart: Engagement by category
 - Heatmap: Engagement by time of day
@@ -599,6 +631,7 @@ class Analytics {
 ### Dashboard 3: On-Chain Analytics (Dune Analytics)
 
 **Metrics:**
+
 - Total Ad Auctions: Count of auctions
 - Total Revenue: Sum of auction bids
 - Active Subscriptions: Count of active subscriptions
@@ -606,6 +639,7 @@ class Analytics {
 - Points Conversions: Count of conversions
 
 **Visualization:**
+
 - Line chart: Revenue over time
 - Bar chart: Revenue by chain
 - Pie chart: Subscription tiers
@@ -623,4 +657,3 @@ class Analytics {
 **Caching Strategy:** IndexedDB (30-min TTL, 2,000 limit)  
 **Offline Support:** Service Worker + Background Sync  
 **Analytics:** Multi-source (Dune, Supabase, Clerk)
-

@@ -1,4 +1,5 @@
 # 🎯 Feature Prioritization
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -13,12 +14,14 @@
 **RICE Formula:** `(Reach × Impact × Confidence) / Effort`
 
 **Scoring Scale:**
+
 - **Reach:** 1-10 (how many users affected per quarter)
 - **Impact:** 0.25-3.0 (Low: 0.25, Medium: 0.5, High: 1.0, Very High: 2.0, Massive: 3.0)
 - **Confidence:** 0.5-1.0 (Low: 0.5, Medium: 0.8, High: 0.9, Very High: 1.0)
 - **Effort:** 1-20 (person-months, lower = better)
 
 **RICE Score Interpretation:**
+
 - **9.0+:** Must Have (MVP)
 - **7.0-8.9:** Should Have (Beta)
 - **5.0-6.9:** Could Have (Production)
@@ -29,9 +32,11 @@
 ## 🎯 MVP FEATURES (Phase 1 - Weeks 1-8)
 
 ### Feature 1: Content Aggregation (20+ Sources)
+
 **RICE Score:** 8.5
 
 **Scoring:**
+
 - **Reach:** 10 (all users)
 - **Impact:** 3.0 (Massive - core product)
 - **Confidence:** 0.9 (High - proven APIs)
@@ -43,6 +48,7 @@
 **Target Release:** Week 1-4
 
 **Description:**
+
 - Aggregate content from 20+ sources (Hacker News, Reddit, Product Hunt, CoinDesk, etc.)
 - Client-side fetching (no backend)
 - IndexedDB caching (30-min TTL)
@@ -54,9 +60,11 @@
 ---
 
 ### Feature 2: Reown Social Login + Smart Accounts
+
 **RICE Score:** 9.0
 
 **Scoring:**
+
 - **Reach:** 10 (all users)
 - **Impact:** 2.0 (Very High - Web3 differentiation)
 - **Confidence:** 0.9 (High - Reown SDK proven)
@@ -68,6 +76,7 @@
 **Target Release:** Week 2-3
 
 **Description:**
+
 - Social login (Google, Twitter, Email)
 - ERC-4337 smart account creation (automatic)
 - Multi-chain wallet support (15+ chains)
@@ -79,9 +88,11 @@
 ---
 
 ### Feature 3: Ad Auction System
+
 **RICE Score:** 7.5
 
 **Scoring:**
+
 - **Reach:** 3 (advertisers only, ~10% of users)
 - **Impact:** 3.0 (Massive - revenue generation)
 - **Confidence:** 0.8 (Medium - smart contracts)
@@ -93,6 +104,7 @@
 **Target Release:** Week 5-6
 
 **Description:**
+
 - Smart contract-based ad auctions
 - Participation fee: 1 USDT (non-refundable)
 - Minimum bids: 50-200 USDT/week per slot
@@ -104,9 +116,11 @@
 ---
 
 ### Feature 4: Points Earning System
+
 **RICE Score:** 8.0
 
 **Scoring:**
+
 - **Reach:** 10 (all users)
 - **Impact:** 2.0 (Very High - gamification)
 - **Confidence:** 0.9 (High - proven mechanics)
@@ -118,6 +132,7 @@
 **Target Release:** Week 4-5
 
 **Description:**
+
 - Earn points for submissions (1,000 points for 10+ upvotes)
 - Earn points for upvotes (10 points per upvote)
 - Earn points for comments (50 points for 5+ upvotes)
@@ -129,9 +144,11 @@
 ---
 
 ### Feature 5: Points → USDT Conversion
+
 **RICE Score:** 8.5
 
 **Scoring:**
+
 - **Reach:** 8 (80% of users will convert)
 - **Impact:** 3.0 (Massive - real value)
 - **Confidence:** 0.85 (High - conversion logic)
@@ -143,6 +160,7 @@
 **Target Release:** Week 6-7
 
 **Description:**
+
 - Conversion ratio: 1,000 points = 1 USDT
 - Conversion fee: 1%
 - Minimum: 100,000 points (100 USDT gross)
@@ -155,9 +173,11 @@
 ---
 
 ### Feature 6: PWA Installation
+
 **RICE Score:** 9.5
 
 **Scoring:**
+
 - **Reach:** 10 (all users)
 - **Impact:** 2.0 (Very High - mobile experience)
 - **Confidence:** 0.95 (Very High - proven PWA)
@@ -169,6 +189,7 @@
 **Target Release:** Week 1-2
 
 **Description:**
+
 - PWA manifest (installable)
 - Service Worker (offline support)
 - Push notifications (Web Push API)
@@ -180,9 +201,11 @@
 ---
 
 ### Feature 7: Reader View Mode (Folo-Inspired)
+
 **RICE Score:** 9.0
 
 **Scoring:**
+
 - **Reach:** 10 (all users)
 - **Impact:** 1.75 (High - reading experience)
 - **Confidence:** 0.9 (High - @mozilla/readability)
@@ -194,6 +217,7 @@
 **Target Release:** Week 2-3
 
 **Description:**
+
 - Distraction-free reading (@mozilla/readability)
 - Adjustable font size, line height
 - Dark mode optimized
@@ -206,9 +230,11 @@
 ---
 
 ### Feature 8: Social Sharing (Folo-Inspired)
+
 **RICE Score:** 8.5
 
 **Scoring:**
+
 - **Reach:** 10 (all users)
 - **Impact:** 1.5 (High - viral growth)
 - **Confidence:** 0.9 (High - Web Share API)
@@ -220,6 +246,7 @@
 **Target Release:** Week 3-4
 
 **Description:**
+
 - Web Share API (native browser)
 - Share to Twitter, Facebook, LinkedIn, Telegram
 - Referral tracking (UTM parameters)
@@ -231,9 +258,11 @@
 ---
 
 ### Feature 9: Curated Lists (Folo-Inspired)
+
 **RICE Score:** 8.0
 
 **Scoring:**
+
 - **Reach:** 8 (80% of users will use lists)
 - **Impact:** 2.0 (Very High - personalization)
 - **Confidence:** 0.8 (Medium - new feature)
@@ -245,6 +274,7 @@
 **Target Release:** Week 4-5
 
 **Description:**
+
 - User-created lists (e.g., "Best DeFi News")
 - Public/private lists
 - List subscriptions (follow other users' lists)
@@ -258,9 +288,11 @@
 ## 🚀 BETA FEATURES (Phase 2 - Weeks 9-12)
 
 ### Feature 10: Social Features (Follow, Like, DM)
+
 **RICE Score:** 7.5
 
 **Scoring:**
+
 - **Reach:** 9 (90% of users will engage)
 - **Impact:** 2.0 (Very High - community)
 - **Confidence:** 0.8 (Medium - Supabase Realtime)
@@ -272,6 +304,7 @@
 **Target Release:** Week 9-10
 
 **Description:**
+
 - Follow/unfollow users
 - Like articles (award 10 points to submitter)
 - Direct messages (Supabase Realtime)
@@ -283,9 +316,11 @@
 ---
 
 ### Feature 11: DAO Governance
+
 **RICE Score:** 7.0
 
 **Scoring:**
+
 - **Reach:** 5 (50% of users will participate)
 - **Impact:** 2.25 (Very High - differentiation)
 - **Confidence:** 0.7 (Medium - smart contracts)
@@ -297,6 +332,7 @@
 **Target Release:** Week 10-11
 
 **Description:**
+
 - Meritocratic voting (earn power through contributions)
 - Proposal creation (costs 1,000 points)
 - Voting categories (6 categories)
@@ -308,9 +344,11 @@
 ---
 
 ### Feature 12: AI Translation (Folo-Inspired)
+
 **RICE Score:** 8.5
 
 **Scoring:**
+
 - **Reach:** 7 (70% of users will use translation)
 - **Impact:** 2.0 (Very High - global reach)
 - **Confidence:** 0.85 (High - Google Translate API)
@@ -322,6 +360,7 @@
 **Target Release:** Week 7-8
 
 **Description:**
+
 - Google Translate API (FREE 500k chars/month)
 - One-click translation (100+ languages)
 - Translation caching (IndexedDB)
@@ -333,9 +372,11 @@
 ---
 
 ### Feature 13: AI Summaries (Folo-Inspired)
+
 **RICE Score:** 8.0
 
 **Scoring:**
+
 - **Reach:** 9 (90% of users will use summaries)
 - **Impact:** 1.75 (High - time-saving)
 - **Confidence:** 0.8 (Medium - Hugging Face API)
@@ -347,6 +388,7 @@
 **Target Release:** Week 7-8
 
 **Description:**
+
 - Hugging Face API (FREE) or OpenAI ($5/month)
 - One-click article summarization (3 sentences)
 - Summary caching (IndexedDB)
@@ -358,9 +400,11 @@
 ---
 
 ### Feature 14: Video Content (YouTube)
+
 **RICE Score:** 7.0
 
 **Scoring:**
+
 - **Reach:** 8 (80% of users will watch videos)
 - **Impact:** 1.5 (High - content variety)
 - **Confidence:** 0.7 (Medium - YouTube API)
@@ -372,6 +416,7 @@
 **Target Release:** Week 8-9
 
 **Description:**
+
 - YouTube Data API v3 (FREE 10k quota/day)
 - Crypto video channels (Coin Bureau, Altcoin Daily)
 - Embedded video player
@@ -383,9 +428,11 @@
 ---
 
 ### Feature 15: Podcast Support
+
 **RICE Score:** 6.5
 
 **Scoring:**
+
 - **Reach:** 5 (50% of users will listen)
 - **Impact:** 1.5 (High - audio content)
 - **Confidence:** 0.65 (Medium - RSS parsing)
@@ -397,6 +444,7 @@
 **Target Release:** Week 9-10
 
 **Description:**
+
 - Podcast RSS feeds (Unchained, Bankless, The Defiant)
 - HTML5 audio player
 - Podcast content tabs
@@ -408,9 +456,11 @@
 ---
 
 ### Feature 16: Dune Analytics Dashboard
+
 **RICE Score:** 7.5
 
 **Scoring:**
+
 - **Reach:** 6 (60% of users will view dashboard)
 - **Impact:** 1.75 (High - transparency)
 - **Confidence:** 0.75 (Medium - Dune embed)
@@ -422,6 +472,7 @@
 **Target Release:** Week 11-12
 
 **Description:**
+
 - Dune Analytics dashboard embed
 - On-chain metrics (ads, subscriptions, treasury)
 - Public stats widget (free)
@@ -435,9 +486,11 @@
 ## 🎯 PRODUCTION FEATURES (Phase 3 - Weeks 13-16)
 
 ### Feature 17: Subscription System (Pro + Premium)
+
 **RICE Score:** 8.0
 
 **Scoring:**
+
 - **Reach:** 7 (70% of users will consider)
 - **Impact:** 2.25 (Very High - recurring revenue)
 - **Confidence:** 0.8 (Medium - smart contracts + Clerk)
@@ -449,6 +502,7 @@
 **Target Release:** Week 13-14
 
 **Description:**
+
 - Pro tier: 30 USDT/month
 - Premium tier: 100 USDT/month
 - Smart contract payments (on-chain verification)
@@ -460,9 +514,11 @@
 ---
 
 ### Feature 18: AI Recommendations (OpenAI)
+
 **RICE Score:** 7.5
 
 **Scoring:**
+
 - **Reach:** 9 (90% of users will use recommendations)
 - **Impact:** 2.0 (Very High - personalization)
 - **Confidence:** 0.75 (Medium - OpenAI API)
@@ -474,6 +530,7 @@
 **Target Release:** Week 15-16
 
 **Description:**
+
 - OpenAI Embeddings API ($0.08/month for 1k users)
 - Personalized feed (collaborative filtering)
 - Content-based recommendations
@@ -485,9 +542,11 @@
 ---
 
 ### Feature 19: Multi-Language Support (EN + 中文)
+
 **RICE Score:** 7.0
 
 **Scoring:**
+
 - **Reach:** 6 (60% of users are international)
 - **Impact:** 2.0 (Very High - global reach)
 - **Confidence:** 0.7 (Medium - i18n implementation)
@@ -499,6 +558,7 @@
 **Target Release:** Week 14-15
 
 **Description:**
+
 - English (primary)
 - Chinese (中文) - Simplified + Traditional
 - i18n framework (next-intl)
@@ -510,9 +570,11 @@
 ---
 
 ### Feature 20: Mainnet Deployment (6 Chains)
+
 **RICE Score:** 7.0
 
 **Scoring:**
+
 - **Reach:** 10 (all users)
 - **Impact:** 2.25 (Very High - production readiness)
 - **Confidence:** 0.7 (Medium - deployment complexity)
@@ -524,6 +586,7 @@
 **Target Release:** Week 15-16
 
 **Description:**
+
 - Deploy smart contracts to 6 mainnets:
   - Ethereum, Polygon, BSC, Arbitrum, Optimism, Base
 - Testnet testing complete
@@ -563,6 +626,7 @@
 ### By Phase
 
 **MVP (Phase 1 - Weeks 1-8):**
+
 - Content Aggregation (8.5)
 - Reown Social Login (9.0)
 - Ad Auction System (7.5)
@@ -574,6 +638,7 @@
 - Curated Lists (8.0)
 
 **Beta (Phase 2 - Weeks 9-12):**
+
 - Social Features (7.5)
 - DAO Governance (7.0)
 - AI Translation (8.5)
@@ -583,6 +648,7 @@
 - Dune Analytics (7.5)
 
 **Production (Phase 3 - Weeks 13-16):**
+
 - Subscription System (8.0)
 - AI Recommendations (7.5)
 - Multi-Language Support (7.0)
@@ -632,11 +698,13 @@ PWA Installation (Week 1-2) - Independent
 **Production Features:** 4 features
 
 **Next Steps:**
+
 1. ✅ Feature prioritization complete
 2. ⏳ User approval required
 3. ⏳ Proceed to Plan Agent (`/plan`)
 
 **Plan Agent Will:**
+
 - Use feature prioritization for roadmap creation
 - Define technical architecture
 - Create development timeline
@@ -646,4 +714,3 @@ PWA Installation (Week 1-2) - Independent
 
 **Product Agent Status:** ✅ Feature Prioritization Complete  
 **Next Agent:** Plan Agent (`/plan`)
-

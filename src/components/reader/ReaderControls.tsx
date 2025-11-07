@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
-  FontSize,
+  Type,
   Sun,
   Moon,
   Share2,
@@ -10,7 +10,7 @@ import {
   BookmarkCheck,
   Copy,
   ExternalLink,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface ReaderControlsProps {
   articleUrl: string;
@@ -20,7 +20,7 @@ interface ReaderControlsProps {
   onShare?: () => void;
   fontSize?: number;
   onFontSizeChange?: (size: number) => void;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
   onThemeToggle?: () => void;
 }
 
@@ -30,13 +30,12 @@ interface ReaderControlsProps {
  */
 export function ReaderControls({
   articleUrl,
-  articleId,
   isBookmarked = false,
   onBookmarkToggle,
   onShare,
   fontSize = 16,
   onFontSizeChange,
-  theme = 'light',
+  theme = "light",
   onThemeToggle,
 }: ReaderControlsProps) {
   const [copied, setCopied] = useState(false);
@@ -47,7 +46,7 @@ export function ReaderControls({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy link:', error);
+      console.error("Failed to copy link:", error);
     }
   };
 
@@ -85,7 +84,7 @@ export function ReaderControls({
           aria-label="Decrease font size"
           disabled={fontSize <= 12}
         >
-          <FontSize className="w-4 h-4" />
+          <Type className="w-4 h-4" />
         </button>
         <span className="text-xs text-gray-600 dark:text-gray-400 min-w-[2rem] text-center">
           {fontSize}px
@@ -96,7 +95,7 @@ export function ReaderControls({
           aria-label="Increase font size"
           disabled={fontSize >= 24}
         >
-          <FontSize className="w-4 h-4 rotate-180" />
+          <Type className="w-4 h-4 scale-125" />
         </button>
       </div>
 
@@ -105,9 +104,9 @@ export function ReaderControls({
         <button
           onClick={onThemeToggle}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
         >
-          {theme === 'light' ? (
+          {theme === "light" ? (
             <Moon className="w-4 h-4" />
           ) : (
             <Sun className="w-4 h-4" />
@@ -121,10 +120,10 @@ export function ReaderControls({
           onClick={onBookmarkToggle}
           className={`p-2 rounded transition-colors ${
             isBookmarked
-              ? 'text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+              ? "text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              : "hover:bg-gray-100 dark:hover:bg-gray-700"
           }`}
-          aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+          aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
         >
           {isBookmarked ? (
             <BookmarkCheck className="w-4 h-4" />
@@ -139,10 +138,10 @@ export function ReaderControls({
         onClick={handleCopyLink}
         className={`p-2 rounded transition-colors ${
           copied
-            ? 'text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20'
-            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+            ? "text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20"
+            : "hover:bg-gray-100 dark:hover:bg-gray-700"
         }`}
-        aria-label={copied ? 'Link copied' : 'Copy link'}
+        aria-label={copied ? "Link copied" : "Copy link"}
       >
         <Copy className="w-4 h-4" />
       </button>
@@ -169,4 +168,3 @@ export function ReaderControls({
     </div>
   );
 }
-

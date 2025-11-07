@@ -12,30 +12,37 @@
 ## 🚨 Common Error Patterns
 
 ### Pattern 1: "Cannot find module" or "Module not found"
+
 **Cause**: Missing dependency or wrong import path  
 **Fix**: Check if package is in `package.json`, verify import paths
 
 ### Pattern 2: "Type error" or "TS2307"
+
 **Cause**: TypeScript type errors  
 **Fix**: Check type definitions, fix type mismatches
 
 ### Pattern 3: "ESLint errors" or "Parsing error"
+
 **Cause**: Code style or syntax issues  
 **Fix**: Run `npm run lint -- --fix` or fix manually
 
 ### Pattern 4: "Prettier formatting errors"
+
 **Cause**: Code formatting doesn't match Prettier rules  
 **Fix**: Run `npm run format` to auto-fix
 
 ### Pattern 5: "Test failures"
+
 **Cause**: Unit tests failing  
 **Fix**: Check test files, fix assertions
 
 ### Pattern 6: "Environment variable undefined"
+
 **Cause**: Missing GitHub Secrets  
 **Fix**: Add missing secrets in Settings → Secrets
 
 ### Pattern 7: "Build failed" or "Next.js build error"
+
 **Cause**: Build-time errors  
 **Fix**: Check specific error in build logs
 
@@ -62,9 +69,9 @@
 ## 🔗 Check Your Errors
 
 **Share with me:**
+
 1. Which workflow failed? (Deploy or CI?)
 2. Which step failed? (Build, Lint, Typecheck, etc.)
 3. Copy the error message from the logs
 
 I can help fix specific errors once I see them!
-

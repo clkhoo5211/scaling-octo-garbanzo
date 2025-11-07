@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { contentAggregator } from '@/lib/services/contentAggregator';
-import { indexedDBCache } from '@/lib/services/indexedDBCache';
-import type { Article } from '@/lib/services/indexedDBCache';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { contentAggregator } from "@/lib/services/contentAggregator";
+import { indexedDBCache } from "@/lib/services/indexedDBCache";
+import type { Article } from "@/lib/services/indexedDBCache";
 import {
   getBookmarks,
   createBookmark,
@@ -15,19 +15,19 @@ import {
   getNotifications,
   markNotificationRead,
   getPointsTransactions,
-} from '@/lib/api/supabaseApi';
-import { useAppStore } from '@/lib/stores/appStore';
+} from "@/lib/api/supabaseApi";
+import { useAppStore } from "@/lib/stores/appStore";
 
 /**
  * Hook to fetch articles with caching and enhanced aggregation
  * Now includes link extraction and pagination support
  */
 export function useArticles(
-  category?: 'tech' | 'crypto' | 'social' | 'general',
+  category?: "tech" | "crypto" | "social" | "general",
   options?: { usePagination?: boolean; extractLinks?: boolean }
 ) {
   return useQuery({
-    queryKey: ['articles', category, options],
+    queryKey: ["articles", category, options],
     queryFn: async () => {
       // Check cache first
       const cached = await indexedDBCache.getArticles(category);
@@ -56,7 +56,7 @@ export function useArticles(
  */
 export function useBookmarks(userId: string | null) {
   return useQuery({
-    queryKey: ['bookmarks', userId],
+    queryKey: ["bookmarks", userId],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await getBookmarks(userId);
@@ -80,7 +80,7 @@ export function useBookmarkArticle() {
       articleTitle: string;
       articleSource: string;
     }) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { error } = await createBookmark({
         userId,
         ...data,
@@ -88,7 +88,7 @@ export function useBookmarkArticle() {
       if (error) throw error;
     },
     onSuccess: (_, data) => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks', userId] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", userId] });
       useAppStore.getState().addBookmark(data.articleId);
     },
   });
@@ -103,12 +103,12 @@ export function useRemoveBookmark() {
 
   return useMutation({
     mutationFn: async (articleId: string) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { error } = await removeBookmark(userId, articleId);
       if (error) throw error;
     },
     onSuccess: (_, articleId) => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks', userId] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", userId] });
       useAppStore.getState().removeBookmark(articleId);
     },
   });
@@ -123,12 +123,12 @@ export function useLikeArticle() {
 
   return useMutation({
     mutationFn: async (articleId: string) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { error } = await likeArticle(userId, articleId);
       if (error) throw error;
     },
     onSuccess: (_, articleId) => {
-      queryClient.invalidateQueries({ queryKey: ['article-likes', articleId] });
+      queryClient.invalidateQueries({ queryKey: ["article-likes", articleId] });
       useAppStore.getState().likeArticle(articleId);
     },
   });
@@ -143,12 +143,12 @@ export function useUnlikeArticle() {
 
   return useMutation({
     mutationFn: async (articleId: string) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { error } = await unlikeArticle(userId, articleId);
       if (error) throw error;
     },
     onSuccess: (_, articleId) => {
-      queryClient.invalidateQueries({ queryKey: ['article-likes', articleId] });
+      queryClient.invalidateQueries({ queryKey: ["article-likes", articleId] });
       useAppStore.getState().unlikeArticle(articleId);
     },
   });
@@ -156,7 +156,7 @@ export function useUnlikeArticle() {
 
 export function useArticleLikes(articleId: string) {
   return useQuery({
-    queryKey: ['article-likes', articleId],
+    queryKey: ["article-likes", articleId],
     queryFn: async () => {
       const { data, error } = await getArticleLikes(articleId);
       if (error) throw error;
@@ -174,12 +174,12 @@ export function useFollowUser() {
 
   return useMutation({
     mutationFn: async (followingId: string) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { error } = await followUser(userId, followingId);
       if (error) throw error;
     },
     onSuccess: (_, followingId) => {
-      queryClient.invalidateQueries({ queryKey: ['following', userId] });
+      queryClient.invalidateQueries({ queryKey: ["following", userId] });
       useAppStore.getState().followUser(followingId);
     },
   });
@@ -194,12 +194,12 @@ export function useUnfollowUser() {
 
   return useMutation({
     mutationFn: async (followingId: string) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { error } = await unfollowUser(userId, followingId);
       if (error) throw error;
     },
     onSuccess: (_, followingId) => {
-      queryClient.invalidateQueries({ queryKey: ['following', userId] });
+      queryClient.invalidateQueries({ queryKey: ["following", userId] });
       useAppStore.getState().unfollowUser(followingId);
     },
   });
@@ -207,7 +207,7 @@ export function useUnfollowUser() {
 
 export function useFollowing(userId: string | null) {
   return useQuery({
-    queryKey: ['following', userId],
+    queryKey: ["following", userId],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await getFollowing(userId);
@@ -224,7 +224,7 @@ export function useFollowing(userId: string | null) {
  */
 export function useNotifications(userId: string | null) {
   return useQuery({
-    queryKey: ['notifications', userId],
+    queryKey: ["notifications", userId],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await getNotifications(userId);
@@ -249,14 +249,14 @@ export function useMarkNotificationRead() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", userId] });
     },
   });
 }
 
 export function usePointsTransactions(userId: string | null) {
   return useQuery({
-    queryKey: ['points-transactions', userId],
+    queryKey: ["points-transactions", userId],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await getPointsTransactions(userId);
@@ -266,4 +266,3 @@ export function usePointsTransactions(userId: string | null) {
     enabled: !!userId,
   });
 }
-

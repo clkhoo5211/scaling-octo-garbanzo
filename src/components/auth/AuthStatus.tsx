@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useUser } from '@clerk/nextjs';
-import { useAccount } from '@reown/appkit/react';
-import { Wallet, User, LogOut } from 'lucide-react';
-import { WalletConnect } from '@/components/web3/WalletConnect';
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { Wallet, User } from "lucide-react";
+import { WalletConnect } from "@/components/web3/WalletConnect";
 
 /**
  * AuthStatus Component
@@ -11,7 +11,7 @@ import { WalletConnect } from '@/components/web3/WalletConnect';
  */
 export function AuthStatus() {
   const { user, isLoaded: clerkLoaded } = useUser();
-  const { isConnected: walletConnected, address } = useAccount();
+  const { isConnected: walletConnected } = useAppKitAccount();
 
   if (!clerkLoaded) {
     return (
@@ -27,10 +27,11 @@ export function AuthStatus() {
       {user ? (
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-            {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() || 'U'}
+            {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() ||
+              "U"}
           </div>
           <span className="text-sm font-medium hidden sm:inline">
-            {user.primaryEmailAddress?.emailAddress?.split('@')[0]}
+            {user.primaryEmailAddress?.emailAddress?.split("@")[0]}
           </span>
         </div>
       ) : (
@@ -49,10 +50,11 @@ export function AuthStatus() {
       ) : (
         <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
           <Wallet className="w-4 h-4 text-gray-500" />
-          <span className="text-sm text-gray-600 dark:text-gray-400">Not Connected</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            Not Connected
+          </span>
         </div>
       )}
     </div>
   );
 }
-

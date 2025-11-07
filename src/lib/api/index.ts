@@ -3,7 +3,6 @@
  * Central export for all API services
  */
 
-export * from './supabaseApi';
-export * from './errorHandler';
-export * from './contractServices';
-
+export * from "./supabaseApi";
+export * from "./errorHandler";
+export * from "./contractServices";

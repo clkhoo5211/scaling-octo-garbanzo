@@ -20,12 +20,14 @@ All workflows are located in `.github/workflows/`:
 The project is configured to deploy to GitHub Pages automatically on push to `main` branch.
 
 **Required Secrets:**
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_REOWN_PROJECT_ID`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 
 **Setup:**
+
 1. Go to repository Settings → Pages
 2. Enable GitHub Pages
 3. Select source: "GitHub Actions"
@@ -46,4 +48,3 @@ npx gh-pages -d out
 All environment variables must be set in GitHub Secrets for CI/CD to work.
 
 See `.env.example` for required variables.
-

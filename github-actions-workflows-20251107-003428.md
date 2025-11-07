@@ -1,4 +1,5 @@
 # 🔄 GitHub Actions Workflows
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -12,6 +13,7 @@
 
 **Total Workflows:** 15+ workflows  
 **Categories:**
+
 - CI/CD (Build, Test, Deploy)
 - Code Quality (Lint, Format, Typecheck)
 - Security (Dependabot, Security Scanning)
@@ -29,10 +31,12 @@
 **Purpose:** Build Next.js PWA and deploy to GitHub Pages
 
 **Triggers:**
+
 - Push to `main` branch
 - Manual workflow dispatch
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js
 3. Install dependencies
@@ -41,6 +45,7 @@
 6. Deploy to GitHub Pages
 
 **Configuration:**
+
 ```yaml
 name: Deploy to GitHub Pages
 
@@ -69,8 +74,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -109,10 +114,12 @@ jobs:
 **Purpose:** Run code quality checks on every PR
 
 **Triggers:**
+
 - Pull requests
 - Push to any branch
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js
 3. Install dependencies
@@ -122,6 +129,7 @@ jobs:
 7. Run tests (if available)
 
 **Configuration:**
+
 ```yaml
 name: CI - Format, Typecheck and Lint
 
@@ -145,8 +153,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -174,10 +182,12 @@ jobs:
 **Purpose:** Automatically fix linting and formatting issues
 
 **Triggers:**
+
 - Pull requests (on comment: `/fix`)
 - Manual workflow dispatch
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js
 3. Install dependencies
@@ -187,6 +197,7 @@ jobs:
 7. Create PR comment
 
 **Configuration:**
+
 ```yaml
 name: Auto Fix Lint and Format
 
@@ -209,8 +220,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -239,14 +250,17 @@ jobs:
 **Purpose:** Validate PR commit messages follow conventional commits
 
 **Triggers:**
+
 - Pull requests
 
 **Steps:**
+
 1. Checkout code
 2. Validate commit messages
 3. Comment on PR (pass/fail)
 
 **Configuration:**
+
 ```yaml
 name: PR Conventional Commit Validation
 
@@ -305,15 +319,18 @@ jobs:
 **Purpose:** Auto-merge Dependabot PRs (patch/minor updates)
 
 **Triggers:**
+
 - Pull requests (by Dependabot)
 
 **Steps:**
+
 1. Check if PR is from Dependabot
 2. Check if update is patch/minor
 3. Run tests
 4. Auto-merge if tests pass
 
 **Configuration:**
+
 ```yaml
 name: Dependabot Updates
 
@@ -332,8 +349,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -357,11 +374,13 @@ jobs:
 **Purpose:** Scan code for security vulnerabilities
 
 **Triggers:**
+
 - Push to main
 - Pull requests
 - Weekly schedule
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js
 3. Install dependencies
@@ -370,6 +389,7 @@ jobs:
 6. Upload results
 
 **Configuration:**
+
 ```yaml
 name: Security Scanning
 
@@ -381,7 +401,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * 0' # Weekly
+    - cron: "0 0 * * 0" # Weekly
 
 jobs:
   security:
@@ -393,8 +413,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -423,14 +443,17 @@ jobs:
 **Purpose:** Automatically label issues based on content
 
 **Triggers:**
+
 - Issues (opened, edited)
 
 **Steps:**
+
 1. Analyze issue content
 2. Apply labels (bug, feature, question, etc.)
 3. Assign to appropriate team member (if configured)
 
 **Configuration:**
+
 ```yaml
 name: Issue Labeler
 
@@ -451,26 +474,27 @@ jobs:
 ```
 
 **Labeler Config:** `.github/labeler.yml`
+
 ```yaml
 bug:
-  - '.*bug.*'
-  - '.*error.*'
-  - '.*issue.*'
+  - ".*bug.*"
+  - ".*error.*"
+  - ".*issue.*"
 
 feature:
-  - '.*feature.*'
-  - '.*enhancement.*'
-  - '.*request.*'
+  - ".*feature.*"
+  - ".*enhancement.*"
+  - ".*request.*"
 
 question:
-  - '.*question.*'
-  - '.*help.*'
-  - '.*how.*'
+  - ".*question.*"
+  - ".*help.*"
+  - ".*how.*"
 
 documentation:
-  - '.*doc.*'
-  - '.*readme.*'
-  - '.*guide.*'
+  - ".*doc.*"
+  - ".*readme.*"
+  - ".*guide.*"
 ```
 
 ---
@@ -482,15 +506,18 @@ documentation:
 **Purpose:** Automatically create tags on semantic version commits
 
 **Triggers:**
+
 - Push to main (with SemVer commit)
 
 **Steps:**
+
 1. Checkout code
 2. Check commit message for SemVer
 3. Create git tag
 4. Create GitHub release
 
 **Configuration:**
+
 ```yaml
 name: Tag on SemVer Commit
 
@@ -548,15 +575,18 @@ jobs:
 **Purpose:** Sync develop branch with main branch
 
 **Triggers:**
+
 - Push to main
 - Manual workflow dispatch
 
 **Steps:**
+
 1. Checkout code
 2. Sync develop with main
 3. Push changes
 
 **Configuration:**
+
 ```yaml
 name: Branch Synchronization
 
@@ -596,11 +626,13 @@ jobs:
 **Purpose:** Build Android APK/AAB (when Flutter app is added)
 
 **Triggers:**
+
 - Push to main
 - Manual workflow dispatch
-- Tag (v*)
+- Tag (v\*)
 
 **Steps:**
+
 1. Checkout code
 2. Setup Flutter
 3. Install dependencies
@@ -608,6 +640,7 @@ jobs:
 5. Upload artifacts
 
 **Configuration:**
+
 ```yaml
 name: Build Android
 
@@ -617,7 +650,7 @@ on:
       - main
   workflow_dispatch:
   tags:
-    - 'v*'
+    - "v*"
 
 jobs:
   build-android:
@@ -629,8 +662,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
+          flutter-version: "3.24.0"
+          channel: "stable"
 
       - name: Install dependencies
         run: flutter pub get
@@ -665,11 +698,13 @@ jobs:
 **Purpose:** Build iOS app (when Flutter app is added)
 
 **Triggers:**
+
 - Push to main
 - Manual workflow dispatch
-- Tag (v*)
+- Tag (v\*)
 
 **Steps:**
+
 1. Checkout code
 2. Setup Flutter
 3. Setup Xcode
@@ -678,6 +713,7 @@ jobs:
 6. Upload artifacts
 
 **Configuration:**
+
 ```yaml
 name: Build iOS
 
@@ -687,7 +723,7 @@ on:
       - main
   workflow_dispatch:
   tags:
-    - 'v*'
+    - "v*"
 
 jobs:
   build-ios:
@@ -699,8 +735,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
+          flutter-version: "3.24.0"
+          channel: "stable"
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -729,17 +765,20 @@ jobs:
 **Purpose:** Build desktop apps (Windows, macOS, Linux)
 
 **Triggers:**
+
 - Push to main
 - Manual workflow dispatch
-- Tag (v*)
+- Tag (v\*)
 
 **Steps:**
+
 1. Checkout code
 2. Setup Flutter
 3. Build for each platform
 4. Upload artifacts
 
 **Configuration:**
+
 ```yaml
 name: Build Desktop
 
@@ -749,7 +788,7 @@ on:
       - main
   workflow_dispatch:
   tags:
-    - 'v*'
+    - "v*"
 
 jobs:
   build-desktop:
@@ -764,8 +803,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
+          flutter-version: "3.24.0"
+          channel: "stable"
 
       - name: Install dependencies
         run: flutter pub get
@@ -789,16 +828,19 @@ jobs:
 **Purpose:** Auto-translate content to multiple languages
 
 **Triggers:**
+
 - Push to main (content changes)
 - Manual workflow dispatch
 
 **Steps:**
+
 1. Checkout code
 2. Detect changed content files
 3. Translate to target languages
 4. Create PR with translations
 
 **Configuration:**
+
 ```yaml
 name: Translator
 
@@ -807,8 +849,8 @@ on:
     branches:
       - main
     paths:
-      - 'content/**'
-      - 'public/locales/**'
+      - "content/**"
+      - "public/locales/**"
   workflow_dispatch:
 
 jobs:
@@ -821,7 +863,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         run: npm ci
@@ -835,9 +877,9 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore: auto-translate content'
-          title: 'Auto-translate content'
-          body: 'Automated translation of content files'
+          commit-message: "chore: auto-translate content"
+          title: "Auto-translate content"
+          body: "Automated translation of content files"
           branch: auto-translate
 ```
 
@@ -850,15 +892,18 @@ jobs:
 **Purpose:** Use AI to find similar issues and suggest duplicates
 
 **Triggers:**
+
 - Issues (opened)
 
 **Steps:**
+
 1. Checkout code
 2. Analyze issue content
 3. Search for similar issues
 4. Comment on issue with similar issues
 
 **Configuration:**
+
 ```yaml
 name: Similar Issues via AI MCP
 
@@ -881,12 +926,12 @@ jobs:
             const issue = context.payload.issue;
             const title = issue.title;
             const body = issue.body;
-            
+
             // Use AI to find similar issues
             // (Implementation depends on AI service)
-            
+
             const similarIssues = await findSimilarIssues(title, body);
-            
+
             if (similarIssues.length > 0) {
               const comment = `Similar issues found:\n${similarIssues.map(i => `- #${i.number}: ${i.title}`).join('\n')}`;
               await github.rest.issues.createComment({
@@ -907,10 +952,12 @@ jobs:
 **Purpose:** Build iOS app for development/testing
 
 **Triggers:**
+
 - Pull requests
 - Manual workflow dispatch
 
 **Steps:**
+
 1. Checkout code
 2. Setup Flutter
 3. Setup Xcode
@@ -918,6 +965,7 @@ jobs:
 5. Upload to TestFlight (if configured)
 
 **Configuration:**
+
 ```yaml
 name: Build iOS for Development
 
@@ -937,8 +985,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
+          flutter-version: "3.24.0"
+          channel: "stable"
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -967,10 +1015,12 @@ jobs:
 **Purpose:** Build web app and SSR server (if SSR is added later)
 
 **Triggers:**
+
 - Push to main
 - Pull requests
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js
 3. Install dependencies
@@ -979,6 +1029,7 @@ jobs:
 6. Upload artifacts
 
 **Configuration:**
+
 ```yaml
 name: CI Build Web and SSR Server
 
@@ -1000,8 +1051,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -1032,21 +1083,25 @@ jobs:
 ## 📝 WORKFLOW SUMMARY
 
 **CI/CD Workflows:**
+
 - ✅ Deploy to GitHub Pages
 - ✅ CI - Format, Typecheck and Lint
 - ✅ Auto Fix Lint and Format
 - ✅ PR Conventional Commit Validation
 
 **Security Workflows:**
+
 - ✅ Dependabot Updates
 - ✅ Security Scanning
 
 **Automation Workflows:**
+
 - ✅ Issue Labeler
 - ✅ Tag on SemVer Commit
 - ✅ Branch Synchronization
 
 **Future Enhancement Workflows:**
+
 - ✅ Build Android (Flutter)
 - ✅ Build iOS (Flutter)
 - ✅ Build Desktop (Flutter)
@@ -1069,4 +1124,3 @@ jobs:
 **Total Workflows:** 15+ workflows  
 **Categories:** CI/CD, Security, Automation, Future Enhancements  
 **Note:** Workflows prepared for future repository creation
-

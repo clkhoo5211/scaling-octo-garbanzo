@@ -3,28 +3,27 @@
  * React Query hooks for governance features (proposals, votes)
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getProposals,
   getVotes,
   createVote,
   type Proposal,
   type Vote,
-} from '@/lib/api/supabaseApi';
-import { useAppStore } from '@/lib/stores/appStore';
-import { useAccount } from '@reown/appkit/react';
-import { useToast } from '@/components/ui/Toast';
+} from "@/lib/api/supabaseApi";
+import { useAppStore } from "@/lib/stores/appStore";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 /**
  * Hook to fetch governance proposals
  */
 export function useProposals(filters?: {
-  status?: 'active' | 'passed' | 'rejected' | 'pending' | 'executed';
+  status?: "active" | "passed" | "rejected" | "pending" | "executed";
   category?: string;
   limit?: number;
 }) {
   return useQuery({
-    queryKey: ['proposals', filters],
+    queryKey: ["proposals", filters],
     queryFn: async () => {
       const { data, error } = await getProposals(filters);
       if (error) throw error;
@@ -39,7 +38,7 @@ export function useProposals(filters?: {
  */
 export function useVotes(proposalId: string) {
   return useQuery({
-    queryKey: ['votes', proposalId],
+    queryKey: ["votes", proposalId],
     queryFn: async () => {
       const { data, error } = await getVotes(proposalId);
       if (error) throw error;
@@ -55,18 +54,18 @@ export function useVotes(proposalId: string) {
 export function useVote() {
   const queryClient = useQueryClient();
   const { userId } = useAppStore();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useAppKitAccount();
 
   return useMutation({
     mutationFn: async (data: {
       proposalId: string;
-      voteOption: 'yes' | 'no' | 'abstain';
+      voteOption: "yes" | "no" | "abstain";
       votingPower: number;
       transactionHash?: string;
     }) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       if (!isConnected || !address) {
-        throw new Error('Wallet not connected');
+        throw new Error("Wallet not connected");
       }
 
       const { error } = await createVote({
@@ -80,12 +79,14 @@ export function useVote() {
       if (error) throw error;
     },
     onSuccess: (_, data) => {
-      queryClient.invalidateQueries({ queryKey: ['votes', data.proposalId] });
-      queryClient.invalidateQueries({ queryKey: ['proposals'] });
-      queryClient.invalidateQueries({ queryKey: ['user-vote', data.proposalId, userId] });
+      queryClient.invalidateQueries({ queryKey: ["votes", data.proposalId] });
+      queryClient.invalidateQueries({ queryKey: ["proposals"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user-vote", data.proposalId, userId],
+      });
     },
     onError: (error: Error) => {
-      console.error('Failed to cast vote:', error);
+      console.error("Failed to cast vote:", error);
     },
   });
 }
@@ -95,7 +96,7 @@ export function useVote() {
  */
 export function useUserVote(proposalId: string, userId: string | null) {
   return useQuery({
-    queryKey: ['user-vote', proposalId, userId],
+    queryKey: ["user-vote", proposalId, userId],
     queryFn: async () => {
       if (!userId || !proposalId) return null;
 
@@ -108,10 +109,10 @@ export function useUserVote(proposalId: string, userId: string | null) {
       return {
         option:
           userVote.vote_option === 0
-            ? 'yes'
+            ? "yes"
             : userVote.vote_option === 1
-            ? 'no'
-            : 'abstain',
+              ? "no"
+              : "abstain",
         votingPower: userVote.voting_power,
         transactionHash: userVote.transaction_hash || undefined,
       };
@@ -119,4 +120,3 @@ export function useUserVote(proposalId: string, userId: string | null) {
     enabled: !!userId && !!proposalId,
   });
 }
-

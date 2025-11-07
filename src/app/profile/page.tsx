@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { useUser } from '@clerk/nextjs';
-import { useAppKit } from '@reown/appkit/react';
-import { User, Wallet, Settings, Bookmark, Heart, MessageCircle } from 'lucide-react';
-import { useBookmarks } from '@/lib/hooks/useArticles';
-import { usePointsTransactions } from '@/lib/hooks/useArticles';
-import { formatDistanceToNow } from 'date-fns';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { useAppKit } from "@reown/appkit/react";
+import {
+  User,
+  Wallet,
+  Bookmark,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
+import { useBookmarks } from "@/lib/hooks/useArticles";
+import { usePointsTransactions } from "@/lib/hooks/useArticles";
+import { formatDistanceToNow } from "date-fns";
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
@@ -39,7 +45,9 @@ export default function ProfilePage() {
   }
 
   const totalPoints = transactions.reduce((sum, tx) => {
-    return tx.transaction_type === 'earn' ? sum + tx.points_amount : sum - tx.points_amount;
+    return tx.transaction_type === "earn"
+      ? sum + tx.points_amount
+      : sum - tx.points_amount;
   }, 0);
 
   return (
@@ -49,19 +57,27 @@ export default function ProfilePage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center gap-6">
             <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold">
-              {user.primaryEmailAddress?.emailAddress?.[0].toUpperCase() || 'U'}
+              {user.primaryEmailAddress?.emailAddress?.[0].toUpperCase() || "U"}
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-                {user.primaryEmailAddress?.emailAddress || user.username || 'User'}
+                {user.primaryEmailAddress?.emailAddress ||
+                  user.username ||
+                  "User"}
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Member since {formatDistanceToNow(new Date(user.createdAt!), { addSuffix: true })}
+                Member since{" "}
+                {formatDistanceToNow(new Date(user.createdAt!), {
+                  addSuffix: true,
+                })}
               </p>
               {isConnected && address && (
                 <div className="mt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <Wallet size={16} />
-                  <span className="font-mono">{address.substring(0, 6)}...{address.substring(address.length - 4)}</span>
+                  <span className="font-mono">
+                    {address.substring(0, 6)}...
+                    {address.substring(address.length - 4)}
+                  </span>
                 </div>
               )}
             </div>
@@ -109,8 +125,12 @@ export default function ProfilePage() {
                 Messages
               </h3>
             </div>
-            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">-</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Coming soon</p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              -
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Coming soon
+            </p>
           </div>
         </div>
 
@@ -135,7 +155,7 @@ export default function ProfilePage() {
                   className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                 >
                   <a
-                    href={`/article/${encodeURIComponent(bookmark.article_id)}`}
+                    href={`/article?url=${encodeURIComponent(bookmark.article_id)}`}
                     className="block"
                   >
                     <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
@@ -149,7 +169,9 @@ export default function ProfilePage() {
                         </>
                       )}
                       <span>
-                        {formatDistanceToNow(new Date(bookmark.created_at), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(bookmark.created_at), {
+                          addSuffix: true,
+                        })}
                       </span>
                     </div>
                   </a>

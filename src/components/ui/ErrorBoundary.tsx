@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { Component, ReactNode } from 'react';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import React, { Component, ReactNode } from "react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -18,7 +18,10 @@ interface ErrorBoundaryState {
  * ErrorBoundary Component
  * Catches React errors and displays fallback UI
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -35,7 +38,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
@@ -64,7 +67,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </h2>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {this.state.error?.message || 'An unexpected error occurred'}
+              {this.state.error?.message || "An unexpected error occurred"}
             </p>
             <button
               onClick={this.handleReset}
@@ -81,4 +84,3 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return this.props.children;
   }
 }
-

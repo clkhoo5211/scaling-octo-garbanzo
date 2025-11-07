@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { ReactNode, useEffect, memo } from 'react';
-import { Button } from './Button';
+import { cn } from "@/lib/utils";
+import { ReactNode, useEffect, memo } from "react";
+import { Button } from "./Button";
 
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   children: ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   showCloseButton?: boolean;
 }
 
 const sizeClasses = {
-  sm: 'max-w-md',
-  md: 'max-w-lg',
-  lg: 'max-w-2xl',
-  xl: 'max-w-4xl',
-  full: 'max-w-full mx-4',
+  sm: "max-w-md",
+  md: "max-w-lg",
+  lg: "max-w-2xl",
+  xl: "max-w-4xl",
+  full: "max-w-full mx-4",
 };
 
 export const Modal = memo(function Modal({
@@ -26,30 +26,30 @@ export const Modal = memo(function Modal({
   onClose,
   title,
   children,
-  size = 'md',
+  size = "md",
   showCloseButton = true,
 }: ModalProps) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -61,9 +61,9 @@ export const Modal = memo(function Modal({
     >
       <div
         className={cn(
-          'bg-white rounded-lg shadow-xl w-full',
+          "bg-white rounded-lg shadow-xl w-full",
           sizeClasses[size],
-          'max-h-[90vh] overflow-y-auto'
+          "max-h-[90vh] overflow-y-auto"
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -102,4 +102,3 @@ export const Modal = memo(function Modal({
     </div>
   );
 });
-

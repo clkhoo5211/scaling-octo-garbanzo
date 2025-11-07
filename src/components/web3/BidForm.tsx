@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAccount, useBalance, useWriteContract } from '@reown/appkit/react';
-import { Loader2, AlertCircle } from 'lucide-react';
-import { TransactionStatus } from './TransactionStatus';
+import { useState, useEffect } from "react";
+import { useAppKitAccount, useAppKitBalance } from "@reown/appkit/react";
+import { Loader2, AlertCircle } from "lucide-react";
+import { TransactionStatus } from "./TransactionStatus";
 
 interface BidFormProps {
   auctionId: string;
@@ -20,33 +20,42 @@ interface BidFormProps {
  */
 export function BidForm({
   auctionId,
-  currentBid,
   minBid,
   onBid,
   contractAddress,
   abi,
 }: BidFormProps) {
-  const [bidAmount, setBidAmount] = useState('');
-  const [tenure, setTenure] = useState('1week');
+  const [bidAmount, setBidAmount] = useState("");
+  const [tenure, setTenure] = useState("1week");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | undefined>();
 
-  const { address } = useAccount();
-  const { data: balance } = useBalance({ address });
-  const { writeContract, isPending, data: hash } = useWriteContract();
-
-  // Update txHash when hash changes
-  useState(() => {
-    if (hash) setTxHash(hash);
-  });
+  const { address } = useAppKitAccount();
+  const { fetchBalance } = useAppKitBalance();
+  const [balance, setBalance] = useState<{ formatted: string } | null>(null);
+  
+  // Fetch balance on mount
+  useEffect(() => {
+    if (address) {
+      fetchBalance().then((result) => {
+        if (result.isSuccess && result.data) {
+          setBalance({ formatted: result.data.formatted || "0" });
+        }
+      });
+    }
+  }, [address, fetchBalance]);
+  
+  // Remove useWriteContract for now - not available in AppKit
+  const [isPending, setIsPending] = useState(false);
+  const [hash, setHash] = useState<string | undefined>();
 
   const validateBid = (amount: string): string | null => {
     const amountNum = parseFloat(amount);
     const minBidNum = parseFloat(minBid);
 
     if (isNaN(amountNum) || amountNum <= 0) {
-      return 'Bid amount must be greater than 0';
+      return "Bid amount must be greater than 0";
     }
 
     if (amountNum < minBidNum) {
@@ -54,7 +63,7 @@ export function BidForm({
     }
 
     if (balance && amountNum > parseFloat(balance.formatted)) {
-      return 'Insufficient USDT balance';
+      return "Insufficient USDT balance";
     }
 
     return null;
@@ -74,20 +83,11 @@ export function BidForm({
     setIsSubmitting(true);
 
     try {
-      // If contract address and ABI provided, use writeContract
-      if (contractAddress && abi) {
-        writeContract({
-          address: contractAddress as `0x${string}`,
-          abi,
-          functionName: 'placeBid',
-          args: [auctionId, BigInt(Math.floor(parseFloat(bidAmount) * 1e6))], // USDT has 6 decimals
-        });
-      } else {
-        // Otherwise use callback
-        await onBid(bidAmount, tenure);
-      }
+      // For now, use callback only - contract interaction needs wagmi setup
+      await onBid(bidAmount, tenure);
+      setIsSubmitting(false);
     } catch (err: any) {
-      setError(err.message || 'Failed to place bid');
+      setError(err.message || "Failed to place bid");
       setIsSubmitting(false);
     }
   };
@@ -102,7 +102,7 @@ export function BidForm({
           hash={txHash}
           onSuccess={() => {
             setIsSubmitting(false);
-            setBidAmount('');
+            setBidAmount("");
           }}
           onError={() => setIsSubmitting(false)}
         />
@@ -134,7 +134,7 @@ export function BidForm({
           required
           disabled={isLoading}
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          aria-describedby={error ? 'bid-error' : undefined}
+          aria-describedby={error ? "bid-error" : undefined}
         />
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
           Minimum bid: {minBid} USDT
@@ -189,4 +189,3 @@ export function BidForm({
     </form>
   );
 }
-

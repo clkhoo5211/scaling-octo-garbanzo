@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Heart,
   MessageCircle,
@@ -9,7 +9,7 @@ import {
   BookmarkCheck,
   Flag,
   MoreVertical,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface ActionBarProps {
   articleId: string;
@@ -29,7 +29,6 @@ interface ActionBarProps {
  * Provides action buttons for article interactions (like, comment, share, bookmark, report)
  */
 export function ActionBar({
-  articleId,
   likes = 0,
   comments = 0,
   isLiked = false,
@@ -52,12 +51,12 @@ export function ActionBar({
             onClick={onLike}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
               isLiked
-                ? 'text-red-500 bg-red-50 dark:bg-red-900/20'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                ? "text-red-500 bg-red-50 dark:bg-red-900/20"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
             }`}
-            aria-label={`${isLiked ? 'Unlike' : 'Like'} article`}
+            aria-label={`${isLiked ? "Unlike" : "Like"} article`}
           >
-            <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+            <Heart className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
             <span className="text-sm font-medium">{likes}</span>
           </button>
         )}
@@ -94,10 +93,10 @@ export function ActionBar({
             onClick={onBookmark}
             className={`p-2 rounded-lg transition-colors ${
               isBookmarked
-                ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
             }`}
-            aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+            aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
           >
             {isBookmarked ? (
               <BookmarkCheck className="w-5 h-5" />
@@ -148,4 +147,3 @@ export function ActionBar({
     </div>
   );
 }
-

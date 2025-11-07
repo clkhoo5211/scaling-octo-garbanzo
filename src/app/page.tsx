@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { ArticleFeed } from '@/components/feed/ArticleFeed';
-import { CategoryTabs } from '@/components/feed/CategoryTabs';
-import { Autocomplete } from '@/components/search/Autocomplete';
-import { FilterChips, type FilterChip } from '@/components/search/FilterChips';
-import { useState } from 'react';
-import { useArticles } from '@/lib/hooks/useArticles';
-import type { Article } from '@/lib/services/indexedDBCache';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { ArticleFeed } from "@/components/feed/ArticleFeed";
+import { CategoryTabs } from "@/components/feed/CategoryTabs";
+import { Autocomplete } from "@/components/search/Autocomplete";
+import { FilterChips, type FilterChip } from "@/components/search/FilterChips";
+import { useState } from "react";
+import { useArticles } from "@/lib/hooks/useArticles";
+import type { Article } from "@/lib/services/indexedDBCache";
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<
-    'tech' | 'crypto' | 'social' | 'general' | undefined
+    "tech" | "crypto" | "social" | "general" | undefined
   >(undefined);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
 
   const { data: articles, isLoading } = useArticles(selectedCategory, {
@@ -39,9 +39,9 @@ export default function HomePage() {
     if (query) {
       // Add search filter chip
       const searchFilter: FilterChip = {
-        id: 'search',
+        id: "search",
         label: `Search: ${query}`,
-        type: 'tag',
+        type: "tag",
         value: query,
       };
       setFilters([searchFilter]);
@@ -52,18 +52,18 @@ export default function HomePage() {
 
   const handleSelectArticle = (article: Article) => {
     // Navigate to article reader view
-    window.location.href = `/article/${encodeURIComponent(article.url)}`;
+    window.location.href = `/article?url=${encodeURIComponent(article.url)}`;
   };
 
   const handleRemoveFilter = (id: string) => {
-    if (id === 'search') {
-      setSearchQuery('');
+    if (id === "search") {
+      setSearchQuery("");
     }
     setFilters(filters.filter((f) => f.id !== id));
   };
 
   const handleClearAllFilters = () => {
-    setSearchQuery('');
+    setSearchQuery("");
     setFilters([]);
   };
 
@@ -110,4 +110,3 @@ export default function HomePage() {
     </ErrorBoundary>
   );
 }
-

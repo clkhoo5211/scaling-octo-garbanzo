@@ -1,4 +1,3 @@
-'use client';
+"use client";
 
-export { PointsDisplay, TransactionHistory } from './PointsDisplay';
-
+export { PointsDisplay, TransactionHistory } from "./PointsDisplay";

@@ -1,4 +1,5 @@
 # 🧩 Component Specifications
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -76,28 +77,32 @@ components/
 **Purpose:** Display article preview in feed
 
 **Props:**
+
 ```typescript
 interface ArticleCardProps {
   article: Article;
   onUpvote?: (articleId: string) => void;
   onBookmark?: (articleId: string) => void;
   onShare?: (articleId: string) => void;
-  variant?: 'compact' | 'expanded' | 'featured';
+  variant?: "compact" | "expanded" | "featured";
 }
 ```
 
 **States:**
+
 - Default: Normal display
 - Hover: Scale 1.02, opacity 0.9
 - Loading: Skeleton screen
 - Error: Error message, retry button
 
 **Variants:**
+
 - Compact: List view (mobile)
 - Expanded: Grid view (desktop)
 - Featured: Hero card (large)
 
 **Implementation:**
+
 ```typescript
 export function ArticleCard({
   article,
@@ -109,7 +114,7 @@ export function ArticleCard({
   const { upvoteArticle } = useArticleActions();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { user } = useUser();
-  
+
   const handleUpvote = async () => {
     if (!user) {
       // Show login modal
@@ -118,7 +123,7 @@ export function ArticleCard({
     await upvoteArticle(article.id);
     onUpvote?.(article.id);
   };
-  
+
   const handleBookmark = async () => {
     if (!user) {
       // Show login modal
@@ -127,7 +132,7 @@ export function ArticleCard({
     await toggleBookmark(article.id);
     onBookmark?.(article.id);
   };
-  
+
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
@@ -142,7 +147,7 @@ export function ArticleCard({
     }
     onShare?.(article.id);
   };
-  
+
   return (
     <article className={`article-card article-card--${variant}`}>
       {article.thumbnail && (
@@ -188,6 +193,7 @@ export function ArticleCard({
 ```
 
 **Accessibility:**
+
 - ARIA labels for all buttons
 - Keyboard navigation (Tab, Enter)
 - Focus indicators (2px outline)
@@ -201,22 +207,25 @@ export function ArticleCard({
 **Purpose:** Search articles, sources, users
 
 **Props:**
+
 ```typescript
 interface SearchBarProps {
   onSearch: (query: string) => void;
   autocomplete?: boolean;
   placeholder?: string;
-  variant?: 'header' | 'page' | 'modal';
+  variant?: "header" | "page" | "modal";
 }
 ```
 
 **States:**
+
 - Default: Placeholder text
 - Focused: Border highlight, autocomplete shown
 - Typing: Autocomplete updates
 - Results: Results shown below
 
 **Implementation:**
+
 ```typescript
 export function SearchBar({
   onSearch,
@@ -226,21 +235,21 @@ export function SearchBar({
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  
+
   const { data: suggestions, isLoading } = useQuery({
     queryKey: ['search-suggestions', query],
     queryFn: () => getSearchSuggestions(query),
     enabled: autocomplete && query.length > 2 && isFocused,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       onSearch(query.trim());
     }
   };
-  
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -290,6 +299,7 @@ export function SearchBar({
 ```
 
 **Accessibility:**
+
 - ARIA labels: `aria-label="Search articles"`
 - Autocomplete: `aria-autocomplete="list"`
 - Keyboard: Arrow keys to navigate, Enter to select
@@ -303,6 +313,7 @@ export function SearchBar({
 **Purpose:** Distraction-free reading experience
 
 **Props:**
+
 ```typescript
 interface ReaderViewProps {
   article: Article;
@@ -315,6 +326,7 @@ interface ReaderViewProps {
 ```
 
 **States:**
+
 - Default: Normal reading
 - Loading: Skeleton screen
 - Error: Error message, retry button
@@ -322,6 +334,7 @@ interface ReaderViewProps {
 - Summarized: Show summary
 
 **Implementation:**
+
 ```typescript
 import { Readability } from '@mozilla/readability';
 
@@ -336,7 +349,7 @@ export function ReaderView({
   const [content, setContent] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState(0);
   const { fontSize, lineHeight, theme } = useReaderPreferences();
-  
+
   useEffect(() => {
     // Fetch and parse article content
     fetchArticleContent(article.url).then((html) => {
@@ -346,7 +359,7 @@ export function ReaderView({
       setContent(articleContent?.content || '');
     });
   }, [article.url]);
-  
+
   useEffect(() => {
     // Track reading progress
     const handleScroll = () => {
@@ -356,11 +369,11 @@ export function ReaderView({
       const progress = (scrollTop / (documentHeight - windowHeight)) * 100;
       setReadingProgress(Math.min(100, Math.max(0, progress)));
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   return (
     <div className={`reader-view reader-view--${theme}`}>
       <ReadingProgress progress={readingProgress} />
@@ -396,6 +409,7 @@ export function ReaderView({
 ```
 
 **Accessibility:**
+
 - Semantic HTML: `<article>`, `<header>`
 - Reading progress: Visual indicator
 - Keyboard navigation: Arrow keys to navigate
@@ -409,6 +423,7 @@ export function ReaderView({
 **Purpose:** Place bid on ad auction
 
 **Props:**
+
 ```typescript
 interface BidFormProps {
   auctionId: string;
@@ -419,6 +434,7 @@ interface BidFormProps {
 ```
 
 **States:**
+
 - Default: Form ready
 - Validating: Validating bid amount
 - Submitting: Transaction pending
@@ -426,6 +442,7 @@ interface BidFormProps {
 - Error: Error message displayed
 
 **Implementation:**
+
 ```typescript
 export function BidForm({
   auctionId,
@@ -437,39 +454,39 @@ export function BidForm({
   const [tenure, setTenure] = useState('1week');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { address } = useAccount();
   const { data: balance } = useBalance({ address });
-  
+
   const validateBid = (amount: string): string | null => {
     const amountNum = parseFloat(amount);
     const minBidNum = parseFloat(minBid);
-    
+
     if (isNaN(amountNum) || amountNum <= 0) {
       return 'Bid amount must be greater than 0';
     }
-    
+
     if (amountNum < minBidNum) {
       return `Bid must be at least ${minBidNum} USDT (5% higher than current bid)`;
     }
-    
+
     if (balance && amountNum > parseFloat(balance.formatted)) {
       return 'Insufficient USDT balance';
     }
-    
+
     return null;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
+
     const validationError = validateBid(bidAmount);
     if (validationError) {
       setError(validationError);
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       await onBid(bidAmount, tenure);
@@ -480,7 +497,7 @@ export function BidForm({
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="bid-form">
       <div className="bid-form__field">
@@ -501,7 +518,7 @@ export function BidForm({
           </div>
         )}
       </div>
-      
+
       <div className="bid-form__field">
         <label htmlFor="tenure">Tenure</label>
         <select
@@ -517,7 +534,7 @@ export function BidForm({
           <option value="6months">6 Months (20% discount)</option>
         </select>
       </div>
-      
+
       <div className="bid-form__summary">
         <p>Current Bid: {currentBid} USDT</p>
         <p>Minimum Bid: {minBid} USDT</p>
@@ -527,7 +544,7 @@ export function BidForm({
           Total: {bidAmount ? (parseFloat(bidAmount) + 1).toFixed(2) : '0'} USDT
         </p>
       </div>
-      
+
       <button
         type="submit"
         disabled={isSubmitting || !bidAmount}
@@ -541,6 +558,7 @@ export function BidForm({
 ```
 
 **Accessibility:**
+
 - Form labels: Associated with inputs
 - Error messages: `aria-describedby`
 - Required fields: Visual indicator + `aria-required`
@@ -554,15 +572,17 @@ export function BidForm({
 **Purpose:** Display points balance and conversion
 
 **Props:**
+
 ```typescript
 interface PointsBalanceProps {
   balance: number;
   onConvert?: (amount: number) => void;
-  variant?: 'compact' | 'expanded' | 'badge';
+  variant?: "compact" | "expanded" | "badge";
 }
 ```
 
 **Implementation:**
+
 ```typescript
 export function PointsBalance({
   balance,
@@ -574,11 +594,11 @@ export function PointsBalance({
     queryFn: () => getConversionRate(),
     staleTime: 60 * 60 * 1000, // 1 hour
   });
-  
+
   const usdtEquivalent = conversionRate
     ? (balance / conversionRate).toFixed(2)
     : '0.00';
-  
+
   if (variant === 'badge') {
     return (
       <div className="points-badge" aria-label={`${balance} points`}>
@@ -586,7 +606,7 @@ export function PointsBalance({
       </div>
     );
   }
-  
+
   if (variant === 'compact') {
     return (
       <div className="points-balance points-balance--compact">
@@ -595,7 +615,7 @@ export function PointsBalance({
       </div>
     );
   }
-  
+
   return (
     <div className="points-balance points-balance--expanded">
       <div className="points-balance__header">
@@ -645,4 +665,3 @@ function formatPoints(points: number): string {
 **Total Components:** 50+ React components  
 **Component Types:** Layout, Feed, Article, Search, Auth, Web3, Social, UI, Shared  
 **Accessibility:** WCAG 2.1 AA compliant
-

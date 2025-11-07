@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { ArticleCard } from './ArticleCard';
-import { EmptyState } from '@/components/ui/LoadingState';
-import type { Article } from '@/lib/services/indexedDBCache';
-import { FileText } from 'lucide-react';
+import { ArticleCard } from "./ArticleCard";
+import { EmptyState } from "@/components/ui/LoadingState";
+import type { Article } from "@/lib/services/indexedDBCache";
+import { FileText } from "lucide-react";
 
 interface ArticleFeedProps {
   articles: Article[];
@@ -33,4 +33,3 @@ export function ArticleFeed({ articles, onSelectArticle }: ArticleFeedProps) {
     </div>
   );
 }
-

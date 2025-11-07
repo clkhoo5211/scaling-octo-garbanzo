@@ -3,18 +3,20 @@ layout: none
 ---
 
 # 🧡 FOLO FEATURES ADOPTION GUIDE
+
 ## Web3News - Inspired by Folo (35.7k ⭐ GitHub Stars)
 
 **Reference Project:** https://github.com/RSSNext/Folo  
 **Live Demo:** https://app.folo.is  
 **License:** GPL-3.0 (open source)  
-**Success:** 35,700+ GitHub stars, Multi-platform (Browser, iOS, Android, Desktop)  
+**Success:** 35,700+ GitHub stars, Multi-platform (Browser, iOS, Android, Desktop)
 
 ---
 
 ## 🎯 WHY FOLO?
 
 Folo is one of the most successful open-source RSS readers/content aggregators with:
+
 - ✅ **35.7k GitHub stars** (proven product-market fit)
 - ✅ **Multi-platform** (Browser + iOS + Android + Desktop)
 - ✅ **AI-powered** (translation, summaries, smart recommendations)
@@ -35,11 +37,13 @@ The best features from Folo that align with our Web3-native platform!
 **Our Implementation:**
 
 **Technology:**
+
 - Google Translate API (FREE 500k characters/month)
 - Endpoint: https://translation.googleapis.com/language/translate/v2
 - Supported: 100+ languages with auto-detection
 
 **User Experience:**
+
 ```
 User reading article in Chinese (from 今日头条)
   ↓
@@ -53,12 +57,13 @@ Toggle button: "Show Original" / "Show Translation"
 ```
 
 **UI/UX:**
+
 ```jsx
 // Article card component
 <ArticleCard article={article}>
   <div className="flex gap-2">
     {article.language !== userLanguage && (
-      <button 
+      <button
         onClick={() => translateArticle(article)}
         className="btn-secondary"
       >
@@ -84,11 +89,13 @@ Toggle button: "Show Original" / "Show Translation"
 ```
 
 **Cost:**
+
 - Free tier: 500k characters/month
 - Estimated usage: ~5,000 articles × 100 chars = 500k/month ✅
 - **Cost: $0 for MVP**
 
 **Benefits:**
+
 - ✅ Access global content (Chinese, Japanese, Korean sources)
 - ✅ Serve international users
 - ✅ Competitive advantage over English-only aggregators
@@ -104,40 +111,47 @@ Toggle button: "Show Original" / "Show Translation"
 **Technology Options:**
 
 **Option A: Hugging Face (FREE)**
+
 ```javascript
 // Using Hugging Face Inference API
 const response = await fetch(
-  'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
+  "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
   {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${HF_API_KEY}` },
-    body: JSON.stringify({ inputs: articleText })
+    method: "POST",
+    headers: { Authorization: `Bearer ${HF_API_KEY}` },
+    body: JSON.stringify({ inputs: articleText }),
   }
-)
+);
 
-const summary = await response.json()
+const summary = await response.json();
 ```
+
 - Model: facebook/bart-large-cnn (summarization model)
 - Free tier: 30,000 chars/month
 - Quality: Good (70-80% accuracy)
 - **Cost: $0**
 
 **Option B: OpenAI (Paid, Better Quality)**
+
 ```javascript
 const response = await openai.chat.completions.create({
-  model: 'gpt-4-turbo',
-  messages: [{
-    role: 'system',
-    content: 'Summarize this article in 3 sentences.'
-  }, {
-    role: 'user',
-    content: articleText
-  }],
-  max_tokens: 150
-})
+  model: "gpt-4-turbo",
+  messages: [
+    {
+      role: "system",
+      content: "Summarize this article in 3 sentences.",
+    },
+    {
+      role: "user",
+      content: articleText,
+    },
+  ],
+  max_tokens: 150,
+});
 
-const summary = response.choices[0].message.content
+const summary = response.choices[0].message.content;
 ```
+
 - Cost: $0.01 per 1k tokens (~$0.05 per summary)
 - Quality: Excellent (95%+ accuracy)
 - **Cost: ~$5/month for 1,000 summaries**
@@ -145,6 +159,7 @@ const summary = response.choices[0].message.content
 **Recommendation:** Start with Hugging Face (free), upgrade to OpenAI when you have revenue
 
 **User Experience:**
+
 ```
 User sees long article (3,000 words, 15-minute read)
   ↓
@@ -159,6 +174,7 @@ Decides: "Worth reading" → Clicks "Read Full Article"
 ```
 
 **UI:**
+
 ```jsx
 <ArticleCard article={article}>
   <div className="bg-blue-50 p-3 rounded mb-2">
@@ -173,6 +189,7 @@ Decides: "Worth reading" → Clicks "Read Full Article"
 ```
 
 **Benefits:**
+
 - ✅ Save users time (scan 10 articles in 5 minutes)
 - ✅ Increase engagement (more articles consumed)
 - ✅ Better recommendations (track which summaries lead to full reads)
@@ -189,12 +206,14 @@ Decides: "Worth reading" → Clicks "Read Full Article"
 **User-Created Lists:**
 
 **Example Lists:**
+
 - "🔥 Best DeFi Protocols" (curated by @alice)
 - "📈 Daily Crypto Market Analysis" (curated by @trader_mike)
 - "🎓 Crypto Education for Beginners" (curated by @crypto_teacher)
 - "⚡ Lightning Network News" (curated by @btc_maximalist)
 
 **User Experience:**
+
 ```
 Create List:
   User → "Create New List" → Enter name + description
@@ -221,6 +240,7 @@ Share List:
 ```
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE content_lists (
   id UUID PRIMARY KEY,
@@ -257,17 +277,20 @@ CREATE INDEX idx_list_items_list ON list_items(list_id, added_at DESC);
 ```
 
 **Monetization:**
+
 - Free users: Create 3 public lists, subscribe to 10 lists
 - Pro users: Create 10 public lists, unlimited subscriptions
 - Premium users: Create unlimited lists (public + private), priority in trending
 
 **Points Rewards:**
+
 - Create public list: 100 points
 - List gets 100 subscribers: 500 bonus points
 - List featured in "Trending": 1,000 bonus points
 - Subscribe to list: 5 points (engagement reward)
 
 **Benefits:**
+
 - ✅ User-generated content (community curation)
 - ✅ Viral growth (share lists on social media)
 - ✅ Engagement boost (users return to check list updates)
@@ -284,30 +307,34 @@ CREATE INDEX idx_list_items_list ON list_items(list_id, added_at DESC);
 **Video Content:**
 
 **YouTube Integration:**
+
 ```javascript
 // YouTube Data API v3 (FREE 10,000 quota/day)
 const fetchCryptoVideos = async () => {
   const response = await fetch(
-    'https://www.googleapis.com/youtube/v3/search?' +
-    'part=snippet&q=cryptocurrency+news&type=video&maxResults=10' +
-    `&key=${YOUTUBE_API_KEY}`
-  )
-  
-  return response.json()
-}
+    "https://www.googleapis.com/youtube/v3/search?" +
+      "part=snippet&q=cryptocurrency+news&type=video&maxResults=10" +
+      `&key=${YOUTUBE_API_KEY}`
+  );
+
+  return response.json();
+};
 
 // Embed video in article card
 <div className="video-card">
-  <iframe 
+  <iframe
     src={`https://www.youtube.com/embed/${videoId}`}
     allow="autoplay; encrypted-media"
   />
   <h3>{video.title}</h3>
-  <p>{video.channel} • {video.views} views</p>
-</div>
+  <p>
+    {video.channel} • {video.views} views
+  </p>
+</div>;
 ```
 
 **Crypto YouTube Channels to Aggregate:**
+
 - Coin Bureau (2.5M subscribers)
 - Benjamin Cowen (800k subscribers)
 - Altcoin Daily (1.4M subscribers)
@@ -315,69 +342,75 @@ const fetchCryptoVideos = async () => {
 - The Defiant (100k subscribers)
 
 **TikTok Integration:**
+
 ```javascript
 // TikTok public API (trending crypto content)
 const fetchTikTokCrypto = async () => {
   const response = await fetch(
-    'https://www.tiktok.com/api/recommend/item_list?' +
-    'keyword=cryptocurrency&count=10'
-  )
-  
-  return response.json()
-}
+    "https://www.tiktok.com/api/recommend/item_list?" +
+      "keyword=cryptocurrency&count=10"
+  );
+
+  return response.json();
+};
 ```
 
 **Audio Content (Podcasts):**
 
 **Podcast RSS Feeds:**
+
 ```javascript
 const cryptoPodcasts = [
   {
-    name: 'Unchained',
-    rss: 'https://unchainedpodcast.com/feed/podcast/',
-    host: 'Laura Shin'
+    name: "Unchained",
+    rss: "https://unchainedpodcast.com/feed/podcast/",
+    host: "Laura Shin",
   },
   {
-    name: 'Bankless',
-    rss: 'https://feeds.simplecast.com/cJ1CAz86',
-    host: 'Ryan Sean Adams & David Hoffman'
+    name: "Bankless",
+    rss: "https://feeds.simplecast.com/cJ1CAz86",
+    host: "Ryan Sean Adams & David Hoffman",
   },
   {
-    name: 'The Defiant',
-    rss: 'https://feeds.buzzsprout.com/1243111.rss',
-    host: 'Camila Russo'
+    name: "The Defiant",
+    rss: "https://feeds.buzzsprout.com/1243111.rss",
+    host: "Camila Russo",
   },
   {
-    name: 'What Bitcoin Did',
-    rss: 'https://feeds.buzzsprout.com/51285.rss',
-    host: 'Peter McCormack'
-  }
-]
+    name: "What Bitcoin Did",
+    rss: "https://feeds.buzzsprout.com/51285.rss",
+    host: "Peter McCormack",
+  },
+];
 
 // Fetch podcast episodes
 const fetchPodcastEpisodes = async (podcast) => {
-  const response = await fetch(podcast.rss)
-  const xml = await response.text()
-  const episodes = parseRSS(xml) // Use rss-parser library
-  
-  return episodes
-}
+  const response = await fetch(podcast.rss);
+  const xml = await response.text();
+  const episodes = parseRSS(xml); // Use rss-parser library
+
+  return episodes;
+};
 ```
 
 **Audio Player:**
+
 ```jsx
 <AudioPlayer episode={episode}>
   <div className="audio-controls">
     <button onClick={play}>▶️ Play</button>
     <button onClick={pause}>⏸️ Pause</button>
     <input type="range" value={progress} onChange={seek} />
-    <span>{currentTime} / {duration}</span>
+    <span>
+      {currentTime} / {duration}
+    </span>
   </div>
   <audio ref={audioRef} src={episode.audioUrl} />
 </AudioPlayer>
 ```
 
 **Content Type Tabs:**
+
 ```jsx
 <NavigationTabs>
   <Tab href="/articles">📰 Articles</Tab>
@@ -388,6 +421,7 @@ const fetchPodcastEpisodes = async (podcast) => {
 ```
 
 **Benefits:**
+
 - ✅ Richer content variety (not just text)
 - ✅ Longer engagement time (users watch videos, listen to podcasts)
 - ✅ Better monetization (video ads command higher rates)
@@ -402,25 +436,27 @@ const fetchPodcastEpisodes = async (podcast) => {
 **Our Implementation:**
 
 **Technology:**
+
 ```javascript
 // @mozilla/readability (open source library)
-import { Readability } from '@mozilla/readability'
+import { Readability } from "@mozilla/readability";
 
 const extractCleanContent = (articleHTML) => {
-  const doc = new DOMParser().parseFromString(articleHTML, 'text/html')
-  const reader = new Readability(doc)
-  const article = reader.parse()
-  
+  const doc = new DOMParser().parseFromString(articleHTML, "text/html");
+  const reader = new Readability(doc);
+  const article = reader.parse();
+
   return {
     title: article.title,
     content: article.content, // Clean HTML (no ads, sidebars)
     excerpt: article.excerpt,
-    readTime: estimateReadTime(article.textContent)
-  }
-}
+    readTime: estimateReadTime(article.textContent),
+  };
+};
 ```
 
 **Reader View UI:**
+
 ```jsx
 <ReaderView article={article}>
   <div className="max-w-2xl mx-auto px-4 py-8">
@@ -436,7 +472,7 @@ const extractCleanContent = (articleHTML) => {
       </div>
       <ProgressBar percent={scrollPercent} />
     </div>
-    
+
     {/* Article content */}
     <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
     <div className="flex gap-4 text-sm text-gray-500 mb-8">
@@ -446,13 +482,13 @@ const extractCleanContent = (articleHTML) => {
       <span>•</span>
       <span>{article.publishedAt}</span>
     </div>
-    
-    <div 
+
+    <div
       className="prose prose-lg dark:prose-invert"
       style={% raw %}{{ fontSize: `${fontSize}px` }}{% endraw %}
       dangerouslySetInnerHTML={% raw %}{{ __html: cleanContent }}{% endraw %}
     />
-    
+
     {/* Bottom actions */}
     <div className="flex gap-4 mt-8 py-4 border-t">
       <button onClick={addToList}>➕ Add to List</button>
@@ -465,6 +501,7 @@ const extractCleanContent = (articleHTML) => {
 ```
 
 **Features:**
+
 - ✅ Clean content extraction (remove ads, popups, sidebars)
 - ✅ Adjustable font size (14px - 24px)
 - ✅ Adjustable line height (1.5x - 2.0x)
@@ -485,6 +522,7 @@ const extractCleanContent = (articleHTML) => {
 **Our Implementation:**
 
 **List Creation Flow:**
+
 ```
 User Profile → "Create New List"
   ↓
@@ -500,6 +538,7 @@ User can now add articles from feed
 ```
 
 **Adding Articles to Lists:**
+
 ```jsx
 <ArticleCard article={article}>
   <div className="article-actions">
@@ -527,15 +566,16 @@ User can now add articles from feed
 ```
 
 **List Discovery Page:**
+
 ```jsx
 <ListsExplorerPage>
   <h1>🌟 Discover Curated Lists</h1>
-  
+
   {/* Trending lists */}
   <section>
     <h2>Trending Lists This Week</h2>
     <div className="grid grid-cols-3 gap-4">
-      {trendingLists.map(list => (
+      {trendingLists.map((list) => (
         <ListCard list={list}>
           <h3>{list.name}</h3>
           <p>{list.description}</p>
@@ -547,14 +587,12 @@ User can now add articles from feed
           <div className="curator">
             By {list.creator.username} <SubscriptionBadge user={list.creator} />
           </div>
-          <button onClick={() => subscribeToList(list)}>
-            Subscribe
-          </button>
+          <button onClick={() => subscribeToList(list)}>Subscribe</button>
         </ListCard>
       ))}
     </div>
   </section>
-  
+
   {/* Category-based lists */}
   <section>
     <h2>Top DeFi Lists</h2>
@@ -564,17 +602,20 @@ User can now add articles from feed
 ```
 
 **Monetization:**
+
 - **Free Tier**: Create 3 public lists, subscribe to 10 lists
 - **Pro Tier**: Create 10 public lists, unlimited subscriptions, private lists
 - **Premium Tier**: Unlimited lists, featured placement in "Trending"
 
 **Points Economy:**
+
 - Create public list: 100 points
 - List reaches 100 subscribers: 500 bonus points
 - List featured in "Trending This Week": 1,000 bonus points
 - Article from your list gets 100+ upvotes: 200 bonus points
 
 **Benefits:**
+
 - ✅ **User-Generated Content**: Community curates best content
 - ✅ **Viral Growth**: Users share lists on Twitter, Reddit
 - ✅ **Engagement Loop**: Users return to check list updates
@@ -590,6 +631,7 @@ User can now add articles from feed
 **Our Implementation:**
 
 **Web Share API (Native Browser):**
+
 ```javascript
 const shareArticle = async (article) => {
   // Check if Web Share API supported
@@ -597,25 +639,24 @@ const shareArticle = async (article) => {
     await navigator.share({
       title: article.title,
       text: `Check out this article: ${article.title}`,
-      url: `${article.url}?ref=web3news&referrer=${user.referral_code}`
-    })
-    
+      url: `${article.url}?ref=web3news&referrer=${user.referral_code}`,
+    });
+
     // Award points for sharing
-    await awardPoints(user.id, 5, 'article_shared')
+    await awardPoints(user.id, 5, "article_shared");
   } else {
     // Fallback: Show social media links
-    showSocialShareModal(article)
+    showSocialShareModal(article);
   }
-}
+};
 ```
 
 **Share Button UI:**
+
 ```jsx
 <ArticleCard article={article}>
   <div className="flex gap-2">
-    <button onClick={() => shareArticle(article)}>
-      🔗 Share
-    </button>
+    <button onClick={() => shareArticle(article)}>🔗 Share</button>
     {/* Desktop fallback */}
     <ShareDropdown>
       <button>Share to Twitter</button>
@@ -629,18 +670,20 @@ const shareArticle = async (article) => {
 ```
 
 **Referral Tracking:**
+
 ```javascript
 // When user shares with their referral code
-const shareURL = `${article.url}?ref=web3news&referrer=${user.referral_code}`
+const shareURL = `${article.url}?ref=web3news&referrer=${user.referral_code}`;
 
 // When someone clicks the link and signs up
 // Track conversion and award points
 if (queryParams.referrer) {
-  await awardReferralPoints(queryParams.referrer, 2000) // 2,000 points for successful referral
+  await awardReferralPoints(queryParams.referrer, 2000); // 2,000 points for successful referral
 }
 ```
 
 **Benefits:**
+
 - ✅ Viral growth (users become ambassadors)
 - ✅ Referral rewards (incentivize sharing)
 - ✅ Zero marketing cost (organic growth)
@@ -650,20 +693,20 @@ if (queryParams.referrer) {
 
 ## 📊 FOLO FEATURES COMPARISON
 
-| Feature | Folo | Web3News | Implementation |
-|---------|------|----------|----------------|
-| **AI Translation** | ✅ | ✅ Phase 2 | Google Translate API (FREE) |
-| **AI Summaries** | ✅ | ✅ Phase 2 | Hugging Face (FREE) or OpenAI ($5/mo) |
-| **Curated Lists** | ✅ | ✅ Phase 1 | Supabase (3 new tables) |
-| **Video Content** | ✅ | ✅ Phase 2 | YouTube API (FREE 10k/day) |
-| **Podcasts** | ✅ | ✅ Phase 2 | RSS feeds (FREE) |
-| **Reader View** | ✅ | ✅ Phase 1 | @mozilla/readability (FREE) |
-| **Social Sharing** | ✅ | ✅ Phase 1 | Web Share API (FREE) |
-| **Multi-Platform** | ✅ | ✅ Phase 1 (PWA) + Phase 4 (Flutter) | PWA + Flutter |
-| **Blockchain Integration** | ❌ | ✅ Unique! | Reown + Smart Contracts |
-| **Crypto Rewards** | ❌ | ✅ Unique! | Points → USDT |
-| **DAO Governance** | ❌ | ✅ Unique! | On-chain voting |
-| **Ad Auctions** | ❌ | ✅ Unique! | Smart contracts |
+| Feature                    | Folo | Web3News                             | Implementation                        |
+| -------------------------- | ---- | ------------------------------------ | ------------------------------------- |
+| **AI Translation**         | ✅   | ✅ Phase 2                           | Google Translate API (FREE)           |
+| **AI Summaries**           | ✅   | ✅ Phase 2                           | Hugging Face (FREE) or OpenAI ($5/mo) |
+| **Curated Lists**          | ✅   | ✅ Phase 1                           | Supabase (3 new tables)               |
+| **Video Content**          | ✅   | ✅ Phase 2                           | YouTube API (FREE 10k/day)            |
+| **Podcasts**               | ✅   | ✅ Phase 2                           | RSS feeds (FREE)                      |
+| **Reader View**            | ✅   | ✅ Phase 1                           | @mozilla/readability (FREE)           |
+| **Social Sharing**         | ✅   | ✅ Phase 1                           | Web Share API (FREE)                  |
+| **Multi-Platform**         | ✅   | ✅ Phase 1 (PWA) + Phase 4 (Flutter) | PWA + Flutter                         |
+| **Blockchain Integration** | ❌   | ✅ Unique!                           | Reown + Smart Contracts               |
+| **Crypto Rewards**         | ❌   | ✅ Unique!                           | Points → USDT                         |
+| **DAO Governance**         | ❌   | ✅ Unique!                           | On-chain voting                       |
+| **Ad Auctions**            | ❌   | ✅ Unique!                           | Smart contracts                       |
 
 **Our Competitive Advantage:**
 We combine Folo's best UX features with Web3-native monetization!
@@ -672,16 +715,16 @@ We combine Folo's best UX features with Web3-native monetization!
 
 ## 💰 COST ANALYSIS (FOLO FEATURES)
 
-| Feature | Technology | Free Tier | Estimated Usage | Cost |
-|---------|-----------|-----------|-----------------|------|
-| **AI Translation** | Google Translate | 500k chars/month | ~5k articles | $0 ✅ |
-| **AI Summaries** | Hugging Face | 30k chars/month | ~300 summaries | $0 ✅ |
-| **Curated Lists** | Supabase | 500 MB | 3 new tables | $0 ✅ |
-| **Video Content** | YouTube API | 10k quota/day | ~100 videos/day | $0 ✅ |
-| **Podcasts** | RSS Feeds | Unlimited | 10 podcasts | $0 ✅ |
-| **Reader View** | @mozilla/readability | N/A | Open source | $0 ✅ |
-| **Social Sharing** | Web Share API | N/A | Native browser | $0 ✅ |
-| **TOTAL** |  |  |  | **$0** ✅ |
+| Feature            | Technology           | Free Tier        | Estimated Usage | Cost      |
+| ------------------ | -------------------- | ---------------- | --------------- | --------- |
+| **AI Translation** | Google Translate     | 500k chars/month | ~5k articles    | $0 ✅     |
+| **AI Summaries**   | Hugging Face         | 30k chars/month  | ~300 summaries  | $0 ✅     |
+| **Curated Lists**  | Supabase             | 500 MB           | 3 new tables    | $0 ✅     |
+| **Video Content**  | YouTube API          | 10k quota/day    | ~100 videos/day | $0 ✅     |
+| **Podcasts**       | RSS Feeds            | Unlimited        | 10 podcasts     | $0 ✅     |
+| **Reader View**    | @mozilla/readability | N/A              | Open source     | $0 ✅     |
+| **Social Sharing** | Web Share API        | N/A              | Native browser  | $0 ✅     |
+| **TOTAL**          |                      |                  |                 | **$0** ✅ |
 
 **All Folo-inspired features can be implemented at ZERO COST!** 🎉
 
@@ -690,15 +733,17 @@ We combine Folo's best UX features with Web3-native monetization!
 ## 🎯 IMPLEMENTATION PRIORITY
 
 ### **Phase 1 (MVP - Week 1-8):**
+
 - ✅ Reader View Mode (1 day dev time)
 - ✅ Social Sharing (1 day dev time)
 - ✅ Curated Lists (3 days dev time)
 
 **Effort:** 5 days total  
 **Cost:** $0  
-**Impact:** HIGH (differentiation from competitors)  
+**Impact:** HIGH (differentiation from competitors)
 
 ### **Phase 2 (Beta - Week 9-12):**
+
 - ✅ AI Translation (2 days dev time)
 - ✅ AI Summaries (2 days dev time)
 - ✅ Video Content (YouTube integration, 3 days)
@@ -706,52 +751,59 @@ We combine Folo's best UX features with Web3-native monetization!
 
 **Effort:** 9 days total  
 **Cost:** $0 (all free tiers)  
-**Impact:** VERY HIGH (Folo-level UX)  
+**Impact:** VERY HIGH (Folo-level UX)
 
 ---
 
 ## 🚀 ROADMAP UPDATE (WITH FOLO FEATURES)
 
 **Week 1-2: Foundation + Folo MVP Features**
+
 - Next.js setup, Reown auth, Supabase
 - ✅ Reader View Mode (1 day)
 - ✅ Social Sharing (1 day)
 - ✅ Curated Lists (3 days)
 
 **Week 3-4: Content Aggregation**
+
 - 15 sources (articles only)
 - IndexedDB caching
 - Search & filter
 
 **Week 5-6: Web3 Features**
+
 - Smart contracts (auction, subscription, governance)
 - Points system
 - Ad auction UI
 
 **Week 7-8: AI Features (Folo-Inspired)**
+
 - ✅ AI Translation (2 days)
 - ✅ AI Summaries (2 days)
 - ✅ Video content (YouTube, 3 days)
 - ✅ Podcast support (2 days)
 
 **Week 9-10: Social + DAO**
+
 - Follow, like, DM
 - DAO voting
 - Governance proposals
 
 **Week 11-12: Polish + Launch**
+
 - Testing, bug fixes
 - Performance optimization
 - MVP LAUNCH! 🚀
 
 **Total Dev Time:** 12 weeks (was 8 weeks, +4 weeks for Folo features)  
-**Added Value:** Folo-level UX + Web3-native monetization  
+**Added Value:** Folo-level UX + Web3-native monetization
 
 ---
 
 ## 📚 REFERENCE IMPLEMENTATION
 
 **Study Folo's Code:**
+
 - Repo: https://github.com/RSSNext/Folo
 - Focus on:
   - `packages/` - Modular architecture
@@ -761,6 +813,7 @@ We combine Folo's best UX features with Web3-native monetization!
   - Reader view implementation
 
 **Key Learnings:**
+
 - Monorepo structure (pnpm workspace)
 - TypeScript throughout (95.7%)
 - Multi-platform strategy (shared code)
@@ -786,13 +839,13 @@ When Product Agent runs (`/product`), include:
 **Folo Features Adopted:** 7 major features  
 **Additional Dev Time:** +4 weeks (12 weeks total MVP instead of 8)  
 **Additional Cost:** $0 (all features use free APIs)  
-**Expected Impact:** 50%+ better user engagement (Folo-proven UX)  
+**Expected Impact:** 50%+ better user engagement (Folo-proven UX)
 
 **Unique Value Prop:**
+
 > "Web3News combines Folo's world-class reading experience with blockchain-powered rewards. Read, earn crypto, govern the platform—all in one beautiful PWA."
 
 ---
 
 **Folo Reference Added by Init Agent!**  
 **Next:** Product Agent will conduct competitive analysis including Folo! 🚀
-

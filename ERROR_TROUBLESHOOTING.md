@@ -1,4 +1,5 @@
 # 🔍 GitHub Actions Error Troubleshooting Guide
+
 ## Web3News - Blockchain Content Aggregator
 
 **Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo  
@@ -11,6 +12,7 @@
 ### Error 1: Workflow Not Triggering
 
 **Symptoms:**
+
 - No workflow runs appear in Actions tab
 - Workflow doesn't start after push
 
@@ -33,6 +35,7 @@
 ### Error 2: Build Fails - Missing Secrets
 
 **Symptoms:**
+
 - Build step fails with "undefined" errors
 - Environment variables not found
 
@@ -61,6 +64,7 @@
 ### Error 3: Build Fails - npm ci Error
 
 **Symptoms:**
+
 - "npm ci" step fails
 - Package installation errors
 
@@ -83,6 +87,7 @@
 ### Error 4: Build Fails - TypeScript Errors
 
 **Symptoms:**
+
 - TypeScript compilation errors
 - Type errors in code
 
@@ -109,6 +114,7 @@
 ### Error 5: Build Fails - Next.js Build Error
 
 **Symptoms:**
+
 - `npm run build` fails
 - Next.js compilation errors
 
@@ -129,6 +135,7 @@
 ### Error 6: Deployment Fails - Pages Not Enabled
 
 **Symptoms:**
+
 - Deploy step fails
 - "Pages not enabled" error
 
@@ -148,6 +155,7 @@
 ### Error 7: Deployment Fails - Artifact Not Found
 
 **Symptoms:**
+
 - "out directory not found"
 - Artifact upload fails
 
@@ -166,6 +174,7 @@
 ### Error 8: Site Shows 404 or Blank Page
 
 **Symptoms:**
+
 - Site loads but shows 404
 - Blank white page
 - Assets not loading
@@ -191,6 +200,7 @@
 ### Error 9: CI Workflow Fails
 
 **Symptoms:**
+
 - Lint/format/typecheck fails
 - Tests fail
 
@@ -315,12 +325,13 @@
 ---
 
 **Fixed Issues:**
+
 - ✅ Workflow now triggers on both `main` and `master` branches
 - ✅ All configuration verified
 
 **Next Steps:**
+
 1. Check Actions tab for workflow runs
 2. If errors, check specific step logs
 3. Verify all secrets are set
 4. Ensure GitHub Pages is enabled
-

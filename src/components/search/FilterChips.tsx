@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
 
-export type FilterType = 'category' | 'source' | 'date' | 'tag';
+export type FilterType = "category" | "source" | "date" | "tag";
 
 export interface FilterChip {
   id: string;
@@ -21,7 +21,11 @@ interface FilterChipsProps {
  * FilterChips Component
  * Displays active filters as removable chips
  */
-export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps) {
+export function FilterChips({
+  filters,
+  onRemove,
+  onClearAll,
+}: FilterChipsProps) {
   if (filters.length === 0) return null;
 
   return (
@@ -48,4 +52,3 @@ export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps)
     </div>
   );
 }
-

@@ -11,57 +11,57 @@ export class AppError extends Error {
     public details?: any
   ) {
     super(message);
-    this.name = 'AppError';
+    this.name = "AppError";
     Object.setPrototypeOf(this, AppError.prototype);
   }
 }
 
 export class NetworkError extends AppError {
   constructor(message: string, details?: any) {
-    super(message, 'NETWORK_ERROR', 0, details);
-    this.name = 'NetworkError';
+    super(message, "NETWORK_ERROR", 0, details);
+    this.name = "NetworkError";
   }
 }
 
 export class ValidationError extends AppError {
   constructor(message: string, details?: any) {
-    super(message, 'VALIDATION_ERROR', 400, details);
-    this.name = 'ValidationError';
+    super(message, "VALIDATION_ERROR", 400, details);
+    this.name = "ValidationError";
   }
 }
 
 export class AuthenticationError extends AppError {
-  constructor(message: string = 'Authentication required', details?: any) {
-    super(message, 'AUTH_ERROR', 401, details);
-    this.name = 'AuthenticationError';
+  constructor(message: string = "Authentication required", details?: any) {
+    super(message, "AUTH_ERROR", 401, details);
+    this.name = "AuthenticationError";
   }
 }
 
 export class AuthorizationError extends AppError {
-  constructor(message: string = 'Insufficient permissions', details?: any) {
-    super(message, 'AUTHORIZATION_ERROR', 403, details);
-    this.name = 'AuthorizationError';
+  constructor(message: string = "Insufficient permissions", details?: any) {
+    super(message, "AUTHORIZATION_ERROR", 403, details);
+    this.name = "AuthorizationError";
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message: string = 'Resource not found', details?: any) {
-    super(message, 'NOT_FOUND', 404, details);
-    this.name = 'NotFoundError';
+  constructor(message: string = "Resource not found", details?: any) {
+    super(message, "NOT_FOUND", 404, details);
+    this.name = "NotFoundError";
   }
 }
 
 export class RateLimitError extends AppError {
-  constructor(message: string = 'Rate limit exceeded', details?: any) {
-    super(message, 'RATE_LIMIT', 429, details);
-    this.name = 'RateLimitError';
+  constructor(message: string = "Rate limit exceeded", details?: any) {
+    super(message, "RATE_LIMIT", 429, details);
+    this.name = "RateLimitError";
   }
 }
 
 export class ServerError extends AppError {
-  constructor(message: string = 'Internal server error', details?: any) {
-    super(message, 'SERVER_ERROR', 500, details);
-    this.name = 'ServerError';
+  constructor(message: string = "Internal server error", details?: any) {
+    super(message, "SERVER_ERROR", 500, details);
+    this.name = "ServerError";
   }
 }
 
@@ -76,15 +76,20 @@ export function handleError(error: unknown): AppError {
   if (error instanceof Error) {
     // Check for network errors
     if (
-      error.message.includes('fetch') ||
-      error.message.includes('network') ||
-      error.message.includes('Failed to fetch')
+      error.message.includes("fetch") ||
+      error.message.includes("network") ||
+      error.message.includes("Failed to fetch")
     ) {
-      return new NetworkError('Network request failed', { original: error.message });
+      return new NetworkError("Network request failed", {
+        original: error.message,
+      });
     }
 
     // Check for validation errors
-    if (error.message.includes('validation') || error.message.includes('invalid')) {
+    if (
+      error.message.includes("validation") ||
+      error.message.includes("invalid")
+    ) {
       return new ValidationError(error.message);
     }
 
@@ -93,7 +98,7 @@ export function handleError(error: unknown): AppError {
   }
 
   // Unknown error type
-  return new ServerError('An unknown error occurred', { original: error });
+  return new ServerError("An unknown error occurred", { original: error });
 }
 
 /**
@@ -111,8 +116,8 @@ export function logError(error: AppError, context?: string) {
   };
 
   // Log to console in development
-  if (process.env.NODE_ENV === 'development') {
-    console.error('Error:', logData);
+  if (process.env.NODE_ENV === "development") {
+    console.error("Error:", logData);
   }
 
   // TODO: Send to error tracking service (e.g., Sentry) in production
@@ -126,22 +131,24 @@ export function logError(error: AppError, context?: string) {
  */
 export function formatErrorMessage(error: AppError): string {
   switch (error.code) {
-    case 'NETWORK_ERROR':
-      return 'Network connection failed. Please check your internet connection and try again.';
-    case 'VALIDATION_ERROR':
-      return error.message || 'Invalid input. Please check your data and try again.';
-    case 'AUTH_ERROR':
-      return 'Please sign in to continue.';
-    case 'AUTHORIZATION_ERROR':
-      return 'You do not have permission to perform this action.';
-    case 'NOT_FOUND':
-      return 'The requested resource was not found.';
-    case 'RATE_LIMIT':
-      return 'Too many requests. Please wait a moment and try again.';
-    case 'SERVER_ERROR':
-      return 'Something went wrong. Please try again later.';
+    case "NETWORK_ERROR":
+      return "Network connection failed. Please check your internet connection and try again.";
+    case "VALIDATION_ERROR":
+      return (
+        error.message || "Invalid input. Please check your data and try again."
+      );
+    case "AUTH_ERROR":
+      return "Please sign in to continue.";
+    case "AUTHORIZATION_ERROR":
+      return "You do not have permission to perform this action.";
+    case "NOT_FOUND":
+      return "The requested resource was not found.";
+    case "RATE_LIMIT":
+      return "Too many requests. Please wait a moment and try again.";
+    case "SERVER_ERROR":
+      return "Something went wrong. Please try again later.";
     default:
-      return error.message || 'An unexpected error occurred.';
+      return error.message || "An unexpected error occurred.";
   }
 }
 
@@ -182,7 +189,7 @@ export async function retryWithBackoff<T>(
     }
   }
 
-  throw lastError || new Error('Retry failed');
+  throw lastError || new Error("Retry failed");
 }
 
 /**
@@ -200,4 +207,3 @@ export async function safeAsync<T>(
     return { data: null, error: appError };
   }
 }
-

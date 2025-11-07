@@ -3,11 +3,11 @@
  * Client-side API wrappers for Supabase operations
  */
 
-import { supabase } from '../services/supabase';
-import type { Database } from '@/types/supabase';
-import { handleError, AppError, safeAsync } from './errorHandler';
+import { supabase } from "../services/supabase";
+import type { Database } from "@/types/supabase";
+import { handleError, AppError, safeAsync } from "./errorHandler";
 
-type Tables = Database['public']['Tables'];
+type Tables = Database["public"]["Tables"];
 
 // ============================================================================
 // BOOKMARKS API
@@ -28,10 +28,10 @@ export async function getBookmarks(userId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('bookmarks')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .from("bookmarks")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
     return data as Bookmark[];
@@ -54,7 +54,7 @@ export async function createBookmark({
 }): Promise<{ data: Bookmark | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('bookmarks')
+      .from("bookmarks")
       .insert({
         user_id: userId,
         article_id: articleId,
@@ -78,10 +78,10 @@ export async function removeBookmark(
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
     const { error } = await supabase
-      .from('bookmarks')
+      .from("bookmarks")
       .delete()
-      .eq('user_id', userId)
-      .eq('article_id', articleId);
+      .eq("user_id", userId)
+      .eq("article_id", articleId);
 
     if (error) throw error;
     return null;
@@ -106,7 +106,7 @@ export async function likeArticle(
   articleId: string
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
-    const { error } = await supabase.from('article_likes').insert({
+    const { error } = await supabase.from("article_likes").insert({
       user_id: userId,
       article_id: articleId,
     });
@@ -124,10 +124,10 @@ export async function unlikeArticle(
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
     const { error } = await supabase
-      .from('article_likes')
+      .from("article_likes")
       .delete()
-      .eq('user_id', userId)
-      .eq('article_id', articleId);
+      .eq("user_id", userId)
+      .eq("article_id", articleId);
 
     if (error) throw error;
     return null;
@@ -142,9 +142,9 @@ export async function getArticleLikes(articleId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('article_likes')
-      .select('*')
-      .eq('article_id', articleId);
+      .from("article_likes")
+      .select("*")
+      .eq("article_id", articleId);
 
     if (error) throw error;
     return data as ArticleLike[];
@@ -163,7 +163,7 @@ export async function followUser(
   followingId: string
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
-    const { error } = await supabase.from('user_follows').insert({
+    const { error } = await supabase.from("user_follows").insert({
       follower_id: userId,
       following_id: followingId,
     });
@@ -181,10 +181,10 @@ export async function unfollowUser(
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
     const { error } = await supabase
-      .from('user_follows')
+      .from("user_follows")
       .delete()
-      .eq('follower_id', userId)
-      .eq('following_id', followingId);
+      .eq("follower_id", userId)
+      .eq("following_id", followingId);
 
     if (error) throw error;
     return null;
@@ -199,9 +199,9 @@ export async function getFollowing(userId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('user_follows')
-      .select('*')
-      .eq('follower_id', userId);
+      .from("user_follows")
+      .select("*")
+      .eq("follower_id", userId);
 
     if (error) throw error;
     return data as UserFollow[];
@@ -232,10 +232,10 @@ export async function getNotifications(userId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .from("notifications")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
       .limit(50);
 
     if (error) throw error;
@@ -251,9 +251,9 @@ export async function markNotificationRead(
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
     const { error } = await supabase
-      .from('notifications')
+      .from("notifications")
       .update({ is_read: true })
-      .eq('id', notificationId);
+      .eq("id", notificationId);
 
     if (error) throw error;
     return null;
@@ -283,10 +283,10 @@ export async function getPointsTransactions(userId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('points_transactions')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .from("points_transactions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
       .limit(100);
 
     if (error) throw error;
@@ -306,7 +306,7 @@ export async function createPointsTransaction({
   transactionHash,
 }: {
   userId: string;
-  transactionType: 'earn' | 'spend' | 'convert';
+  transactionType: "earn" | "spend" | "convert";
   pointsAmount: number;
   usdtAmount?: number | null;
   source?: string | null;
@@ -314,7 +314,7 @@ export async function createPointsTransaction({
 }): Promise<{ data: PointsTransaction | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('points_transactions')
+      .from("points_transactions")
       .insert({
         user_id: userId,
         transaction_type: transactionType,
@@ -344,7 +344,7 @@ export interface Submission {
   title: string;
   url: string;
   source: string;
-  category: 'tech' | 'crypto' | 'social' | 'general';
+  category: "tech" | "crypto" | "social" | "general";
   upvotes: number;
   created_at: string;
   updated_at: string;
@@ -361,11 +361,11 @@ export async function createSubmission({
   title: string;
   url: string;
   source: string;
-  category: 'tech' | 'crypto' | 'social' | 'general';
+  category: "tech" | "crypto" | "social" | "general";
 }): Promise<{ data: Submission | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('submissions')
+      .from("submissions")
       .insert({
         user_id: userId,
         title,
@@ -387,21 +387,24 @@ export async function createSubmission({
 
 export async function getSubmissions(filters?: {
   userId?: string;
-  category?: 'tech' | 'crypto' | 'social' | 'general';
-  status?: 'pending' | 'approved' | 'rejected';
+  category?: "tech" | "crypto" | "social" | "general";
+  status?: "pending" | "approved" | "rejected";
   limit?: number;
 }): Promise<{ data: Submission[]; error: Error | null }> {
   return safeAsync(async () => {
-    let query = supabase.from('submissions').select('*').order('created_at', { ascending: false });
+    let query = supabase
+      .from("submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (filters?.userId) {
-      query = query.eq('user_id', filters.userId);
+      query = query.eq("user_id", filters.userId);
     }
     if (filters?.category) {
-      query = query.eq('category', filters.category);
+      query = query.eq("category", filters.category);
     }
     if (filters?.status) {
-      query = query.eq('status', filters.status);
+      query = query.eq("status", filters.status);
     }
 
     const { data, error } = await query.limit(filters?.limit || 50);
@@ -436,7 +439,7 @@ export interface Proposal {
 }
 
 export async function getProposals(filters?: {
-  status?: 'active' | 'passed' | 'rejected' | 'pending' | 'executed';
+  status?: "active" | "passed" | "rejected" | "pending" | "executed";
   category?: string;
   limit?: number;
 }): Promise<{
@@ -444,13 +447,16 @@ export async function getProposals(filters?: {
   error: Error | null;
 }> {
   return safeAsync(async () => {
-    let query = supabase.from('proposals').select('*').order('created_at', { ascending: false });
+    let query = supabase
+      .from("proposals")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (filters?.status) {
-      query = query.eq('status', filters.status);
+      query = query.eq("status", filters.status);
     }
     if (filters?.category) {
-      query = query.eq('category', filters.category);
+      query = query.eq("category", filters.category);
     }
 
     const { data, error } = await query.limit(filters?.limit || 50);
@@ -482,14 +488,14 @@ export async function createProposal({
 }): Promise<{ data: Proposal | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('proposals')
+      .from("proposals")
       .insert({
         proposal_id: proposalId,
         creator_id: creatorId,
         title,
         description,
         category,
-        status: 'active',
+        status: "active",
         yes_votes: 0,
         no_votes: 0,
         abstain_votes: 0,
@@ -528,10 +534,10 @@ export async function getVotes(proposalId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('votes')
-      .select('*')
-      .eq('proposal_id', proposalId)
-      .order('created_at', { ascending: false });
+      .from("votes")
+      .select("*")
+      .eq("proposal_id", proposalId)
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
     return (data || []) as Vote[];
@@ -550,17 +556,17 @@ export async function createVote({
 }: {
   proposalId: string;
   voterId: string;
-  voteOption: 'yes' | 'no' | 'abstain';
+  voteOption: "yes" | "no" | "abstain";
   votingPower: number;
   transactionHash?: string;
 }): Promise<{ data: Vote | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('votes')
+      .from("votes")
       .insert({
         proposal_id: proposalId,
         voter_id: voterId,
-        vote_option: voteOption === 'yes' ? 0 : voteOption === 'no' ? 1 : 2,
+        vote_option: voteOption === "yes" ? 0 : voteOption === "no" ? 1 : 2,
         voting_power: votingPower,
         transaction_hash: transactionHash || `pending-${Date.now()}`,
       })
@@ -589,19 +595,22 @@ export interface Auction {
   end_time: string;
   total_bids: number;
   highest_bidder_address: string | null;
-  status: 'active' | 'ended' | 'settled' | 'pending';
+  status: "active" | "ended" | "settled" | "pending";
   created_at: string;
 }
 
 export async function getAuctions(filters?: {
-  status?: 'active' | 'ended' | 'settled';
+  status?: "active" | "ended" | "settled";
   limit?: number;
 }): Promise<{ data: Auction[]; error: Error | null }> {
   return safeAsync(async () => {
-    let query = supabase.from('auctions').select('*').order('created_at', { ascending: false });
+    let query = supabase
+      .from("auctions")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (filters?.status) {
-      query = query.eq('status', filters.status);
+      query = query.eq("status", filters.status);
     }
 
     const { data, error } = await query.limit(filters?.limit || 50);
@@ -620,9 +629,9 @@ export async function updateAuction(
 ): Promise<{ data: Auction | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('auctions')
+      .from("auctions")
       .update(updates)
-      .eq('id', auctionId)
+      .eq("id", auctionId)
       .select()
       .single();
 
@@ -654,10 +663,10 @@ export async function getAuctionBids(auctionId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('auction_bids')
-      .select('*')
-      .eq('auction_id', auctionId)
-      .order('bid_amount', { ascending: false });
+      .from("auction_bids")
+      .select("*")
+      .eq("auction_id", auctionId)
+      .order("bid_amount", { ascending: false });
 
     if (error) throw error;
     return (data || []) as AuctionBid[];
@@ -682,7 +691,7 @@ export async function createAuctionBid({
 }): Promise<{ data: AuctionBid | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('auction_bids')
+      .from("auction_bids")
       .insert({
         auction_id: auctionId,
         bidder_address: bidderAddress,
@@ -740,21 +749,21 @@ export async function getLists(filters?: {
   limit?: number;
 }): Promise<{ data: List[] | null; error: Error | null }> {
   return safeAsync(async () => {
-    let query = supabase.from('lists').select('*');
+    let query = supabase.from("lists").select("*");
 
     if (filters?.userId) {
-      query = query.eq('user_id', filters.userId);
+      query = query.eq("user_id", filters.userId);
     }
 
     if (filters?.isPublic !== undefined) {
-      query = query.eq('is_public', filters.isPublic);
+      query = query.eq("is_public", filters.isPublic);
     }
 
     if (filters?.limit) {
       query = query.limit(filters.limit);
     }
 
-    query = query.order('created_at', { ascending: false });
+    query = query.order("created_at", { ascending: false });
 
     const { data, error } = await query;
 
@@ -772,9 +781,9 @@ export async function getList(listId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('lists')
-      .select('*')
-      .eq('id', listId)
+      .from("lists")
+      .select("*")
+      .eq("id", listId)
       .single();
 
     if (error) throw error;
@@ -798,7 +807,7 @@ export async function createList({
 }): Promise<{ data: List | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('lists')
+      .from("lists")
       .insert({
         user_id: userId,
         name,
@@ -838,9 +847,9 @@ export async function updateList({
     if (isPublic !== undefined) updates.is_public = isPublic;
 
     const { data, error } = await supabase
-      .from('lists')
+      .from("lists")
       .update(updates)
-      .eq('id', listId)
+      .eq("id", listId)
       .select()
       .single();
 
@@ -856,7 +865,7 @@ export async function deleteList(listId: string): Promise<{
   error: Error | null;
 }> {
   return safeAsync(async () => {
-    const { error } = await supabase.from('lists').delete().eq('id', listId);
+    const { error } = await supabase.from("lists").delete().eq("id", listId);
 
     if (error) throw error;
     return null;
@@ -871,10 +880,10 @@ export async function getListArticles(listId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('list_articles')
-      .select('*')
-      .eq('list_id', listId)
-      .order('added_at', { ascending: false });
+      .from("list_articles")
+      .select("*")
+      .eq("list_id", listId)
+      .order("added_at", { ascending: false });
 
     if (error) throw error;
     return (data || []) as ListArticle[];
@@ -901,7 +910,7 @@ export async function addArticleToList({
 }): Promise<{ data: ListArticle | null; error: Error | null }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('list_articles')
+      .from("list_articles")
       .insert({
         list_id: listId,
         article_id: articleId,
@@ -927,10 +936,10 @@ export async function removeArticleFromList(
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
     const { error } = await supabase
-      .from('list_articles')
+      .from("list_articles")
       .delete()
-      .eq('list_id', listId)
-      .eq('article_id', articleId);
+      .eq("list_id", listId)
+      .eq("article_id", articleId);
 
     if (error) throw error;
     return null;
@@ -949,20 +958,20 @@ export async function subscribeToList({
   return safeAsync(async () => {
     // First, increment subscriber count
     const { data: list } = await supabase
-      .from('lists')
-      .select('subscriber_count')
-      .eq('id', listId)
+      .from("lists")
+      .select("subscriber_count")
+      .eq("id", listId)
       .single();
 
     if (list) {
       await supabase
-        .from('lists')
+        .from("lists")
         .update({ subscriber_count: (list.subscriber_count || 0) + 1 })
-        .eq('id', listId);
+        .eq("id", listId);
     }
 
     const { data, error } = await supabase
-      .from('list_subscriptions')
+      .from("list_subscriptions")
       .insert({
         list_id: listId,
         user_id: userId,
@@ -988,23 +997,23 @@ export async function unsubscribeFromList({
   return safeAsync(async () => {
     // First, decrement subscriber count
     const { data: list } = await supabase
-      .from('lists')
-      .select('subscriber_count')
-      .eq('id', listId)
+      .from("lists")
+      .select("subscriber_count")
+      .eq("id", listId)
       .single();
 
     if (list && list.subscriber_count > 0) {
       await supabase
-        .from('lists')
+        .from("lists")
         .update({ subscriber_count: list.subscriber_count - 1 })
-        .eq('id', listId);
+        .eq("id", listId);
     }
 
     const { error } = await supabase
-      .from('list_subscriptions')
+      .from("list_subscriptions")
       .delete()
-      .eq('list_id', listId)
-      .eq('user_id', userId);
+      .eq("list_id", listId)
+      .eq("user_id", userId);
 
     if (error) throw error;
     return null;
@@ -1019,9 +1028,9 @@ export async function getListSubscriptions(userId: string): Promise<{
 }> {
   return safeAsync(async () => {
     const { data, error } = await supabase
-      .from('list_subscriptions')
-      .select('*')
-      .eq('user_id', userId);
+      .from("list_subscriptions")
+      .select("*")
+      .eq("user_id", userId);
 
     if (error) throw error;
     return (data || []) as ListSubscription[];
@@ -1030,4 +1039,3 @@ export async function getListSubscriptions(userId: string): Promise<{
     error: result.error,
   }));
 }
-

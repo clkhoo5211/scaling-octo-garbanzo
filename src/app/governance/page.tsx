@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { ProposalCard } from '@/components/governance/ProposalCard';
-import { useProposals, useVote, useUserVote } from '@/lib/hooks/useProposals';
-import { usePointsTransactions } from '@/lib/hooks/useArticles';
-import { useUser } from '@clerk/nextjs';
-import { useAccount } from '@reown/appkit/react';
-import { Gavel } from 'lucide-react';
-import type { Proposal } from '@/lib/api/supabaseApi';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { ProposalCard } from "@/components/governance/ProposalCard";
+import { useProposals, useVote, useUserVote } from "@/lib/hooks/useProposals";
+import { usePointsTransactions } from "@/lib/hooks/useArticles";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { Gavel } from "lucide-react";
+import type { Proposal } from "@/lib/api/supabaseApi";
 
 function ProposalCardWithVote({
   proposal,
@@ -20,7 +20,7 @@ function ProposalCardWithVote({
 }: {
   proposal: Proposal;
   userId: string | null;
-  onVote: (proposalId: string, voteOption: 'yes' | 'no' | 'abstain') => void;
+  onVote: (proposalId: string, voteOption: "yes" | "no" | "abstain") => void;
   canVote: boolean;
   isLoadingVote: boolean;
 }) {
@@ -38,7 +38,7 @@ function ProposalCardWithVote({
 
 export default function GovernancePage() {
   const { user } = useUser();
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAppKitAccount();
 
   const { data: proposals, isLoading, error } = useProposals();
   const { data: transactions = [] } = usePointsTransactions(user?.id || null);
@@ -47,28 +47,31 @@ export default function GovernancePage() {
   // Calculate voting power based on user points balance
   const calculateVotingPower = (): number => {
     if (!transactions || transactions.length === 0) return 1; // Minimum voting power
-    
+
     const balance = transactions.reduce((total, tx) => {
-      return tx.transaction_type === 'earn'
+      return tx.transaction_type === "earn"
         ? total + tx.points_amount
         : total - tx.points_amount;
     }, 0);
-    
+
     // Voting power = floor(points / 100), minimum 1
     // Example: 0-99 points = 1 vote, 100-199 = 2 votes, etc.
     return Math.max(1, Math.floor(balance / 100));
   };
 
-  const handleVote = async (proposalId: string, voteOption: 'yes' | 'no' | 'abstain') => {
+  const handleVote = async (
+    proposalId: string,
+    voteOption: "yes" | "no" | "abstain"
+  ) => {
     if (!user?.id || !isConnected) {
-      alert('Please connect your wallet and sign in to vote');
+      alert("Please connect your wallet and sign in to vote");
       return;
     }
 
     // TODO: Implement on-chain voting via smart contract first
     // For now, use the mutation hook which handles Supabase
     const votingPower = calculateVotingPower();
-    
+
     await voteMutation.mutateAsync({
       proposalId,
       voteOption,
@@ -110,7 +113,7 @@ export default function GovernancePage() {
                 proposal={proposal}
                 userId={user?.id || null}
                 onVote={handleVote}
-                canVote={!!user && isConnected && proposal.status === 'active'}
+                canVote={!!user && isConnected && proposal.status === "active"}
                 isLoadingVote={voteMutation.isPending}
               />
             ))}

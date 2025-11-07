@@ -3,8 +3,13 @@
  * Web3 contract interactions for Web3News platform
  */
 
-import { type Address, type Chain, type PublicClient, type WalletClient } from 'viem';
-import { handleError, AppError } from './errorHandler';
+import {
+  type Address,
+  type Chain,
+  type PublicClient,
+  type WalletClient,
+} from "viem";
+import { handleError, AppError } from "./errorHandler";
 
 // ============================================================================
 // CONTRACT ADDRESSES (Example - Replace with actual deployed addresses)
@@ -12,22 +17,22 @@ import { handleError, AppError } from './errorHandler';
 
 export const CONTRACT_ADDRESSES = {
   ethereum: {
-    adPayment: '0x0000000000000000000000000000000000000000' as Address,
-    subscription: '0x0000000000000000000000000000000000000000' as Address,
-    governance: '0x0000000000000000000000000000000000000000' as Address,
-    points: '0x0000000000000000000000000000000000000000' as Address,
+    adPayment: "0x0000000000000000000000000000000000000000" as Address,
+    subscription: "0x0000000000000000000000000000000000000000" as Address,
+    governance: "0x0000000000000000000000000000000000000000" as Address,
+    points: "0x0000000000000000000000000000000000000000" as Address,
   },
   polygon: {
-    adPayment: '0x0000000000000000000000000000000000000000' as Address,
-    subscription: '0x0000000000000000000000000000000000000000' as Address,
-    governance: '0x0000000000000000000000000000000000000000' as Address,
-    points: '0x0000000000000000000000000000000000000000' as Address,
+    adPayment: "0x0000000000000000000000000000000000000000" as Address,
+    subscription: "0x0000000000000000000000000000000000000000" as Address,
+    governance: "0x0000000000000000000000000000000000000000" as Address,
+    points: "0x0000000000000000000000000000000000000000" as Address,
   },
   bsc: {
-    adPayment: '0x0000000000000000000000000000000000000000' as Address,
-    subscription: '0x0000000000000000000000000000000000000000' as Address,
-    governance: '0x0000000000000000000000000000000000000000' as Address,
-    points: '0x0000000000000000000000000000000000000000' as Address,
+    adPayment: "0x0000000000000000000000000000000000000000" as Address,
+    subscription: "0x0000000000000000000000000000000000000000" as Address,
+    governance: "0x0000000000000000000000000000000000000000" as Address,
+    points: "0x0000000000000000000000000000000000000000" as Address,
   },
 } as const;
 
@@ -38,96 +43,96 @@ export const CONTRACT_ADDRESSES = {
 export const AD_PAYMENT_ABI = [
   {
     inputs: [
-      { name: 'slotId', type: 'string' },
-      { name: 'bidAmount', type: 'uint256' },
-      { name: 'tenure', type: 'uint256' },
+      { name: "slotId", type: "string" },
+      { name: "bidAmount", type: "uint256" },
+      { name: "tenure", type: "uint256" },
     ],
-    name: 'placeBid',
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'payable',
-    type: 'function',
+    name: "placeBid",
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "payable",
+    type: "function",
   },
   {
-    inputs: [{ name: 'slotId', type: 'string' }],
-    name: 'getCurrentBid',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
+    inputs: [{ name: "slotId", type: "string" }],
+    name: "getCurrentBid",
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
   },
   {
-    inputs: [{ name: 'slotId', type: 'string' }],
-    name: 'getAuctionEndTime',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
+    inputs: [{ name: "slotId", type: "string" }],
+    name: "getAuctionEndTime",
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
   },
 ] as const;
 
 export const SUBSCRIPTION_ABI = [
   {
     inputs: [
-      { name: 'tier', type: 'uint8' }, // 0=Free, 1=Pro, 2=Premium
-      { name: 'duration', type: 'uint256' }, // Duration in seconds
+      { name: "tier", type: "uint8" }, // 0=Free, 1=Pro, 2=Premium
+      { name: "duration", type: "uint256" }, // Duration in seconds
     ],
-    name: 'subscribe',
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'payable',
-    type: 'function',
+    name: "subscribe",
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "payable",
+    type: "function",
   },
   {
-    inputs: [{ name: 'user', type: 'address' }],
-    name: 'getSubscription',
+    inputs: [{ name: "user", type: "address" }],
+    name: "getSubscription",
     outputs: [
-      { name: 'tier', type: 'uint8' },
-      { name: 'expiresAt', type: 'uint256' },
-      { name: 'isActive', type: 'bool' },
+      { name: "tier", type: "uint8" },
+      { name: "expiresAt", type: "uint256" },
+      { name: "isActive", type: "bool" },
     ],
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
   },
 ] as const;
 
 export const GOVERNANCE_ABI = [
   {
     inputs: [
-      { name: 'proposalId', type: 'string' },
-      { name: 'voteOption', type: 'uint8' }, // 0=Yes, 1=No, 2=Abstain
+      { name: "proposalId", type: "string" },
+      { name: "voteOption", type: "uint8" }, // 0=Yes, 1=No, 2=Abstain
     ],
-    name: 'castVote',
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    name: "castVote",
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    inputs: [{ name: 'proposalId', type: 'string' }],
-    name: 'getVoteCounts',
+    inputs: [{ name: "proposalId", type: "string" }],
+    name: "getVoteCounts",
     outputs: [
-      { name: 'yesVotes', type: 'uint256' },
-      { name: 'noVotes', type: 'uint256' },
-      { name: 'abstainVotes', type: 'uint256' },
+      { name: "yesVotes", type: "uint256" },
+      { name: "noVotes", type: "uint256" },
+      { name: "abstainVotes", type: "uint256" },
     ],
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
   },
 ] as const;
 
 export const POINTS_ABI = [
   {
     inputs: [
-      { name: 'points', type: 'uint256' },
-      { name: 'recipient', type: 'address' },
+      { name: "points", type: "uint256" },
+      { name: "recipient", type: "address" },
     ],
-    name: 'convertPointsToUSDT',
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    name: "convertPointsToUSDT",
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    inputs: [{ name: 'user', type: 'address' }],
-    name: 'getPointsBalance',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
+    inputs: [{ name: "user", type: "address" }],
+    name: "getPointsBalance",
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
   },
 ] as const;
 
@@ -143,15 +148,20 @@ export class AdPaymentService {
 
   async getCurrentBid(slotId: string, chain: Chain): Promise<bigint> {
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.adPayment;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]
+          ?.adPayment;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const result = await this.publicClient.readContract({
         address,
         abi: AD_PAYMENT_ABI,
-        functionName: 'getCurrentBid',
+        functionName: "getCurrentBid",
         args: [slotId],
       });
 
@@ -163,15 +173,20 @@ export class AdPaymentService {
 
   async getAuctionEndTime(slotId: string, chain: Chain): Promise<bigint> {
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.adPayment;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]
+          ?.adPayment;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const result = await this.publicClient.readContract({
         address,
         abi: AD_PAYMENT_ABI,
-        functionName: 'getAuctionEndTime',
+        functionName: "getAuctionEndTime",
         args: [slotId],
       });
 
@@ -188,19 +203,24 @@ export class AdPaymentService {
     chain: Chain
   ): Promise<`0x${string}`> {
     if (!this.walletClient) {
-      throw new AppError('Wallet not connected', 'WALLET_NOT_CONNECTED');
+      throw new AppError("Wallet not connected", "WALLET_NOT_CONNECTED");
     }
 
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.adPayment;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]
+          ?.adPayment;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const hash = await this.walletClient.writeContract({
         address,
         abi: AD_PAYMENT_ABI,
-        functionName: 'placeBid',
+        functionName: "placeBid",
         args: [slotId, bidAmount, tenure],
         value: bidAmount,
       });
@@ -220,15 +240,20 @@ export class SubscriptionService {
 
   async getSubscription(userAddress: Address, chain: Chain) {
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.subscription;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]
+          ?.subscription;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const result = await this.publicClient.readContract({
         address,
         abi: SUBSCRIPTION_ABI,
-        functionName: 'getSubscription',
+        functionName: "getSubscription",
         args: [userAddress],
       });
 
@@ -238,15 +263,24 @@ export class SubscriptionService {
     }
   }
 
-  async subscribe(tier: number, duration: bigint, chain: Chain): Promise<`0x${string}`> {
+  async subscribe(
+    tier: number,
+    duration: bigint,
+    chain: Chain
+  ): Promise<`0x${string}`> {
     if (!this.walletClient) {
-      throw new AppError('Wallet not connected', 'WALLET_NOT_CONNECTED');
+      throw new AppError("Wallet not connected", "WALLET_NOT_CONNECTED");
     }
 
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.subscription;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]
+          ?.subscription;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       // Calculate payment amount based on tier and duration
@@ -255,7 +289,7 @@ export class SubscriptionService {
       const hash = await this.walletClient.writeContract({
         address,
         abi: SUBSCRIPTION_ABI,
-        functionName: 'subscribe',
+        functionName: "subscribe",
         args: [tier, duration],
         value: paymentAmount,
       });
@@ -273,7 +307,8 @@ export class SubscriptionService {
       2: BigInt(25 * 10 ** 6), // 25 USDT (6 decimals)
     };
 
-    const monthlyRate = monthlyRates[tier as keyof typeof monthlyRates] || BigInt(0);
+    const monthlyRate =
+      monthlyRates[tier as keyof typeof monthlyRates] || BigInt(0);
     const months = Number(duration) / (30 * 24 * 60 * 60); // Convert seconds to months
     return BigInt(Math.floor(Number(monthlyRate) * months));
   }
@@ -287,19 +322,28 @@ export class GovernanceService {
 
   async getVoteCounts(proposalId: string, chain: Chain) {
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.governance;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]
+          ?.governance;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const result = await this.publicClient.readContract({
         address,
         abi: GOVERNANCE_ABI,
-        functionName: 'getVoteCounts',
+        functionName: "getVoteCounts",
         args: [proposalId],
       });
 
-      return result as { yesVotes: bigint; noVotes: bigint; abstainVotes: bigint };
+      return result as {
+        yesVotes: bigint;
+        noVotes: bigint;
+        abstainVotes: bigint;
+      };
     } catch (error) {
       throw handleError(error);
     }
@@ -307,17 +351,22 @@ export class GovernanceService {
 
   async castVote(
     proposalId: string,
-    voteOption: 'yes' | 'no' | 'abstain',
+    voteOption: "yes" | "no" | "abstain",
     chain: Chain
   ): Promise<`0x${string}`> {
     if (!this.walletClient) {
-      throw new AppError('Wallet not connected', 'WALLET_NOT_CONNECTED');
+      throw new AppError("Wallet not connected", "WALLET_NOT_CONNECTED");
     }
 
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.governance;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]
+          ?.governance;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const voteOptionMap = { yes: 0, no: 1, abstain: 2 };
@@ -326,7 +375,7 @@ export class GovernanceService {
       const hash = await this.walletClient.writeContract({
         address,
         abi: GOVERNANCE_ABI,
-        functionName: 'castVote',
+        functionName: "castVote",
         args: [proposalId, voteValue],
       });
 
@@ -345,15 +394,19 @@ export class PointsService {
 
   async getPointsBalance(userAddress: Address, chain: Chain): Promise<bigint> {
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.points;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.points;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const result = await this.publicClient.readContract({
         address,
         abi: POINTS_ABI,
-        functionName: 'getPointsBalance',
+        functionName: "getPointsBalance",
         args: [userAddress],
       });
 
@@ -369,19 +422,23 @@ export class PointsService {
     chain: Chain
   ): Promise<`0x${string}`> {
     if (!this.walletClient) {
-      throw new AppError('Wallet not connected', 'WALLET_NOT_CONNECTED');
+      throw new AppError("Wallet not connected", "WALLET_NOT_CONNECTED");
     }
 
     try {
-      const address = CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.points;
+      const address =
+        CONTRACT_ADDRESSES[chain.id as keyof typeof CONTRACT_ADDRESSES]?.points;
       if (!address) {
-        throw new AppError(`Contract not deployed on ${chain.name}`, 'CONTRACT_NOT_FOUND');
+        throw new AppError(
+          `Contract not deployed on ${chain.name}`,
+          "CONTRACT_NOT_FOUND"
+        );
       }
 
       const hash = await this.walletClient.writeContract({
         address,
         abi: POINTS_ABI,
-        functionName: 'convertPointsToUSDT',
+        functionName: "convertPointsToUSDT",
         args: [points, recipient],
       });
 
@@ -407,4 +464,3 @@ export function createContractServices(
     points: new PointsService(publicClient, walletClient),
   };
 }
-

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Search, X, Loader2 } from 'lucide-react';
-import type { Article } from '@/lib/services/indexedDBCache';
+import { useState, useRef, useEffect } from "react";
+import { Search, X, Loader2 } from "lucide-react";
+import type { Article } from "@/lib/services/indexedDBCache";
 
 interface AutocompleteProps {
   articles: Article[];
@@ -22,22 +22,24 @@ export function Autocomplete({
   onSelect,
   onSearch,
   isLoading = false,
-  placeholder = 'Search articles...',
+  placeholder = "Search articles...",
   maxResults = 5,
 }: AutocompleteProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Filter articles based on query
-  const filteredArticles = articles.filter(
-    (article) =>
-      article.title.toLowerCase().includes(query.toLowerCase()) ||
-      article.excerpt?.toLowerCase().includes(query.toLowerCase()) ||
-      article.source.toLowerCase().includes(query.toLowerCase())
-  ).slice(0, maxResults);
+  const filteredArticles = articles
+    .filter(
+      (article) =>
+        article.title.toLowerCase().includes(query.toLowerCase()) ||
+        article.excerpt?.toLowerCase().includes(query.toLowerCase()) ||
+        article.source.toLowerCase().includes(query.toLowerCase())
+    )
+    .slice(0, maxResults);
 
   // Handle input change
   const handleInputChange = (value: string) => {
@@ -51,7 +53,7 @@ export function Autocomplete({
 
   // Handle article selection
   const handleSelect = (article: Article) => {
-    setQuery('');
+    setQuery("");
     setShowSuggestions(false);
     onSelect(article);
   };
@@ -61,23 +63,23 @@ export function Autocomplete({
     if (!showSuggestions || filteredArticles.length === 0) return;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         setSelectedIndex((prev) =>
           prev < filteredArticles.length - 1 ? prev + 1 : prev
         );
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
         break;
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < filteredArticles.length) {
           handleSelect(filteredArticles[selectedIndex]);
         }
         break;
-      case 'Escape':
+      case "Escape":
         setShowSuggestions(false);
         break;
     }
@@ -94,8 +96,8 @@ export function Autocomplete({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -118,7 +120,7 @@ export function Autocomplete({
         )}
         {query && !isLoading && (
           <button
-            onClick={() => handleInputChange('')}
+            onClick={() => handleInputChange("")}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
             aria-label="Clear search"
           >
@@ -135,9 +137,9 @@ export function Autocomplete({
               key={article.id}
               onClick={() => handleSelect(article)}
               className={`w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                index === selectedIndex ? 'bg-gray-100 dark:bg-gray-700' : ''
-              } ${index === 0 ? 'rounded-t-lg' : ''} ${
-                index === filteredArticles.length - 1 ? 'rounded-b-lg' : ''
+                index === selectedIndex ? "bg-gray-100 dark:bg-gray-700" : ""
+              } ${index === 0 ? "rounded-t-lg" : ""} ${
+                index === filteredArticles.length - 1 ? "rounded-b-lg" : ""
               }`}
             >
               <div className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
@@ -152,12 +154,14 @@ export function Autocomplete({
       )}
 
       {/* No Results */}
-      {showSuggestions && query.length > 0 && filteredArticles.length === 0 && !isLoading && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 p-4 text-center text-sm text-gray-500 dark:text-gray-400">
-          No articles found
-        </div>
-      )}
+      {showSuggestions &&
+        query.length > 0 &&
+        filteredArticles.length === 0 &&
+        !isLoading && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            No articles found
+          </div>
+        )}
     </div>
   );
 }
-

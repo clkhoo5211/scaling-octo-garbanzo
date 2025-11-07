@@ -1,4 +1,5 @@
 # 🚀 GitHub Setup Instructions
+
 ## Web3News - Blockchain Content Aggregator
 
 **Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo  
@@ -32,9 +33,10 @@ git push -u origin master
    - **Copy the token** (you won't see it again!)
 
 2. **Push with token:**
+
    ```bash
    cd /Users/khoo/Downloads/project4/projects/project-20251107-003428-web3news-aggregator
-   
+
    # When prompted for password, use your Personal Access Token
    git push -u origin master
    ```
@@ -62,22 +64,26 @@ git push -u origin master
 ### Required Secrets (Add these 4):
 
 #### 1. NEXT_PUBLIC_SUPABASE_URL
+
 - **Name**: `NEXT_PUBLIC_SUPABASE_URL`
 - **Value**: Your Supabase project URL
   - Format: `https://xxxxx.supabase.co`
   - Get from: https://supabase.com/dashboard → Your Project → Settings → API
 
 #### 2. NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 - **Name**: `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - **Value**: Your Supabase anonymous/public key
   - Get from: https://supabase.com/dashboard → Your Project → Settings → API → Project API keys → `anon` `public`
 
 #### 3. NEXT_PUBLIC_REOWN_PROJECT_ID
+
 - **Name**: `NEXT_PUBLIC_REOWN_PROJECT_ID`
 - **Value**: Your Reown AppKit project ID
   - Get from: https://cloud.reown.com → Your Project → Project ID
 
 #### 4. NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
 - **Name**: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - **Value**: Your Clerk publishable key
   - Get from: https://dashboard.clerk.com → Your Application → API Keys → Publishable key
@@ -85,6 +91,7 @@ git push -u origin master
 ### Optional Secrets:
 
 #### 5. SNYK_TOKEN (Optional - for Snyk security scanning)
+
 - **Name**: `SNYK_TOKEN`
 - **Value**: Your Snyk API token (if you want Snyk scanning)
   - Get from: https://app.snyk.io/account → API Token
@@ -96,6 +103,7 @@ git push -u origin master
 **Go to**: https://github.com/clkhoo5211/scaling-octo-garbanzo/settings/pages
 
 **Configure:**
+
 1. **Source**: Select "GitHub Actions" (NOT "Deploy from a branch")
 2. **Save** (no other settings needed)
 
@@ -123,6 +131,7 @@ git push -u origin master
 **URL**: https://clkhoo5211.github.io/scaling-octo-garbanzo/
 
 **Verify:**
+
 - ✅ Homepage loads
 - ✅ No console errors
 - ✅ Assets load correctly (CSS, JS)
@@ -140,6 +149,7 @@ git push -u origin master
 **Branch name pattern**: `main` (or `master` if that's your default branch)
 
 **Settings:**
+
 - ✅ Require a pull request before merging
 - ✅ Require status checks to pass before merging
   - Select: `CI - Format, Typecheck and Lint`
@@ -162,11 +172,13 @@ git push -u origin master
 ### Expected Workflow Status
 
 **Deploy Workflow:**
+
 - ✅ Build job: Green checkmark
 - ✅ Deploy job: Green checkmark
 - ✅ Site deployed: https://clkhoo5211.github.io/scaling-octo-garbanzo/
 
 **CI Workflow:**
+
 - ✅ Quality checks: Green checkmark (or warnings if code needs formatting)
 
 ---
@@ -176,6 +188,7 @@ git push -u origin master
 ### Push Fails with 403 Error
 
 **Solution**: Use one of these methods:
+
 1. **GitHub CLI**: `gh auth login` then push
 2. **Personal Access Token**: Create token, use as password
 3. **SSH**: Set up SSH key, change remote URL
@@ -183,6 +196,7 @@ git push -u origin master
 ### Build Fails in GitHub Actions
 
 **Check:**
+
 1. All 4 required secrets are set
 2. Secret names match exactly (case-sensitive)
 3. Secret values don't have extra spaces
@@ -191,6 +205,7 @@ git push -u origin master
 ### Deployment Fails
 
 **Check:**
+
 1. GitHub Pages is enabled (Settings → Pages → Source: GitHub Actions)
 2. Workflow has `pages: write` permission (already configured)
 3. Build step completed successfully
@@ -199,6 +214,7 @@ git push -u origin master
 ### Site Shows 404 or Blank Page
 
 **Check:**
+
 1. basePath is configured correctly (`/scaling-octo-garbanzo`)
 2. Repository name matches `GITHUB_REPOSITORY_NAME` in workflow
 3. Check browser console for path errors
@@ -207,6 +223,7 @@ git push -u origin master
 ### Assets (CSS/JS) Not Loading
 
 **Check:**
+
 1. basePath includes asset paths
 2. Check browser Network tab for failed requests
 3. Verify `_next/static/` directory exists in `out/`
@@ -216,10 +233,12 @@ git push -u origin master
 ## ✅ Quick Checklist
 
 **Before First Push:**
+
 - [ ] Code committed locally
 - [ ] Remote configured: `git remote add origin https://github.com/clkhoo5211/scaling-octo-garbanzo.git`
 
 **After Push:**
+
 - [ ] Code pushed to GitHub
 - [ ] 4 GitHub Secrets configured
 - [ ] GitHub Pages enabled (Source: GitHub Actions)
@@ -252,4 +271,3 @@ git push -u origin master
 ---
 
 **Need Help?** Check the troubleshooting section or review the workflow logs in the Actions tab.
-

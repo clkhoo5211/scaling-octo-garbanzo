@@ -1,11 +1,11 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Article } from '@/lib/services/indexedDBCache';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { Article } from "@/lib/services/indexedDBCache";
 
 interface UserPreferences {
-  theme: 'light' | 'dark' | 'system';
-  category: 'tech' | 'crypto' | 'social' | 'general' | 'all';
-  fontSize: 'small' | 'medium' | 'large';
+  theme: "light" | "dark" | "system";
+  category: "tech" | "crypto" | "social" | "general" | "all";
+  fontSize: "small" | "medium" | "large";
   notifications: boolean;
 }
 
@@ -23,8 +23,10 @@ interface AppState {
   setPointsBalance: (balance: number) => void;
 
   // Selected category
-  selectedCategory: 'tech' | 'crypto' | 'social' | 'general' | 'all';
-  setSelectedCategory: (category: 'tech' | 'crypto' | 'social' | 'general' | 'all') => void;
+  selectedCategory: "tech" | "crypto" | "social" | "general" | "all";
+  setSelectedCategory: (
+    category: "tech" | "crypto" | "social" | "general" | "all"
+  ) => void;
 
   // Bookmarked articles
   bookmarks: Set<string>;
@@ -47,12 +49,12 @@ interface AppState {
   // Offline queue
   offlineQueue: Array<{
     id: string;
-    type: 'like' | 'bookmark' | 'follow' | 'message' | 'bid';
+    type: "like" | "bookmark" | "follow" | "message" | "bid";
     payload: any;
     timestamp: number;
   }>;
   addToOfflineQueue: (action: {
-    type: 'like' | 'bookmark' | 'follow' | 'message' | 'bid';
+    type: "like" | "bookmark" | "follow" | "message" | "bid";
     payload: any;
   }) => void;
   removeFromOfflineQueue: (id: string) => void;
@@ -69,9 +71,9 @@ export const useAppStore = create<AppState>()(
     (set, get) => ({
       // User preferences
       preferences: {
-        theme: 'system',
-        category: 'all',
-        fontSize: 'medium',
+        theme: "system",
+        category: "all",
+        fontSize: "medium",
         notifications: true,
       },
       setPreferences: (newPreferences) =>
@@ -88,7 +90,7 @@ export const useAppStore = create<AppState>()(
       setPointsBalance: (balance) => set({ pointsBalance: balance }),
 
       // Selected category
-      selectedCategory: 'all',
+      selectedCategory: "all",
       setSelectedCategory: (category) => set({ selectedCategory: category }),
 
       // Bookmarked articles
@@ -172,7 +174,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'web3news-store',
+      name: "web3news-store",
       partialize: (state) => ({
         preferences: state.preferences,
         bookmarks: Array.from(state.bookmarks),
@@ -193,4 +195,3 @@ export const useAppStore = create<AppState>()(
     }
   )
 );
-

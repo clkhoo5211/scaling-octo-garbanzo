@@ -10,24 +10,27 @@ A Progressive Web App (PWA) that aggregates content from 30+ sources, enables us
 
 ### Prerequisites
 
-- Node.js 20+ 
+- Node.js 20+
 - npm or yarn
 - Git
 
 ### Installation
 
 1. **Install dependencies:**
+
 ```bash
 npm install
 ```
 
 2. **Set up environment variables:**
+
 ```bash
 cp .env.example .env.local
 ```
 
 3. **Configure environment variables:**
-Edit `.env.local` and add your API keys:
+   Edit `.env.local` and add your API keys:
+
 - `NEXT_PUBLIC_REOWN_PROJECT_ID` - Get from [Reown Dashboard](https://cloud.reown.com)
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Get from [Clerk Dashboard](https://dashboard.clerk.com)
 - `CLERK_SECRET_KEY` - Get from Clerk Dashboard
@@ -35,12 +38,13 @@ Edit `.env.local` and add your API keys:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Get from Supabase Dashboard
 
 4. **Run development server:**
+
 ```bash
 npm run dev
 ```
 
 5. **Open browser:**
-Navigate to [http://localhost:3000](http://localhost:3000)
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -83,7 +87,7 @@ src/
 
 ## 🔧 Development Commands
 
-```bash
+````bash
 # Development
 npm run dev              # Start development server
 
@@ -114,28 +118,32 @@ npm run format:check    # Check code formatting
 npm run test            # Run all tests
 npm run test:watch      # Run tests in watch mode
 npm run test:coverage   # Generate coverage report
-```
+````
 
 ---
 
 ## 🏗️ Architecture Overview
 
 ### Client-Side PWA
+
 - **Framework:** Next.js 14 App Router with static export
 - **State Management:** Zustand (global) + React Query (server state)
 - **Caching:** IndexedDB (30-min TTL, 2,000 article limit)
 - **Offline Support:** Service Worker + Background Sync
 
 ### Authentication
+
 - **Primary:** Reown AppKit (social login, ERC-4337 smart accounts)
 - **Secondary:** Clerk (user management, metadata storage)
 
 ### Database
+
 - **Content:** Supabase PostgreSQL (13 tables)
 - **Cache:** IndexedDB (client-side)
 - **Users:** Clerk metadata (no users table in Supabase)
 
 ### Content Aggregation
+
 - **Sources:** 15+ sources (Hacker News, Product Hunt, GitHub, Reddit, RSS feeds)
 - **Strategy:** Client-side fetching, parallel requests, deduplication
 - **Caching:** IndexedDB with 30-minute TTL
@@ -161,6 +169,7 @@ npm run test:coverage   # Generate coverage report
 ## 🧩 Components Implemented
 
 ### UI Components (7/7)
+
 - ✅ Button (variants: primary, secondary, outline, ghost, danger)
 - ✅ Input (with label, error, helper text)
 - ✅ Modal (with size variants, memoized)
@@ -170,45 +179,55 @@ npm run test:coverage   # Generate coverage report
 - ✅ LoadingState & EmptyState (loading and empty states)
 
 ### Layout Components (2/2)
+
 - ✅ Header (logo, search, profile, points, wallet connect)
 - ✅ BottomNav (mobile navigation)
 
 ### Feed Components (3/3)
+
 - ✅ ArticleCard (compact/expanded/featured variants, memoized)
 - ✅ ArticleFeed (with infinite scroll setup)
 - ✅ CategoryTabs (swipeable category navigation)
 
 ### Reader Components (4/4)
+
 - ✅ ReadingProgress (reading progress bar)
 - ✅ ReaderControls (font size, theme, bookmark, share)
 - ✅ ActionBar (like, comment, share, bookmark, report)
 - ✅ ArticleContent service (@mozilla/readability integration)
 
 ### Search Components (2/2)
+
 - ✅ Autocomplete (search suggestions with keyboard navigation)
 - ✅ FilterChips (active filters display and removal)
 
 ### Web3 Components (3/3)
+
 - ✅ WalletConnect (Reown AppKit integration)
 - ✅ TransactionStatus (transaction status with Etherscan links)
 - ✅ BidForm (auction bid form with validation)
 
 ### Authentication Components (2/2)
+
 - ✅ AuthPage (combined login/signup with Clerk + Reown)
 - ✅ AuthStatus (user authentication status display)
 
 ### Governance Components (2/2)
+
 - ✅ ProposalCard (proposal display with voting progress)
 - ✅ VoteButton (on-chain voting via smart contract)
 
 ### Points Components (2/2)
+
 - ✅ PointsDisplay (points balance, USDT conversion, transaction history)
 - ✅ TransactionHistory (points transaction list)
 
 ### Auction Components (1/1)
+
 - ✅ AuctionCard (auction details, current bid, time remaining)
 
 ### Messaging Components (3/3)
+
 - ✅ MessageBubble (message display)
 - ✅ ConversationList (conversation list)
 - ✅ MessageInput (message input with send)
@@ -219,16 +238,19 @@ npm run test:coverage   # Generate coverage report
 ## 🔌 Services Implemented
 
 ### Core Services (4/4)
+
 - ✅ IndexedDB Cache Service (TTL, deduplication, cleanup)
 - ✅ Supabase Client (45+ API functions with error handling)
 - ✅ Content Aggregator (15+ sources with link extraction)
 - ✅ Article Content Service (@mozilla/readability integration)
 
 ### State Management (2/2)
+
 - ✅ Zustand Store (global state with persistence)
 - ✅ React Query Hooks (server state management, 20+ hooks)
 
 ### Error Handling (1/1)
+
 - ✅ Error Handler Utilities (custom error classes, retry logic, safeAsync wrapper)
 
 ---
@@ -332,6 +354,7 @@ npm run test:coverage   # Generate coverage report
 The project is configured to deploy automatically to GitHub Pages on push to `main` branch.
 
 **Setup:**
+
 1. Go to repository Settings → Pages
 2. Enable GitHub Pages
 3. Select source: "GitHub Actions"

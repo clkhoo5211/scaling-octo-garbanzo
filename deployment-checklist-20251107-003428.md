@@ -1,4 +1,5 @@
 # Deployment Checklist
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -10,6 +11,7 @@
 ## 📋 Pre-Deployment Checklist
 
 ### Environment Setup
+
 - [ ] Create `.env.local` file from `.env.example`
 - [ ] Configure Supabase credentials:
   - [ ] `NEXT_PUBLIC_SUPABASE_URL`
@@ -24,6 +26,7 @@
   - [ ] `NEXT_PUBLIC_GITHUB_TOKEN`
 
 ### Database Setup
+
 - [ ] Create Supabase project
 - [ ] Run database schema migration (`database-schema-20251107-003428.sql`)
 - [ ] Configure Row Level Security (RLS) policies
@@ -31,6 +34,7 @@
 - [ ] Configure Supabase Realtime for messaging
 
 ### Build Verification
+
 - [ ] Run `npm run build` successfully
 - [ ] Verify static export generates `out/` directory
 - [ ] Check for build warnings/errors
@@ -39,6 +43,7 @@
 - [ ] Verify Service Worker registration
 
 ### Code Quality
+
 - [ ] Run `npm run lint` - no errors
 - [ ] Run `npm run typecheck` - no TypeScript errors
 - [ ] Run `npm run format:check` - code formatted
@@ -46,6 +51,7 @@
 - [ ] Review test coverage report
 
 ### PWA Configuration
+
 - [ ] Verify `manifest.json` is generated correctly
 - [ ] Check PWA icons (192x192, 512x512) exist
 - [ ] Test Service Worker registration
@@ -62,6 +68,7 @@
 **Configuration:** `vercel.json` created
 
 **Steps:**
+
 1. Install Vercel CLI: `npm i -g vercel`
 2. Login: `vercel login`
 3. Deploy: `vercel --prod`
@@ -69,10 +76,12 @@
 5. Set up custom domain (optional)
 
 **Environment Variables:**
+
 - Add all `NEXT_PUBLIC_*` variables in Vercel dashboard
 - Set `NODE_ENV=production`
 
 **Features:**
+
 - Automatic HTTPS
 - CDN distribution
 - Edge functions support
@@ -85,6 +94,7 @@
 **Configuration:** `netlify.toml` created
 
 **Steps:**
+
 1. Install Netlify CLI: `npm i -g netlify-cli`
 2. Login: `netlify login`
 3. Deploy: `netlify deploy --prod`
@@ -92,10 +102,12 @@
 5. Set up custom domain (optional)
 
 **Environment Variables:**
+
 - Add all `NEXT_PUBLIC_*` variables in Netlify dashboard
 - Set `NODE_ENV=production`
 
 **Features:**
+
 - Automatic HTTPS
 - CDN distribution
 - Form handling
@@ -108,6 +120,7 @@
 **Configuration:** `.github/workflows/deploy.yml` (to be created by DevOps agent)
 
 **Steps:**
+
 1. Enable GitHub Pages in repository settings
 2. Configure GitHub Actions secrets:
    - `REOWN_PROJECT_ID`
@@ -118,6 +131,7 @@
 4. Configure custom domain (optional)
 
 **Features:**
+
 - Free hosting
 - Automatic deployments on push
 - Custom domain support
@@ -128,6 +142,7 @@
 ## 🔧 Post-Deployment Verification
 
 ### Functionality Tests
+
 - [ ] Homepage loads correctly
 - [ ] Article feed displays articles
 - [ ] Search functionality works
@@ -141,6 +156,7 @@
 - [ ] Messaging interface works (if enabled)
 
 ### Performance Tests
+
 - [ ] Lighthouse score > 90 (Performance)
 - [ ] Lighthouse score > 90 (Accessibility)
 - [ ] Lighthouse score > 90 (Best Practices)
@@ -150,6 +166,7 @@
 - [ ] Cumulative Layout Shift < 0.1
 
 ### PWA Tests
+
 - [ ] App installable on mobile
 - [ ] App installable on desktop
 - [ ] Offline mode works
@@ -158,6 +175,7 @@
 - [ ] Background sync works
 
 ### Security Tests
+
 - [ ] HTTPS enabled
 - [ ] Environment variables not exposed
 - [ ] CORS configured correctly
@@ -169,12 +187,14 @@
 ## 📊 Monitoring Setup
 
 ### Analytics
+
 - [ ] Supabase Analytics configured
 - [ ] Clerk Analytics configured
 - [ ] Dune Analytics configured (on-chain metrics)
 - [ ] Error tracking configured (optional: Sentry)
 
 ### Logging
+
 - [ ] Error logging configured
 - [ ] Performance monitoring configured
 - [ ] User activity tracking configured
@@ -219,6 +239,7 @@
 ## 🚨 Rollback Plan
 
 If deployment fails:
+
 1. Revert to previous working commit
 2. Check build logs for errors
 3. Verify environment variables
@@ -230,6 +251,7 @@ If deployment fails:
 ## 📞 Support
 
 For deployment issues:
+
 1. Check build logs
 2. Verify environment variables
 3. Review error messages
@@ -239,9 +261,9 @@ For deployment issues:
 ---
 
 **Next Steps:**
+
 1. Complete DevOps agent setup (`/devops`)
 2. Configure CI/CD pipelines
 3. Set up monitoring
 4. Deploy to staging environment
 5. Deploy to production
-

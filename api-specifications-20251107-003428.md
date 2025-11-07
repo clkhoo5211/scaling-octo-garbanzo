@@ -1,4 +1,5 @@
 # 🔌 API Specifications
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -17,6 +18,7 @@
 **Endpoint:** `https://hacker-news.firebaseio.com/v0/topstories.json`
 
 **Request:**
+
 ```typescript
 interface HackerNewsRequest {
   limit?: number; // Default: 30
@@ -24,6 +26,7 @@ interface HackerNewsRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface HackerNewsResponse {
   storyIds: number[];
@@ -31,26 +34,33 @@ interface HackerNewsResponse {
 ```
 
 **Implementation:**
+
 ```typescript
 export async function fetchHackerNews(limit = 30): Promise<Article[]> {
   // 1. Fetch top story IDs
-  const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+  const response = await fetch(
+    "https://hacker-news.firebaseio.com/v0/topstories.json"
+  );
   const storyIds: number[] = await response.json();
-  
+
   // 2. Fetch story details (parallel)
   const stories = await Promise.all(
-    storyIds.slice(0, limit).map(id =>
-      fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json())
-    )
+    storyIds
+      .slice(0, limit)
+      .map((id) =>
+        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(
+          (r) => r.json()
+        )
+      )
   );
-  
+
   // 3. Transform to Article format
-  return stories.map(story => ({
+  return stories.map((story) => ({
     id: `hn-${story.id}`,
     title: story.title,
     url: story.url || `https://news.ycombinator.com/item?id=${story.id}`,
-    source: 'Hacker News',
-    category: 'tech',
+    source: "Hacker News",
+    category: "tech",
     upvotes: story.score || 0,
     comments: story.descendants || 0,
     publishedAt: story.time * 1000,
@@ -71,6 +81,7 @@ export async function fetchHackerNews(limit = 30): Promise<Article[]> {
 **Endpoint:** `https://api.producthunt.com/v2/api/graphql`
 
 **Request:**
+
 ```typescript
 interface ProductHuntRequest {
   limit?: number; // Default: 20
@@ -78,6 +89,7 @@ interface ProductHuntRequest {
 ```
 
 **GraphQL Query:**
+
 ```graphql
 query GetPosts($first: Int!) {
   posts(first: $first) {
@@ -100,6 +112,7 @@ query GetPosts($first: Int!) {
 ```
 
 **Response:**
+
 ```typescript
 interface ProductHuntResponse {
   data: {
@@ -122,6 +135,7 @@ interface ProductHuntResponse {
 ```
 
 **Implementation:**
+
 ```typescript
 export async function fetchProductHunt(limit = 20): Promise<Article[]> {
   const query = `
@@ -142,24 +156,24 @@ export async function fetchProductHunt(limit = 20): Promise<Article[]> {
       }
     }
   `;
-  
-  const response = await fetch('https://api.producthunt.com/v2/api/graphql', {
-    method: 'POST',
+
+  const response = await fetch("https://api.producthunt.com/v2/api/graphql", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_PRODUCT_HUNT_TOKEN}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_PRODUCT_HUNT_TOKEN}`,
     },
     body: JSON.stringify({ query, variables: { first: limit } }),
   });
-  
+
   const data = await response.json();
-  
+
   return data.data.posts.edges.map((edge: any) => ({
     id: `ph-${edge.node.id}`,
     title: edge.node.name,
     url: edge.node.url,
-    source: 'Product Hunt',
-    category: 'tech',
+    source: "Product Hunt",
+    category: "tech",
     upvotes: edge.node.votesCount,
     comments: edge.node.commentsCount,
     publishedAt: new Date(edge.node.createdAt).getTime(),
@@ -180,6 +194,7 @@ export async function fetchProductHunt(limit = 20): Promise<Article[]> {
 **Endpoint:** `https://api.github.com/search/repositories`
 
 **Request:**
+
 ```typescript
 interface GitHubRequest {
   language?: string; // e.g., 'javascript', 'typescript', 'python'
@@ -188,6 +203,7 @@ interface GitHubRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface GitHubResponse {
   items: Array<{
@@ -205,32 +221,36 @@ interface GitHubResponse {
 ```
 
 **Implementation:**
+
 ```typescript
-export async function fetchGitHubTrending(language?: string, limit = 30): Promise<Article[]> {
+export async function fetchGitHubTrending(
+  language?: string,
+  limit = 30
+): Promise<Article[]> {
   const query = language
     ? `language:${language} created:>${getDate30DaysAgo()}`
     : `created:>${getDate30DaysAgo()}`;
-  
+
   const response = await fetch(
     `https://api.github.com/search/repositories?q=${query}&sort=stars&order=desc&per_page=${limit}`,
     {
       headers: {
-        'Accept': 'application/vnd.github.v3+json',
+        Accept: "application/vnd.github.v3+json",
         ...(process.env.NEXT_PUBLIC_GITHUB_TOKEN && {
-          'Authorization': `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+          Authorization: `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
         }),
       },
     }
   );
-  
+
   const data = await response.json();
-  
+
   return data.items.map((repo: any) => ({
     id: `gh-${repo.id}`,
     title: repo.name,
     url: repo.html_url,
-    source: 'GitHub',
-    category: 'tech',
+    source: "GitHub",
+    category: "tech",
     upvotes: repo.stargazers_count,
     comments: 0,
     publishedAt: new Date(repo.created_at).getTime(),
@@ -252,6 +272,7 @@ export async function fetchGitHubTrending(language?: string, limit = 30): Promis
 **Endpoint:** `https://www.reddit.com/r/{subreddit}.json`
 
 **Request:**
+
 ```typescript
 interface RedditRequest {
   subreddit: string; // e.g., 'technology', 'cryptocurrency', 'programming'
@@ -260,6 +281,7 @@ interface RedditRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface RedditResponse {
   data: {
@@ -281,15 +303,23 @@ interface RedditResponse {
 ```
 
 **Implementation:**
+
 ```typescript
-export async function fetchReddit(subreddit: string, limit = 25): Promise<Article[]> {
-  const response = await fetch(`https://www.reddit.com/r/${subreddit}.json?limit=${limit}`);
+export async function fetchReddit(
+  subreddit: string,
+  limit = 25
+): Promise<Article[]> {
+  const response = await fetch(
+    `https://www.reddit.com/r/${subreddit}.json?limit=${limit}`
+  );
   const data = await response.json();
-  
+
   return data.data.children.map((child: any) => ({
     id: `reddit-${child.data.id}`,
     title: child.data.title,
-    url: child.data.url.startsWith('http') ? child.data.url : `https://reddit.com${child.data.url}`,
+    url: child.data.url.startsWith("http")
+      ? child.data.url
+      : `https://reddit.com${child.data.url}`,
     source: `r/${subreddit}`,
     category: getCategoryFromSubreddit(subreddit),
     upvotes: child.data.score,
@@ -313,6 +343,7 @@ export async function fetchReddit(subreddit: string, limit = 25): Promise<Articl
 **Endpoint:** RSS feed URL (e.g., `https://decrypt.co/feed`)
 
 **Request:**
+
 ```typescript
 interface RSSRequest {
   url: string; // RSS feed URL
@@ -320,6 +351,7 @@ interface RSSRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface RSSResponse {
   items: Array<{
@@ -333,26 +365,27 @@ interface RSSResponse {
 ```
 
 **Implementation:**
+
 ```typescript
-import Parser from 'rss-parser';
+import Parser from "rss-parser";
 
 const parser = new Parser();
 
 export async function fetchRSSFeed(url: string): Promise<Article[]> {
   try {
     const feed = await parser.parseURL(url);
-    
+
     return feed.items.map((item: any) => ({
       id: `rss-${hashUrl(item.link)}`,
-      title: item.title || '',
-      url: item.link || '',
-      source: feed.title || 'RSS Feed',
+      title: item.title || "",
+      url: item.link || "",
+      source: feed.title || "RSS Feed",
       category: inferCategory(feed.title),
       upvotes: 0,
       comments: 0,
       publishedAt: item.pubDate ? new Date(item.pubDate).getTime() : Date.now(),
-      author: item.creator || item.author || '',
-      excerpt: item.contentSnippet || item.description || '',
+      author: item.creator || item.author || "",
+      excerpt: item.contentSnippet || item.description || "",
     }));
   } catch (error) {
     console.error(`Failed to fetch RSS feed: ${url}`, error);
@@ -362,6 +395,7 @@ export async function fetchRSSFeed(url: string): Promise<Article[]> {
 ```
 
 **RSS Sources:**
+
 - Medium: `https://medium.com/feed/@publication`
 - CoinDesk: `https://www.coindesk.com/arc/outboundfeeds/rss/`
 - CoinTelegraph: `https://cointelegraph.com/rss`
@@ -381,6 +415,7 @@ export async function fetchRSSFeed(url: string): Promise<Article[]> {
 **Endpoint:** `https://api.coingecko.com/api/v3/simple/price`
 
 **Request:**
+
 ```typescript
 interface CoinGeckoRequest {
   coinIds: string[]; // e.g., ['bitcoin', 'ethereum', 'solana']
@@ -389,6 +424,7 @@ interface CoinGeckoRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface CoinGeckoResponse {
   [coinId: string]: {
@@ -400,18 +436,19 @@ interface CoinGeckoResponse {
 ```
 
 **Implementation:**
+
 ```typescript
 export async function fetchCryptoPrices(
   coinIds: string[],
-  vsCurrency = 'usd'
+  vsCurrency = "usd"
 ): Promise<PriceData> {
-  const ids = coinIds.join(',');
+  const ids = coinIds.join(",");
   const response = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${vsCurrency}&include_24hr_change=true&include_market_cap=true`
   );
-  
+
   const data = await response.json();
-  
+
   return Object.entries(data).reduce((acc, [coinId, price]: [string, any]) => {
     acc[coinId] = {
       price: price.usd,
@@ -437,10 +474,11 @@ export async function fetchCryptoPrices(
 **Table:** `submissions`
 
 **Request:**
+
 ```typescript
 interface SubmissionFilters {
   userId?: string;
-  category?: 'tech' | 'crypto' | 'social' | 'general';
+  category?: "tech" | "crypto" | "social" | "general";
   source?: string;
   dateRange?: { start: Date; end: Date };
   limit?: number;
@@ -449,6 +487,7 @@ interface SubmissionFilters {
 ```
 
 **Response:**
+
 ```typescript
 interface Submission {
   id: string;
@@ -464,34 +503,38 @@ interface Submission {
 ```
 
 **Implementation:**
+
 ```typescript
 export async function getSubmissions(filters?: SubmissionFilters) {
-  let query = supabase.from('submissions').select('*');
-  
+  let query = supabase.from("submissions").select("*");
+
   if (filters?.userId) {
-    query = query.eq('user_id', filters.userId);
+    query = query.eq("user_id", filters.userId);
   }
   if (filters?.category) {
-    query = query.eq('category', filters.category);
+    query = query.eq("category", filters.category);
   }
   if (filters?.source) {
-    query = query.eq('source', filters.source);
+    query = query.eq("source", filters.source);
   }
   if (filters?.dateRange) {
     query = query
-      .gte('created_at', filters.dateRange.start.toISOString())
-      .lte('created_at', filters.dateRange.end.toISOString());
+      .gte("created_at", filters.dateRange.start.toISOString())
+      .lte("created_at", filters.dateRange.end.toISOString());
   }
-  
-  query = query.order('created_at', { ascending: false });
-  
+
+  query = query.order("created_at", { ascending: false });
+
   if (filters?.limit) {
     query = query.limit(filters.limit);
   }
   if (filters?.offset) {
-    query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+    query = query.range(
+      filters.offset,
+      filters.offset + (filters.limit || 10) - 1
+    );
   }
-  
+
   const { data, error } = await query;
   if (error) throw error;
   return data;
@@ -507,6 +550,7 @@ export async function getSubmissions(filters?: SubmissionFilters) {
 **Table:** `bookmarks`
 
 **Request:**
+
 ```typescript
 interface CreateBookmarkRequest {
   articleId: string;
@@ -516,6 +560,7 @@ interface CreateBookmarkRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface Bookmark {
   id: string;
@@ -528,6 +573,7 @@ interface Bookmark {
 ```
 
 **Implementation:**
+
 ```typescript
 export async function createBookmark(
   articleId: string,
@@ -535,10 +581,10 @@ export async function createBookmark(
   articleSource: string
 ) {
   const { data: user } = await clerk.user.get();
-  if (!user) throw new Error('Not authenticated');
-  
+  if (!user) throw new Error("Not authenticated");
+
   const { data, error } = await supabase
-    .from('bookmarks')
+    .from("bookmarks")
     .insert({
       user_id: user.id,
       article_id: articleId,
@@ -547,7 +593,7 @@ export async function createBookmark(
     })
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
 }
@@ -562,6 +608,7 @@ export async function createBookmark(
 **Table:** `article_likes`
 
 **Request:**
+
 ```typescript
 interface LikeArticleRequest {
   articleId: string;
@@ -569,6 +616,7 @@ interface LikeArticleRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface Like {
   id: string;
@@ -579,44 +627,45 @@ interface Like {
 ```
 
 **Implementation:**
+
 ```typescript
 export async function likeArticle(articleId: string) {
   const { data: user } = await clerk.user.get();
-  if (!user) throw new Error('Not authenticated');
-  
+  if (!user) throw new Error("Not authenticated");
+
   // Check if already liked
   const { data: existing } = await supabase
-    .from('article_likes')
-    .select('id')
-    .eq('article_id', articleId)
-    .eq('user_id', user.id)
+    .from("article_likes")
+    .select("id")
+    .eq("article_id", articleId)
+    .eq("user_id", user.id)
     .single();
-  
+
   if (existing) {
     // Unlike
     const { error } = await supabase
-      .from('article_likes')
+      .from("article_likes")
       .delete()
-      .eq('id', existing.id);
+      .eq("id", existing.id);
     if (error) throw error;
     return null;
   }
-  
+
   // Like
   const { data, error } = await supabase
-    .from('article_likes')
+    .from("article_likes")
     .insert({
       article_id: articleId,
       user_id: user.id,
     })
     .select()
     .single();
-  
+
   if (error) throw error;
-  
+
   // Award points to article submitter (if exists)
   await awardPointsForLike(articleId);
-  
+
   return data;
 }
 ```
@@ -634,6 +683,7 @@ export async function likeArticle(articleId: string) {
 **Method:** `joinAuction(uint256 auctionId)`
 
 **Request:**
+
 ```typescript
 interface JoinAuctionRequest {
   auctionId: string;
@@ -642,33 +692,35 @@ interface JoinAuctionRequest {
 ```
 
 **Response:**
+
 ```typescript
 interface TransactionResponse {
   hash: string;
-  status: 'pending' | 'success' | 'failed';
+  status: "pending" | "success" | "failed";
 }
 ```
 
 **Implementation:**
+
 ```typescript
-import { useContractWrite, useWaitForTransaction } from 'wagmi';
-import { AdPaymentContractABI } from '@/abis/AdPaymentContract';
+import { useContractWrite, useWaitForTransaction } from "wagmi";
+import { AdPaymentContractABI } from "@/abis/AdPaymentContract";
 
 export function useJoinAuction(auctionId: string, chainId: number) {
-  const contractAddress = getContractAddress(chainId, 'AdPaymentContract');
-  
+  const contractAddress = getContractAddress(chainId, "AdPaymentContract");
+
   const { write, data, isLoading } = useContractWrite({
     address: contractAddress,
     abi: AdPaymentContractABI,
-    functionName: 'joinAuction',
+    functionName: "joinAuction",
     args: [BigInt(auctionId)],
-    value: parseEther('1'), // 1 USDT participation fee
+    value: parseEther("1"), // 1 USDT participation fee
   });
-  
+
   const { isLoading: isConfirming, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
-  
+
   return {
     joinAuction: write,
     isLoading: isLoading || isConfirming,
@@ -689,6 +741,7 @@ export function useJoinAuction(auctionId: string, chainId: number) {
 **Method:** `placeBid(uint256 auctionId, uint256 amount)`
 
 **Request:**
+
 ```typescript
 interface PlaceBidRequest {
   auctionId: string;
@@ -698,29 +751,32 @@ interface PlaceBidRequest {
 ```
 
 **Implementation:**
+
 ```typescript
 export function usePlaceBid(auctionId: string, chainId: number) {
-  const contractAddress = getContractAddress(chainId, 'AdPaymentContract');
-  
+  const contractAddress = getContractAddress(chainId, "AdPaymentContract");
+
   const placeBid = async (amount: string) => {
     // Validate bid amount (5%+ increment)
     const currentBid = await getCurrentBid(auctionId);
     const minBid = currentBid * 1.05;
     if (parseFloat(amount) < minBid) {
-      throw new Error(`Bid must be at least 5% higher than current bid (${minBid} USDT)`);
+      throw new Error(
+        `Bid must be at least 5% higher than current bid (${minBid} USDT)`
+      );
     }
-    
+
     // Place bid
     const { write } = useContractWrite({
       address: contractAddress,
       abi: AdPaymentContractABI,
-      functionName: 'placeBid',
+      functionName: "placeBid",
       args: [BigInt(auctionId), parseUnits(amount, 6)], // USDT has 6 decimals
     });
-    
+
     write();
   };
-  
+
   return { placeBid };
 }
 ```
@@ -737,4 +793,3 @@ export function usePlaceBid(auctionId: string, chainId: number) {
 **External APIs:** 15+ content sources  
 **Supabase Functions:** 20+ database operations  
 **Smart Contract Functions:** 10+ blockchain operations
-

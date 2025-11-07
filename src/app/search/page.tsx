@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { Autocomplete } from '@/components/search/Autocomplete';
-import { FilterChips, type FilterChip } from '@/components/search/FilterChips';
-import { ArticleFeed } from '@/components/feed/ArticleFeed';
-import { useState } from 'react';
-import { useArticles } from '@/lib/hooks/useArticles';
-import type { Article } from '@/lib/services/indexedDBCache';
-import { Search } from 'lucide-react';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { Autocomplete } from "@/components/search/Autocomplete";
+import { FilterChips, type FilterChip } from "@/components/search/FilterChips";
+import { ArticleFeed } from "@/components/feed/ArticleFeed";
+import { useState } from "react";
+import { useArticles } from "@/lib/hooks/useArticles";
+import type { Article } from "@/lib/services/indexedDBCache";
+import { Search } from "lucide-react";
 
 export default function SearchPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<
-    'tech' | 'crypto' | 'social' | 'general' | undefined
+  const [selectedCategory] = useState<
+    "tech" | "crypto" | "social" | "general" | undefined
   >(undefined);
 
   const { data: articles, isLoading } = useArticles(selectedCategory, {
@@ -40,9 +40,9 @@ export default function SearchPage() {
     setSearchQuery(query);
     if (query) {
       const searchFilter: FilterChip = {
-        id: 'search',
+        id: "search",
         label: `Search: ${query}`,
-        type: 'tag',
+        type: "tag",
         value: query,
       };
       setFilters([searchFilter]);
@@ -52,18 +52,18 @@ export default function SearchPage() {
   };
 
   const handleSelectArticle = (article: Article) => {
-    window.location.href = `/article/${encodeURIComponent(article.url)}`;
+    window.location.href = `/article?url=${encodeURIComponent(article.url)}`;
   };
 
   const handleRemoveFilter = (id: string) => {
-    if (id === 'search') {
-      setSearchQuery('');
+    if (id === "search") {
+      setSearchQuery("");
     }
     setFilters(filters.filter((f) => f.id !== id));
   };
 
   const handleClearAllFilters = () => {
-    setSearchQuery('');
+    setSearchQuery("");
     setFilters([]);
   };
 
@@ -106,7 +106,8 @@ export default function SearchPage() {
         ) : filteredArticles && filteredArticles.length > 0 ? (
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Found {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
+              Found {filteredArticles.length} article
+              {filteredArticles.length !== 1 ? "s" : ""}
             </p>
             <ArticleFeed
               articles={filteredArticles}

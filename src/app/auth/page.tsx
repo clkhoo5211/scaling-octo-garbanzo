@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import AuthPage from '@/components/auth/AuthPage';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import AuthPage from "@/components/auth/AuthPage";
 
 export default function AuthRoutePage() {
   return (

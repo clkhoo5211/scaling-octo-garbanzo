@@ -1,9 +1,10 @@
 # Prompt Update Summary
+
 ## Blockchain Web3 Content Aggregator - Optimization Report
 
 **Date:** 2025-11-06  
 **Document:** PROJECT_INIT_PROMPT_WEB3_AGGREGATOR.md  
-**Status:** ✅ Ready for Init Agent  
+**Status:** ✅ Ready for Init Agent
 
 ---
 
@@ -15,6 +16,7 @@
 **After:** Reown primary → Clerk secondary ✅
 
 **New Flow:**
+
 ```
 User clicks "Sign In"
   → Reown AppKit modal (FIRST)
@@ -26,6 +28,7 @@ User clicks "Sign In"
 ```
 
 **Benefits:**
+
 - ✅ Smart account created FIRST (users can transact immediately)
 - ✅ No Web3 wallet needed (Reown handles everything)
 - ✅ Clerk manages users in background (sessions, subscriptions)
@@ -38,11 +41,13 @@ User clicks "Sign In"
 **After:** Clerk metadata stores users (50 MB database) ✅
 
 **Removed from Supabase:**
+
 - ❌ Users table (5 MB)
 - ❌ User indexes (3 MB)
 - ❌ User foreign key constraints
 
 **What's in Clerk Metadata:**
+
 ```javascript
 {
   reown_address: "0x123...",
@@ -59,6 +64,7 @@ User clicks "Sign In"
 ```
 
 **Benefits:**
+
 - ✅ 14% database reduction (58 MB → 50 MB)
 - ✅ 15x faster user profile reads (< 10ms from Clerk cache)
 - ✅ 20x faster subscription checks (no database join)
@@ -70,6 +76,7 @@ User clicks "Sign In"
 ### 3. **Subscription System - SMART CONTRACT + ON-RAMP**
 
 **New Features:**
+
 - ✅ Pay subscriptions with USDT (any chain)
 - ✅ Built-in on-ramp (buy USDT with credit card via Reown)
 - ✅ On-chain verification (smart contract is source of truth)
@@ -77,17 +84,20 @@ User clicks "Sign In"
 - ✅ Display in website (reads from Clerk, not Supabase)
 
 **Subscription Tiers:**
+
 - **Free:** $0/month - Basic features
 - **Pro:** 30 USDT/month - AI feed, unlimited DMs, ad-free
 - **Premium:** 100 USDT/month - All Pro + VIP support, 2x points
 
 **SubscriptionManager.sol Contract:**
+
 - Deployed on 6 chains (Ethereum, Polygon, BSC, Arbitrum, Optimism, Base)
 - Accepts USDT payments
 - Tracks subscription expiry on-chain
 - Emits events for backend to update Clerk
 
 **Reown On-Ramp:**
+
 - MoonPay (credit card, 3.5% fee)
 - Transak (bank transfer, 2.9% fee)
 - Ramp (instant, 3.9% fee)
@@ -97,11 +107,11 @@ User clicks "Sign In"
 
 ### 4. **AI Recommendations - 3 FREE OPTIONS**
 
-| Approach | Cost | Accuracy | Implementation |
-|----------|------|----------|----------------|
-| Collaborative Filtering | $0 | 70% | Supabase SQL (MVP) |
-| TensorFlow.js | $0 | 80% | Client-side (Beta) |
-| OpenAI Embeddings | $0.08/mo | 95% | Optional (Production) |
+| Approach                | Cost     | Accuracy | Implementation        |
+| ----------------------- | -------- | -------- | --------------------- |
+| Collaborative Filtering | $0       | 70%      | Supabase SQL (MVP)    |
+| TensorFlow.js           | $0       | 80%      | Client-side (Beta)    |
+| OpenAI Embeddings       | $0.08/mo | 95%      | Optional (Production) |
 
 **Recommendation:** Start FREE, upgrade to OpenAI when you have revenue
 
@@ -110,6 +120,7 @@ User clicks "Sign In"
 ### 5. **Social Features - SUPABASE REALTIME**
 
 **Implemented:**
+
 - ✅ Follow/unfollow users
 - ✅ Like articles (award points to submitter)
 - ✅ Direct messages (real-time via Supabase)
@@ -124,6 +135,7 @@ User clicks "Sign In"
 ### 6. **DAO Governance - MERITOCRATIC VOTING**
 
 **What Users Vote On:**
+
 1. Content moderation decisions
 2. Economic policy (fees, conversion rates)
 3. Feature prioritization
@@ -132,6 +144,7 @@ User clicks "Sign In"
 6. Partnership decisions
 
 **Voting Power Calculation:**
+
 ```
 Base: 1 vote (everyone)
 + 1 vote per 10 approved submissions
@@ -148,6 +161,7 @@ Base: 1 vote (everyone)
 ### 7. **Crypto Data Sources - ALL FREE VERIFIED**
 
 **✅ FREE Price APIs:**
+
 - CoinGecko (43,200 calls/day)
 - CryptoCompare (100,000 calls/month)
 - CoinCap (unlimited)
@@ -155,9 +169,11 @@ Base: 1 vote (everyone)
 - Blockchain.com (unlimited)
 
 **✅ FREE News RSS:**
+
 - CoinDesk, CoinTelegraph, Decrypt, Bitcoin Magazine, The Block
 
 **❌ REMOVED (Not Free):**
+
 - Crypto Bubbles (no public API)
 - Coin360 (requires licensing)
 
@@ -185,6 +201,7 @@ Base: 1 vote (everyone)
    - executeProposal() - Execute if passed (51% + 10% quorum)
 
 **Deployment Chains:**
+
 - Ethereum, Polygon, BSC, Arbitrum, Optimism, Base
 
 **Gas Cost Estimate:** ~$100-200 per chain = $600-1,200 total (testnet is free)
@@ -193,12 +210,12 @@ Base: 1 vote (everyone)
 
 ## 📊 PERFORMANCE IMPROVEMENTS
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| User profile load | 150ms | < 10ms | **15x faster** ✅ |
-| Subscription check | 200ms | < 10ms | **20x faster** ✅ |
-| Points update | 100ms | 50ms | **2x faster** ✅ |
-| Database size | 58 MB | 50 MB | **14% smaller** ✅ |
+| Metric                | Before      | After       | Improvement          |
+| --------------------- | ----------- | ----------- | -------------------- |
+| User profile load     | 150ms       | < 10ms      | **15x faster** ✅    |
+| Subscription check    | 200ms       | < 10ms      | **20x faster** ✅    |
+| Points update         | 100ms       | 50ms        | **2x faster** ✅     |
+| Database size         | 58 MB       | 50 MB       | **14% smaller** ✅   |
 | Database queries/page | 5-8 queries | 2-3 queries | **60% reduction** ✅ |
 
 ---
@@ -206,6 +223,7 @@ Base: 1 vote (everyone)
 ## 💰 FINAL COST ANALYSIS
 
 ### MVP (1,000 Users):
+
 - GitHub Pages: $0
 - Clerk (10k MAU): $0
 - Reown: $0
@@ -215,11 +233,13 @@ Base: 1 vote (everyone)
 - **TOTAL: $0/month** ✅
 
 ### Production (10,000 Users):
+
 - All services: $0 (still within free tiers)
 - Optional OpenAI: $0.08/month
 - **TOTAL: $0.08/month** ✅
 
 ### Scale (100,000 Users):
+
 - Clerk Pro: $99/month (only paid service needed)
 - Supabase (upgrade): $25/month
 - OpenAI: $8/month
@@ -232,6 +252,7 @@ Base: 1 vote (everyone)
 ## 🚀 READY TO LAUNCH
 
 **Document Status:**
+
 - ✅ 2,623 lines (comprehensive specification)
 - ✅ 10 detailed sections
 - ✅ 3 smart contracts specified
@@ -258,6 +279,7 @@ Base: 1 vote (everyone)
 **What You Can Do in Clerk Dashboard:**
 
 **1. View Users by Subscription:**
+
 ```
 Filter: publicMetadata.subscription_tier = "pro"
 Result: Shows all 1,234 Pro users
@@ -265,6 +287,7 @@ Export: Download CSV for analytics
 ```
 
 **2. Manually Update Subscriptions:**
+
 ```
 Click User → Edit Metadata → Change tier
   - Upgrade user to Premium (promotional)
@@ -274,6 +297,7 @@ Click User → Edit Metadata → Change tier
 ```
 
 **3. Bulk Operations:**
+
 ```
 Select All Pro Users → Bulk Update
   - Give everyone 1,000 bonus points
@@ -282,6 +306,7 @@ Select All Pro Users → Bulk Update
 ```
 
 **4. Feature Flags (Per User or Per Tier):**
+
 ```javascript
 // Dashboard → User → Metadata Editor
 {
@@ -310,11 +335,13 @@ Select All Pro Users → Bulk Update
 | Points Multiplier | 1x | 1.5x | 2x |
 
 **6. Automatic Actions:**
+
 - **Subscription Expires** → Auto-downgrade to Free (daily cron job)
 - **Payment Fails** → 7-day grace period, then downgrade
 - **User Banned** → All features disabled, redirect to /banned
 
 **Benefits:**
+
 - ✅ Control features from UI (no code deployment)
 - ✅ Changes apply instantly (< 1 second)
 - ✅ Visual interface (no SQL queries)
@@ -325,14 +352,14 @@ Select All Pro Users → Bulk Update
 
 ```
 Scenario: Influencer Partnership
-  
+
 Dashboard → User: @cryptoinfluencer
   → Edit Metadata
   → subscription_tier: "premium" (was "free")
   → subscription_expiry: "2025-12-31" (12 months free)
   → promotion_code: "INFLUENCER2024"
   → Save
-  
+
 Result: Influencer instantly has Premium features!
   ✅ AI feed appears in their navigation
   ✅ All ads hidden
@@ -346,6 +373,7 @@ No code changes, no database updates, instant activation!
 ---
 
 **Questions to Answer During Init:**
+
 1. Project name preference
 2. Initial categories (10 suggestions provided)
 3. Content moderation approach
@@ -362,6 +390,7 @@ No code changes, no database updates, instant activation!
 ---
 
 **Estimated Timeline:**
+
 - Week 1-2: Foundation (Next.js, Reown, Clerk, Supabase)
 - Week 3-4: Content aggregation (20 sources)
 - Week 5-6: Web3 features (smart contracts, auctions, subscriptions)
@@ -382,7 +411,6 @@ No code changes, no database updates, instant activation!
 ✅ AI recommendations (free options)  
 ✅ Social features (follow, like, DM)  
 ✅ DAO governance (6 voting categories)  
-✅ 18 smart contracts (3 types × 6 chains)  
+✅ 18 smart contracts (3 types × 6 chains)
 
 **YOU'RE READY! Trigger `/init` now! 🚀**
-

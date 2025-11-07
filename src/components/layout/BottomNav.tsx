@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: '/', label: 'Home', icon: '🏠' },
-  { href: '/search', label: 'Search', icon: '🔍' },
-  { href: '/bookmarks', label: 'Bookmarks', icon: '🔖' },
-  { href: '/profile', label: 'Profile', icon: '👤' },
+  { href: "/", label: "Home", icon: "🏠" },
+  { href: "/search", label: "Search", icon: "🔍" },
+  { href: "/bookmarks", label: "Bookmarks", icon: "🔖" },
+  { href: "/profile", label: "Profile", icon: "👤" },
 ];
 
 export function BottomNav() {
@@ -24,10 +24,10 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 h-full transition-colors',
+                "flex flex-col items-center justify-center flex-1 h-full transition-colors",
                 isActive
-                  ? 'text-black dark:text-white font-medium'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  ? "text-black dark:text-white font-medium"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               )}
             >
               <span className="text-2xl mb-1">{item.icon}</span>
@@ -39,4 +39,3 @@ export function BottomNav() {
     </nav>
   );
 }
-

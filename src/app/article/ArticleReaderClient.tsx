@@ -1,32 +1,55 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { useParams } from 'next/navigation';
-import { useEffect, useState, lazy, Suspense } from 'react';
-import { useArticles } from '@/lib/hooks/useArticles';
-import { useArticleLikes, useLikeArticle, useUnlikeArticle, useBookmarkArticle, useRemoveBookmark, useBookmarks } from '@/lib/hooks/useArticles';
-import { fetchArticleContent, estimateReadingTime } from '@/lib/services/articleContent';
-import type { Article } from '@/lib/services/indexedDBCache';
-import { FileText } from 'lucide-react';
-import { useAppStore } from '@/lib/stores/appStore';
-import { shareContent } from '@/lib/utils';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { useEffect, useState, lazy, Suspense } from "react";
+import { useArticles } from "@/lib/hooks/useArticles";
+import {
+  useArticleLikes,
+  useLikeArticle,
+  useUnlikeArticle,
+  useBookmarkArticle,
+  useRemoveBookmark,
+  useBookmarks,
+} from "@/lib/hooks/useArticles";
+import {
+  fetchArticleContent,
+  estimateReadingTime,
+} from "@/lib/services/articleContent";
+import type { Article } from "@/lib/services/indexedDBCache";
+import { FileText } from "lucide-react";
+import { useAppStore } from "@/lib/stores/appStore";
+import { shareContent } from "@/lib/utils";
 
 // Lazy load heavy reader components
-const ReadingProgress = lazy(() => import('@/components/reader/ReadingProgress').then(m => ({ default: m.ReadingProgress })));
-const ReaderControls = lazy(() => import('@/components/reader/ReaderControls').then(m => ({ default: m.ReaderControls })));
-const ActionBar = lazy(() => import('@/components/reader/ActionBar').then(m => ({ default: m.ActionBar })));
+const ReadingProgress = lazy(() =>
+  import("@/components/reader/ReadingProgress").then((m) => ({
+    default: m.ReadingProgress,
+  }))
+);
+const ReaderControls = lazy(() =>
+  import("@/components/reader/ReaderControls").then((m) => ({
+    default: m.ReaderControls,
+  }))
+);
+const ActionBar = lazy(() =>
+  import("@/components/reader/ActionBar").then((m) => ({
+    default: m.ActionBar,
+  }))
+);
 
-export default function ArticleReaderPage() {
-  const params = useParams();
-  const articleUrl = decodeURIComponent(params.url as string);
+interface ArticleReaderClientProps {
+  url: string;
+}
+
+export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProps) {
   const [readingProgress, setReadingProgress] = useState(0);
   const [article, setArticle] = useState<Article | null>(null);
   const [parsedContent, setParsedContent] = useState<string | null>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [fontSize, setFontSize] = useState(16);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const { userId } = useAppStore();
 
   const { data: articles, isLoading } = useArticles(undefined, {
@@ -34,22 +57,26 @@ export default function ArticleReaderPage() {
     extractLinks: true,
   });
 
-  const { data: likes } = useArticleLikes(article?.id || '');
+  const { data: likes } = useArticleLikes(article?.id || "");
   const { data: bookmarks } = useBookmarks(userId);
   const likeMutation = useLikeArticle();
   const unlikeMutation = useUnlikeArticle();
   const bookmarkMutation = useBookmarkArticle();
   const removeBookmarkMutation = useRemoveBookmark();
 
-  const isLiked = article ? (likes?.some((like) => like.user_id === userId) ?? false) : false;
-  const isBookmarked = article ? (bookmarks?.some((b) => b.article_id === article.id) ?? false) : false;
+  const isLiked = article
+    ? (likes?.some((like) => like.user_id === userId) ?? false)
+    : false;
+  const isBookmarked = article
+    ? (bookmarks?.some((b) => b.article_id === article.id) ?? false)
+    : false;
   const likesCount = likes?.length || 0;
 
   useEffect(() => {
-    if (articles) {
+    if (articles && articleUrl) {
       const found = articles.find((a) => a.url === articleUrl);
       setArticle(found || null);
-      
+
       // Fetch full article content if article found
       if (found && !found.content) {
         setIsLoadingContent(true);
@@ -60,7 +87,7 @@ export default function ArticleReaderPage() {
             }
           })
           .catch((error) => {
-            console.error('Failed to fetch article content:', error);
+            console.error("Failed to fetch article content:", error);
           })
           .finally(() => {
             setIsLoadingContent(false);
@@ -83,8 +110,8 @@ export default function ArticleReaderPage() {
       setReadingProgress(progress);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleLike = () => {
@@ -113,14 +140,14 @@ export default function ArticleReaderPage() {
     if (!article) return;
     await shareContent({
       title: article.title,
-      text: article.excerpt || '',
+      text: article.excerpt || "",
       url: article.url,
     });
   };
 
   const handleThemeToggle = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark');
+    setTheme(theme === "light" ? "dark" : "light");
+    document.documentElement.classList.toggle("dark");
   };
 
   if (isLoading) {
@@ -142,12 +169,14 @@ export default function ArticleReaderPage() {
   }
 
   const readingTime = parsedContent
-    ? estimateReadingTime(parsedContent.replace(/<[^>]*>/g, ''))
+    ? estimateReadingTime(parsedContent.replace(/<[^>]*>/g, ""))
     : null;
 
   return (
     <ErrorBoundary>
-      <div className={`min-h-screen bg-white dark:bg-gray-900 ${theme === 'dark' ? 'dark' : ''}`}>
+      <div
+        className={`min-h-screen bg-white dark:bg-gray-900 ${theme === "dark" ? "dark" : ""}`}
+      >
         <Suspense fallback={null}>
           <ReadingProgress progress={readingProgress} />
         </Suspense>
@@ -209,7 +238,11 @@ export default function ArticleReaderPage() {
                       rel="noopener noreferrer"
                       className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
                     >
-                      {link.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0]}
+                      {
+                        link
+                          .replace(/^(https?:\/\/)?(www\.)?/, "")
+                          .split("/")[0]
+                      }
                     </a>
                   </li>
                 ))}
@@ -252,7 +285,8 @@ export default function ArticleReaderPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              <strong>Note:</strong> This is a reader view. For the full article, visit{' '}
+              <strong>Note:</strong> This is a reader view. For the full
+              article, visit{" "}
               <a
                 href={article.url}
                 target="_blank"
@@ -268,3 +302,4 @@ export default function ArticleReaderPage() {
     </ErrorBoundary>
   );
 }
+

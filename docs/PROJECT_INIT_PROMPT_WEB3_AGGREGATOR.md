@@ -1,9 +1,10 @@
 # PROJECT INITIALIZATION PROMPT
+
 ## Blockchain Web3 Content Aggregator
 
 **Document Version:** 2.0  
 **Last Updated:** 2025-11-06  
-**Status:** Ready for Init Agent Trigger  
+**Status:** Ready for Init Agent Trigger
 
 ---
 
@@ -28,6 +29,7 @@
 **Project Type:** Progressive Web App (PWA) with Web3 Integration - Pure Client-Side Application
 
 **Reference Projects:**
+
 - NewsNow: https://github.com/ourongxing/newsnow (UI/UX reference)
 - BettaFish: https://github.com/666ghj/BettaFish (content aggregation patterns)
 - Live Demo: https://newsnow.busiyi.world/c/hottest
@@ -40,6 +42,7 @@
 A decentralized, community-driven news and content aggregation platform that pulls real-time content from 30+ global sources (X, Reddit, Hacker News, Product Hunt, Medium, crypto news, Chinese platforms like 抖音/百度/今日头条, etc.) with cryptocurrency-based monetization via advertisement auctions and user rewards system.
 
 **Key Differentiators:**
+
 1. ✅ **No Backend Required** - Pure client-side aggregation (saves hosting costs)
 2. ✅ **Web3 Native** - Reown smart accounts with social login (Google, Twitter, Email)
 3. ✅ **Auction-Based Ads** - Transparent blockchain auctions with tenure leasing
@@ -58,6 +61,7 @@ A decentralized, community-driven news and content aggregation platform that pul
 **Framework:** Next.js 14+ with App Router
 
 **Build Configuration:**
+
 - **Build Mode:** Static Site Generation (`output: 'export'`)
 - **Deployment:** GitHub Pages (static HTML/CSS/JS)
 - **No Backend:** Pure client-side application
@@ -65,6 +69,7 @@ A decentralized, community-driven news and content aggregation platform that pul
 **Platform Support:**
 
 **Phase 1 - MVP: Progressive Web App (PWA)**
+
 - **Web Browsers (Desktop):**
   - Chrome, Edge, Firefox, Safari (macOS/Windows/Linux)
   - Accessible via URL: https://yourdomain.com
@@ -81,7 +86,7 @@ A decentralized, community-driven news and content aggregation platform that pul
   - **iOS:** Safari → Share → "Add to Home Screen" → Acts like native app
   - **Android:** Chrome → Menu → "Install App" → Acts like native app
   - **Desktop:** Chrome → Install button in address bar → Desktop app
-  - **Benefits:** 
+  - **Benefits:**
     - Offline support (Service Worker)
     - Push notifications
     - Full-screen experience (no browser UI)
@@ -92,7 +97,7 @@ A decentralized, community-driven news and content aggregation platform that pul
 **Phase 3 - Future: Native Mobile Apps (Flutter)**
 
 - **Framework:** Flutter SDK (Dart language)
-- **Platforms:** 
+- **Platforms:**
   - iOS (App Store submission via Xcode)
   - Android (Google Play Store submission)
 - **Benefits:**
@@ -113,7 +118,7 @@ A decentralized, community-driven news and content aggregation platform that pul
   - **Flutter uses:** Hive (NoSQL) or sqflite (SQLite)
   - **Same Logic:** 30-min cache, 2,000 article limit, auto-refresh
   - **Same Data Structure:** JSON serialization, identical schemas
-- **Code Sharing:** 
+- **Code Sharing:**
   - ~70% business logic reused (API fetching, data models, validation)
   - ~30% platform-specific (UI components, storage layer)
   - Single codebase generates both iOS + Android APK/IPA
@@ -122,17 +127,20 @@ A decentralized, community-driven news and content aggregation platform that pul
 - **Cost:** $0 (Flutter SDK is free, Play Store: $25 one-time, App Store: $99/year)
 
 **Styling & UI:**
+
 - **CSS Framework:** Tailwind CSS
 - **Component Library:** shadcn/ui (React components)
 - **Design System:** Custom (inspired by NewsNow's clean aesthetic)
 - **State Management:** Zustand (lightweight, ~1kb)
 
 **Web3 Integration:**
+
 - **Auth SDK:** Reown AppKit + wagmi + viem
 - **Wallet Support:** MetaMask, Coinbase Wallet, WalletConnect, Social Login
 - **Smart Account:** ERC-4337 (auto-created via Reown)
 
 **PWA Configuration:**
+
 ```javascript
 // next.config.js
 module.exports = {
@@ -187,6 +195,7 @@ self.addEventListener('install', (event) => {
 **Architecture:** Client-Side Aggregation (No Backend Servers)
 
 **How It Works:**
+
 1. User visits website → React app loads
 2. Check browser cache (IndexedDB) for articles (30-min TTL)
 3. If cache expired → Fetch from 30+ sources in parallel:
@@ -201,7 +210,8 @@ self.addEventListener('install', (event) => {
 
 **Tier 1 - MVP (20 sources):**
 
-*General Tech & Startup:*
+_General Tech & Startup:_
+
 - Hacker News (Firebase API: https://github.com/HackerNews/API)
 - Product Hunt (GraphQL API)
 - GitHub Trending (REST API)
@@ -209,14 +219,16 @@ self.addEventListener('install', (event) => {
 - Medium (RSS feeds by publication)
 - HackerNoon (RSS: https://hackernoon.com/feed)
 
-*Crypto News (RSS - All FREE):*
+_Crypto News (RSS - All FREE):_
+
 - CoinDesk (https://www.coindesk.com/arc/outboundfeeds/rss/)
 - CoinTelegraph (https://cointelegraph.com/rss)
 - Decrypt (https://decrypt.co/feed)
 - Bitcoin Magazine (https://bitcoinmagazine.com/.rss/full/)
 - The Block (https://www.theblock.co/rss.xml)
 
-*Crypto Price Data (FREE APIs):*
+_Crypto Price Data (FREE APIs):_
+
 - CoinGecko API (43,200 calls/day FREE: https://www.coingecko.com/en/api)
 - CryptoCompare API (100,000 calls/month FREE: https://min-api.cryptocompare.com/)
 - CoinCap API (Unlimited FREE: https://docs.coincap.io/)
@@ -224,6 +236,7 @@ self.addEventListener('install', (event) => {
 - Blockchain.com API (Unlimited FREE: https://www.blockchain.com/api)
 
 **Tier 2 - Beta (10 sources):**
+
 - X/Twitter (API v2 or public embeds)
 - Discord (public webhooks/RSS bridges)
 - Telegram (public channel RSS: t.me/s/{channel})
@@ -231,6 +244,7 @@ self.addEventListener('install', (event) => {
 - Yahoo Finance Crypto (RSS)
 
 **Tier 3 - Launch (10+ sources):**
+
 - 抖音 (Douyin), 今日头条 (Toutiao), 百度热搜 (Baidu)
 - Meta (Facebook/Instagram public embeds)
 - TikTok (public API)
@@ -238,42 +252,45 @@ self.addEventListener('install', (event) => {
 - YouTube Crypto Channels (via Data API)
 
 **Caching Strategy (Client-Side Only):**
+
 - **IndexedDB** (browser): 30-min cache per user, 2,000 article limit
 - **LocalStorage**: User preferences, theme, language settings
 - **No Shared Cache**: Each user fetches content individually (APIs are free anyway)
 - **Update Frequency**: Every 30 minutes per user (automatic refresh)
 
 **Implementation:**
+
 ```javascript
-import localforage from 'localforage'
+import localforage from "localforage";
 
 // Create IndexedDB instance
 const articleCache = localforage.createInstance({
-  name: 'web3news',
-  storeName: 'articles'
-})
+  name: "web3news",
+  storeName: "articles",
+});
 
 // Cache articles for 30 minutes
 const cacheArticles = async (articles) => {
-  await articleCache.setItem('cached_at', Date.now())
-  await articleCache.setItem('articles', articles)
-}
+  await articleCache.setItem("cached_at", Date.now());
+  await articleCache.setItem("articles", articles);
+};
 
 // Check cache before fetching
 const getCachedArticles = async () => {
-  const cachedAt = await articleCache.getItem('cached_at')
-  const now = Date.now()
-  
+  const cachedAt = await articleCache.getItem("cached_at");
+  const now = Date.now();
+
   // Cache expired after 30 minutes
   if (now - cachedAt > 30 * 60 * 1000) {
-    return null // Fetch fresh
+    return null; // Fetch fresh
   }
-  
-  return await articleCache.getItem('articles')
-}
+
+  return await articleCache.getItem("articles");
+};
 ```
 
 **CORS Handling:**
+
 - Most RSS feeds allow CORS (direct fetch)
 - APIs without CORS: Use public CORS proxy (https://corsproxy.io)
 - Last resort: Browser extension mode (optional for power users)
@@ -283,17 +300,20 @@ const getCachedArticles = async () => {
 **Architecture:** Reown handles authentication, Clerk handles user management
 
 **Why This Architecture?**
+
 - **Reown (PRIMARY)**: Social login, smart account creation, on-ramp
 - **Clerk (SECONDARY)**: User profiles stored in metadata, subscription management, admin dashboard
 - **Supabase**: Content data ONLY (70% database reduction!)
 - **Result**: No user table in Supabase, all user data in Clerk metadata
 
 **SDK Installation:**
+
 ```bash
 npm install @clerk/nextjs @reown/appkit @reown/appkit-adapter-wagmi wagmi viem
 ```
 
 **Reown Features (PRIMARY AUTH):**
+
 - ✅ Social Login (Google, Twitter, Discord, Email, etc.)
 - ✅ Smart Accounts (ERC-4337 Account Abstraction - auto-created)
 - ✅ Multi-Chain Support (15+ chains)
@@ -303,6 +323,7 @@ npm install @clerk/nextjs @reown/appkit @reown/appkit-adapter-wagmi wagmi viem
 - ✅ Session Keys
 
 **Clerk Features (USER MANAGEMENT):**
+
 - ✅ User Profiles (stored in Clerk metadata, not Supabase!)
 - ✅ Subscription Management (Pro, Premium tiers)
 - ✅ Admin Dashboard (pre-built, production-ready)
@@ -312,6 +333,7 @@ npm install @clerk/nextjs @reown/appkit @reown/appkit-adapter-wagmi wagmi viem
 - ✅ Bulk Operations (e.g., give all Pro users 1,000 bonus points)
 
 **Optimized Login Flow:**
+
 ```
 STEP 1: User Authentication (Reown PRIMARY)
 User visits site
@@ -353,18 +375,18 @@ ALL user data in Clerk metadata:
 
 ```javascript
 // app/providers.tsx - Reown setup (PRIMARY)
-'use client'
+"use client";
 
-import { createAppKit } from '@reown/appkit/react'
-import { WagmiProvider, createConfig } from 'wagmi'
-import { mainnet, polygon, bsc, arbitrum, optimism, base } from 'wagmi/chains'
+import { createAppKit } from "@reown/appkit/react";
+import { WagmiProvider, createConfig } from "wagmi";
+import { mainnet, polygon, bsc, arbitrum, optimism, base } from "wagmi/chains";
 
-const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID
+const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 
 const config = createConfig({
   chains: [mainnet, polygon, bsc, arbitrum, optimism, base],
   // ...wagmi config
-})
+});
 
 createAppKit({
   projectId,
@@ -372,55 +394,53 @@ createAppKit({
   wagmiConfig: config,
   features: {
     analytics: true,
-    socials: ['google', 'x', 'discord', 'github'], // Social login options
+    socials: ["google", "x", "discord", "github"], // Social login options
     email: true, // Email login option
-    onramp: true // Built-in on-ramp for buying USDT
-  }
-})
+    onramp: true, // Built-in on-ramp for buying USDT
+  },
+});
 
 export function Providers({ children }) {
   return (
     <WagmiProvider config={config}>
-      <ClerkProvider>
-        {children}
-      </ClerkProvider>
+      <ClerkProvider>{children}</ClerkProvider>
     </WagmiProvider>
-  )
+  );
 }
 
 // hooks/useAuth.ts - Combined auth hook
-import { useAppKitAccount } from '@reown/appkit/react'
-import { useUser } from '@clerk/nextjs'
-import { useEffect } from 'react'
+import { useAppKitAccount } from "@reown/appkit/react";
+import { useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
 
 export function useAuth() {
-  const { address, isConnected } = useAppKitAccount() // Reown
-  const { user, isLoaded } = useUser() // Clerk
-  
+  const { address, isConnected } = useAppKitAccount(); // Reown
+  const { user, isLoaded } = useUser(); // Clerk
+
   // Auto-create Clerk user when Reown login succeeds
   useEffect(() => {
     if (isConnected && address && !user) {
-      createClerkUserFromReown(address)
+      createClerkUserFromReown(address);
     }
-  }, [isConnected, address, user])
-  
+  }, [isConnected, address, user]);
+
   return {
     // User data from Clerk metadata
     address: user?.publicMetadata?.reown_address,
     smartAccount: user?.publicMetadata?.smart_account_address,
     points: user?.publicMetadata?.points || 0,
-    subscription: user?.publicMetadata?.subscription_tier || 'free',
+    subscription: user?.publicMetadata?.subscription_tier || "free",
     isAuthenticated: isConnected && !!user,
-    user
-  }
+    user,
+  };
 }
 
 // api/clerk/create-user.ts - Auto-create Clerk user
-import { clerkClient } from '@clerk/nextjs/server'
+import { clerkClient } from "@clerk/nextjs/server";
 
 export default async function handler(req, res) {
-  const { reownAddress, smartAccountAddress, email } = req.body
-  
+  const { reownAddress, smartAccountAddress, email } = req.body;
+
   try {
     // Create Clerk user with Reown data in metadata
     const user = await clerkClient.users.createUser({
@@ -432,45 +452,45 @@ export default async function handler(req, res) {
         smart_account_address: smartAccountAddress,
         points: 0,
         usdt_balance_offchain: 0,
-        subscription_tier: 'free',
+        subscription_tier: "free",
         subscription_expiry: null,
         referral_code: generateReferralCode(),
         total_submissions: 0,
         total_upvotes: 0,
         login_streak: 0,
-        created_at: new Date().toISOString()
-      }
-    })
-    
+        created_at: new Date().toISOString(),
+      },
+    });
+
     // Send email verification magic link
     await clerkClient.emailAddresses.createEmailVerification({
       id: user.emailAddresses[0].id,
-      strategy: 'email_link'
-    })
-    
-    res.json({ success: true, clerkUserId: user.id })
+      strategy: "email_link",
+    });
+
+    res.json({ success: true, clerkUserId: user.id });
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.message });
   }
 }
 
 // Update user points (stored in Clerk metadata, not Supabase)
 const awardPoints = async (userId, amount, reason) => {
-  const user = await clerkClient.users.getUser(userId)
-  const currentPoints = user.publicMetadata.points || 0
-  
+  const user = await clerkClient.users.getUser(userId);
+  const currentPoints = user.publicMetadata.points || 0;
+
   await clerkClient.users.updateUser(userId, {
     publicMetadata: {
       ...user.publicMetadata,
-      points: currentPoints + amount
-    }
-  })
-}
+      points: currentPoints + amount,
+    },
+  });
+};
 
 // Display user profile (reading from Clerk metadata)
 const UserProfile = () => {
-  const { user } = useUser()
-  
+  const { user } = useUser();
+
   return (
     <div>
       <h1>{user.username}</h1>
@@ -478,11 +498,12 @@ const UserProfile = () => {
       <p>Tier: {user.publicMetadata.subscription_tier}</p>
       <p>Smart Account: {user.publicMetadata.smart_account_address}</p>
     </div>
-  )
-}
+  );
+};
 ```
 
 **Clerk Metadata Structure** (replaces Supabase users table):
+
 ```javascript
 // All user data stored in Clerk publicMetadata
 {
@@ -503,6 +524,7 @@ const UserProfile = () => {
 ```
 
 **Benefits of This Architecture:**
+
 1. ✅ **Reown First**: Smart accounts created immediately (users can transact without Web3 wallet)
 2. ✅ **70% Less Database Usage**: No users table in Supabase (only content data)
 3. ✅ **Better Performance**: No database queries for user profiles (reads from Clerk cache)
@@ -517,6 +539,7 @@ const UserProfile = () => {
 ### 2.4.1 Subscription Tiers
 
 **Free Tier** ($0/month):
+
 - Read unlimited articles
 - Bookmark up to 50 articles
 - Basic recommendations
@@ -524,6 +547,7 @@ const UserProfile = () => {
 - Vote on governance (1 vote base power)
 
 **Pro Tier** (30 USDT/month):
+
 - All Free features
 - Unlimited bookmarks
 - AI-powered personalized feed
@@ -534,6 +558,7 @@ const UserProfile = () => {
 - Early access to new features
 
 **Premium Tier** (100 USDT/month):
+
 - All Pro features
 - Priority content moderation review
 - Custom content sources (request any API)
@@ -550,67 +575,74 @@ const UserProfile = () => {
 ```javascript
 // User clicks "Upgrade to Pro" (30 USDT)
 const purchaseSubscription = async (tier) => {
-  const { address } = useAppKitAccount()
-  const { user } = useUser() // Clerk
-  
+  const { address } = useAppKitAccount();
+  const { user } = useUser(); // Clerk
+
   // Step 1: Check USDT balance in smart account
   const balance = await readContract({
     address: USDT_ADDRESS,
     abi: ERC20_ABI,
-    functionName: 'balanceOf',
-    args: [user.publicMetadata.smart_account_address]
-  })
-  
+    functionName: "balanceOf",
+    args: [user.publicMetadata.smart_account_address],
+  });
+
   // Step 2: If insufficient balance, open Reown on-ramp
   if (balance < tierPrice[tier]) {
-    const { open } = useAppKit()
-    
+    const { open } = useAppKit();
+
     // Open on-ramp modal (buy USDT directly)
-    await open({ view: 'OnRampProviders' })
-    
+    await open({ view: "OnRampProviders" });
+
     // Reown shows providers:
     // - MoonPay (credit card, 3.5% fee)
     // - Transak (bank transfer, 2.9% fee)
     // - Ramp (instant, 3.9% fee)
-    
+
     // User buys USDT → arrives in smart account (2-5 min)
     // Automatically returns to subscription purchase
   }
-  
+
   // Step 3: Approve USDT spending
   await writeContract({
     address: USDT_ADDRESS,
     abi: ERC20_ABI,
-    functionName: 'approve',
-    args: [SUBSCRIPTION_CONTRACT_ADDRESS, tierPrice[tier]]
-  })
-  
+    functionName: "approve",
+    args: [SUBSCRIPTION_CONTRACT_ADDRESS, tierPrice[tier]],
+  });
+
   // Step 4: Purchase subscription (on-chain)
   await writeContract({
     address: SUBSCRIPTION_CONTRACT_ADDRESS,
     abi: SUBSCRIPTION_ABI,
-    functionName: 'subscribe',
-    args: [tier, 30] // Pro, 30 days
-  })
-  
+    functionName: "subscribe",
+    args: [tier, 30], // Pro, 30 days
+  });
+
   // Step 5: Smart contract emits event
   // Backend listener catches event, updates Clerk metadata
-}
+};
 
 // Backend listener (Node.js service)
-subscriptionContract.on('SubscriptionPurchased', async (user, tier, expiry, event) => {
-  // Update Clerk metadata (not Supabase!)
-  await clerkClient.users.updateUserMetadata(user, {
-    publicMetadata: {
-      subscription_tier: tier, // 'pro' or 'premium'
-      subscription_expiry: expiry.toString(),
-      subscription_tx_hash: event.transactionHash
-    }
-  })
-  
-  // Send confirmation email
-  await sendEmail(user.email, 'Subscription Activated', `Welcome to ${tier}!`)
-})
+subscriptionContract.on(
+  "SubscriptionPurchased",
+  async (user, tier, expiry, event) => {
+    // Update Clerk metadata (not Supabase!)
+    await clerkClient.users.updateUserMetadata(user, {
+      publicMetadata: {
+        subscription_tier: tier, // 'pro' or 'premium'
+        subscription_expiry: expiry.toString(),
+        subscription_tx_hash: event.transactionHash,
+      },
+    });
+
+    // Send confirmation email
+    await sendEmail(
+      user.email,
+      "Subscription Activated",
+      `Welcome to ${tier}!`
+    );
+  }
+);
 ```
 
 **SubscriptionContract.sol:**
@@ -625,71 +657,71 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract SubscriptionManager is Ownable {
     IERC20 public usdtToken;
     address public treasury;
-    
+
     // Subscription prices (in USDT with 6 decimals)
     uint256 public constant PRO_PRICE = 30 * 10**6; // 30 USDT
     uint256 public constant PREMIUM_PRICE = 100 * 10**6; // 100 USDT
-    
+
     struct Subscription {
         string tier; // "pro" or "premium"
         uint256 expiryTimestamp;
         bool active;
     }
-    
+
     mapping(address => Subscription) public subscriptions;
-    
+
     event SubscriptionPurchased(
         address indexed user,
         string tier,
         uint256 expiryTimestamp,
         uint256 amount
     );
-    
+
     event SubscriptionRenewed(
         address indexed user,
         uint256 newExpiry
     );
-    
+
     constructor(address _usdtAddress, address _treasury) {
         usdtToken = IERC20(_usdtAddress);
         treasury = _treasury;
     }
-    
+
     // Purchase subscription
     function subscribe(string memory tier, uint256 durationDays) external {
-        uint256 price = keccak256(bytes(tier)) == keccak256(bytes("pro")) 
-            ? PRO_PRICE 
+        uint256 price = keccak256(bytes(tier)) == keccak256(bytes("pro"))
+            ? PRO_PRICE
             : PREMIUM_PRICE;
-        
+
         // Transfer USDT from user to treasury
         require(
             usdtToken.transferFrom(msg.sender, treasury, price),
             "Payment failed"
         );
-        
+
         // Calculate expiry (extend if existing subscription)
-        uint256 startTime = subscriptions[msg.sender].active && 
+        uint256 startTime = subscriptions[msg.sender].active &&
             subscriptions[msg.sender].expiryTimestamp > block.timestamp
             ? subscriptions[msg.sender].expiryTimestamp
             : block.timestamp;
-        
+
         uint256 expiryTimestamp = startTime + (durationDays * 1 days);
-        
+
         subscriptions[msg.sender] = Subscription({
             tier: tier,
             expiryTimestamp: expiryTimestamp,
             active: true
         });
-        
+
         emit SubscriptionPurchased(msg.sender, tier, expiryTimestamp, price);
     }
-    
+
     // Check if subscription is active
     function isActiveSubscriber(address user) public view returns (bool) {
-        return subscriptions[user].active && 
+        return subscriptions[user].active &&
                subscriptions[user].expiryTimestamp > block.timestamp;
     }
-    
+
     // Get subscription details
     function getSubscription(address user) public view returns (
         string memory tier,
@@ -712,30 +744,30 @@ createAppKit({
   projectId: REOWN_PROJECT_ID,
   features: {
     onramp: true, // Enable on-ramp
-  }
-})
+  },
+});
 
 // Trigger on-ramp manually
-import { useAppKit } from '@reown/appkit/react'
+import { useAppKit } from "@reown/appkit/react";
 
 const BuyUSDTButton = () => {
-  const { open } = useAppKit()
-  
+  const { open } = useAppKit();
+
   return (
-    <button onClick={() => open({ view: 'OnRampProviders' })}>
-      Buy USDT
-    </button>
-  )
-}
+    <button onClick={() => open({ view: "OnRampProviders" })}>Buy USDT</button>
+  );
+};
 ```
 
 **Supported Providers** (automatically available):
+
 - **MoonPay**: Credit/debit card, 3.5% fee, instant
 - **Transak**: Bank transfer, 2.9% fee, 10-30 minutes
 - **Ramp**: Credit card, 3.9% fee, instant
 - **Wyre**: Bank transfer, 2.5% fee, 1-3 days
 
 **User Experience:**
+
 1. User clicks "Buy USDT"
 2. Reown modal opens showing providers
 3. User selects provider (e.g., MoonPay)
@@ -753,48 +785,50 @@ const BuyUSDTButton = () => {
 ```javascript
 // Check subscription status (no Supabase query!)
 const SubscriptionBadge = () => {
-  const { user } = useUser() // Clerk
-  
-  const tier = user?.publicMetadata?.subscription_tier
-  const expiry = user?.publicMetadata?.subscription_expiry
-  
-  if (!tier || tier === 'free') return null
-  
-  const isExpired = new Date(expiry) < new Date()
-  if (isExpired) return <span className="text-red-500">Expired</span>
-  
-  return tier === 'premium' 
-    ? <span className="badge-premium">💎 Premium</span>
-    : <span className="badge-pro">⭐ Pro</span>
-}
+  const { user } = useUser(); // Clerk
+
+  const tier = user?.publicMetadata?.subscription_tier;
+  const expiry = user?.publicMetadata?.subscription_expiry;
+
+  if (!tier || tier === "free") return null;
+
+  const isExpired = new Date(expiry) < new Date();
+  if (isExpired) return <span className="text-red-500">Expired</span>;
+
+  return tier === "premium" ? (
+    <span className="badge-premium">💎 Premium</span>
+  ) : (
+    <span className="badge-pro">⭐ Pro</span>
+  );
+};
 
 // Protect Pro-only features
 const useProFeature = () => {
-  const { user } = useUser()
-  
+  const { user } = useUser();
+
   const isPro = () => {
-    const tier = user?.publicMetadata?.subscription_tier
-    const expiry = user?.publicMetadata?.subscription_expiry
-    
-    if (!tier || tier === 'free') return false
-    if (new Date(expiry) < new Date()) return false
-    
-    return ['pro', 'premium'].includes(tier)
-  }
-  
-  return { isPro: isPro() }
-}
+    const tier = user?.publicMetadata?.subscription_tier;
+    const expiry = user?.publicMetadata?.subscription_expiry;
+
+    if (!tier || tier === "free") return false;
+    if (new Date(expiry) < new Date()) return false;
+
+    return ["pro", "premium"].includes(tier);
+  };
+
+  return { isPro: isPro() };
+};
 
 // Usage
 const PersonalizedFeed = () => {
-  const { isPro } = useProFeature()
-  
+  const { isPro } = useProFeature();
+
   if (!isPro) {
-    return <UpgradePrompt message="Upgrade to Pro for AI-powered feed" />
+    return <UpgradePrompt message="Upgrade to Pro for AI-powered feed" />;
   }
-  
-  return <AIRecommendations />
-}
+
+  return <AIRecommendations />;
+};
 ```
 
 **Backend Verification (for sensitive operations):**
@@ -805,12 +839,12 @@ const verifySubscription = async (userAddress) => {
   const isActive = await readContract({
     address: SUBSCRIPTION_CONTRACT_ADDRESS,
     abi: SUBSCRIPTION_ABI,
-    functionName: 'isActiveSubscriber',
-    args: [userAddress]
-  })
-  
-  return isActive
-}
+    functionName: "isActiveSubscriber",
+    args: [userAddress],
+  });
+
+  return isActive;
+};
 ```
 
 ---
@@ -822,6 +856,7 @@ const verifySubscription = async (userAddress) => {
 You can control ALL features directly from Clerk dashboard without code changes!
 
 **1. View Users by Subscription Tier:**
+
 ```
 Dashboard → Users → Filter by metadata
   → publicMetadata.subscription_tier = "pro"
@@ -830,6 +865,7 @@ Dashboard → Users → Filter by metadata
 ```
 
 **2. Bulk Operations:**
+
 ```
 Dashboard → Users → Select all Pro users → Bulk update
   → Add 1,000 bonus points: publicMetadata.points += 1000
@@ -838,15 +874,16 @@ Dashboard → Users → Select all Pro users → Bulk update
 ```
 
 **3. Manual Subscription Management:**
+
 ```
 Dashboard → User Profile → Edit Metadata
-  
+
 Example: Refund user
   ✅ Change subscription_tier from "pro" to "free"
   ✅ Clear subscription_expiry
   ✅ Add points: points += 30000 (30 USDT worth)
   ✅ Add note in privateMetadata: { refund_reason: "Requested refund" }
-  
+
 Example: Promotional upgrade
   ✅ Change tier to "premium" (influencer gets free Premium)
   ✅ Set expiry to 1 year from now
@@ -854,6 +891,7 @@ Example: Promotional upgrade
 ```
 
 **4. Feature Flags (Via Metadata):**
+
 ```
 Dashboard → User → Metadata Editor
 
@@ -894,7 +932,7 @@ export const SUBSCRIPTION_FEATURES = {
     governance_voting_power: 1, // Base voting power
     points_multiplier: 1.0,
     custom_sources: 0,
-    priority_support: false
+    priority_support: false,
   },
   pro: {
     max_bookmarks: -1, // Unlimited
@@ -904,7 +942,7 @@ export const SUBSCRIPTION_FEATURES = {
     governance_voting_power: 5, // 5x voting power
     points_multiplier: 1.5, // Earn 1.5x points
     custom_sources: 3, // Can request 3 custom sources
-    priority_support: false
+    priority_support: false,
   },
   premium: {
     max_bookmarks: -1,
@@ -914,55 +952,58 @@ export const SUBSCRIPTION_FEATURES = {
     governance_voting_power: 10, // 10x voting power
     points_multiplier: 2.0, // Earn 2x points
     custom_sources: -1, // Unlimited custom sources
-    priority_support: true
-  }
-}
+    priority_support: true,
+  },
+};
 
 // Check feature availability
 const canUseFeature = (user, featureName) => {
-  const tier = user.publicMetadata.subscription_tier || 'free'
-  const features = SUBSCRIPTION_FEATURES[tier]
-  
+  const tier = user.publicMetadata.subscription_tier || "free";
+  const features = SUBSCRIPTION_FEATURES[tier];
+
   // Check expiry
-  const expiry = user.publicMetadata.subscription_expiry
-  if (tier !== 'free' && new Date(expiry) < new Date()) {
-    return SUBSCRIPTION_FEATURES.free[featureName] // Downgrade to free
+  const expiry = user.publicMetadata.subscription_expiry;
+  if (tier !== "free" && new Date(expiry) < new Date()) {
+    return SUBSCRIPTION_FEATURES.free[featureName]; // Downgrade to free
   }
-  
-  return features[featureName]
-}
+
+  return features[featureName];
+};
 
 // Component-level feature control
 const AIFeedSection = () => {
-  const { user } = useUser()
-  const hasAccess = canUseFeature(user, 'ai_feed')
-  
+  const { user } = useUser();
+  const hasAccess = canUseFeature(user, "ai_feed");
+
   if (!hasAccess) {
     return (
       <div className="blur-md pointer-events-none relative">
         <AIFeedPreview />
         <UpgradeOverlay message="Upgrade to Pro to unlock AI Feed" />
       </div>
-    )
+    );
   }
-  
-  return <AIFeedFull />
-}
+
+  return <AIFeedFull />;
+};
 
 // Rate limiting based on tier
 const sendDirectMessage = async (recipientId, content) => {
-  const { user } = useUser()
-  const maxDMs = canUseFeature(user, 'max_dm_per_day')
-  
-  if (maxDMs !== -1) { // Not unlimited
-    const todayDMs = await countUserDMsToday(user.id)
+  const { user } = useUser();
+  const maxDMs = canUseFeature(user, "max_dm_per_day");
+
+  if (maxDMs !== -1) {
+    // Not unlimited
+    const todayDMs = await countUserDMsToday(user.id);
     if (todayDMs >= maxDMs) {
-      throw new Error(`Free tier limited to ${maxDMs} DMs/day. Upgrade to Pro for unlimited.`)
+      throw new Error(
+        `Free tier limited to ${maxDMs} DMs/day. Upgrade to Pro for unlimited.`
+      );
     }
   }
-  
+
   // Send message...
-}
+};
 ```
 
 **6. Clerk Dashboard UI Controls:**
@@ -974,7 +1015,7 @@ User: alice@example.com
   Status: Active ✅
   Created: 2024-01-15
   Last Sign In: 2 hours ago
-  
+
   Public Metadata:
     ├─ subscription_tier: "pro" [Edit]
     ├─ subscription_expiry: "2024-12-31T23:59:59Z" [Edit]
@@ -985,7 +1026,7 @@ User: alice@example.com
     │   ├─ governance_voting: true ✅
     │   └─ custom_sources: true ✅
     └─ smart_account_address: "0x456..." [View]
-  
+
   Actions:
     [Upgrade to Premium] [Downgrade to Free] [Extend Subscription]
     [Ban User] [Delete User] [Reset Password]
@@ -1000,6 +1041,7 @@ User: alice@example.com
 **Automatic Feature Disabling When:**
 
 **Scenario 1: Subscription Expires**
+
 ```javascript
 // Middleware auto-checks expiry
 if (new Date(user.publicMetadata.subscription_expiry) < new Date()) {
@@ -1007,10 +1049,10 @@ if (new Date(user.publicMetadata.subscription_expiry) < new Date()) {
   await clerkClient.users.updateUser(user.id, {
     publicMetadata: {
       ...user.publicMetadata,
-      subscription_tier: 'free', // Downgrade
-      features_enabled: SUBSCRIPTION_FEATURES.free
-    }
-  })
+      subscription_tier: "free", // Downgrade
+      features_enabled: SUBSCRIPTION_FEATURES.free,
+    },
+  });
 }
 
 // UI automatically reflects downgrade
@@ -1021,6 +1063,7 @@ if (new Date(user.publicMetadata.subscription_expiry) < new Date()) {
 ```
 
 **Scenario 2: Payment Failed (Grace Period)**
+
 ```javascript
 // If subscription payment fails (user's smart account has 0 USDT)
 // Clerk can set grace period:
@@ -1035,7 +1078,7 @@ publicMetadata: {
 if (user.publicMetadata.subscription_status === 'grace_period') {
   return (
     <Banner type="warning">
-      Your Pro subscription expires in 7 days. 
+      Your Pro subscription expires in 7 days.
       <button onClick={handleRenew}>Renew Now</button>
     </Banner>
   )
@@ -1043,6 +1086,7 @@ if (user.publicMetadata.subscription_status === 'grace_period') {
 ```
 
 **Scenario 3: User Banned/Suspended**
+
 ```javascript
 // In Clerk dashboard, ban user:
 User → Actions → Ban User
@@ -1069,77 +1113,77 @@ if (user.publicMetadata.status === 'banned') {
 // config/feature-matrix.ts
 export const FEATURE_MATRIX = {
   // Feature: [free, pro, premium]
-  ai_personalized_feed:    [false, true,  true],
-  unlimited_bookmarks:     [false, true,  true],
-  unlimited_dm:            [false, true,  true],
-  ad_free_experience:      [false, true,  true],
-  custom_content_sources:  [false, false, true],
-  advanced_analytics:      [false, false, true],
-  priority_support:        [false, false, true],
-  governance_proposals:    [false, true,  true], // Can CREATE proposals
-  
+  ai_personalized_feed: [false, true, true],
+  unlimited_bookmarks: [false, true, true],
+  unlimited_dm: [false, true, true],
+  ad_free_experience: [false, true, true],
+  custom_content_sources: [false, false, true],
+  advanced_analytics: [false, false, true],
+  priority_support: [false, false, true],
+  governance_proposals: [false, true, true], // Can CREATE proposals
+
   // Limits: [free, pro, premium]
-  max_bookmarks:           [50,    -1,    -1],   // -1 = unlimited
-  max_dm_per_day:          [5,     -1,    -1],
-  points_multiplier:       [1.0,   1.5,   2.0],
-  voting_power_bonus:      [0,     5,     10],
-  
+  max_bookmarks: [50, -1, -1], // -1 = unlimited
+  max_dm_per_day: [5, -1, -1],
+  points_multiplier: [1.0, 1.5, 2.0],
+  voting_power_bonus: [0, 5, 10],
+
   // UI Elements (show/hide based on tier)
-  show_ai_feed_tab:        [false, true,  true],
-  show_analytics_page:     [false, false, true],
+  show_ai_feed_tab: [false, true, true],
+  show_analytics_page: [false, false, true],
   show_custom_sources_btn: [false, false, true],
-  show_pro_badge:          [false, true,  false],
-  show_premium_badge:      [false, false, true],
-}
+  show_pro_badge: [false, true, false],
+  show_premium_badge: [false, false, true],
+};
 
 // Helper function
 const getFeatureAccess = (user, featureName) => {
-  const tier = user?.publicMetadata?.subscription_tier || 'free'
-  const tierIndex = { free: 0, pro: 1, premium: 2 }[tier]
-  
-  return FEATURE_MATRIX[featureName][tierIndex]
-}
+  const tier = user?.publicMetadata?.subscription_tier || "free";
+  const tierIndex = { free: 0, pro: 1, premium: 2 }[tier];
+
+  return FEATURE_MATRIX[featureName][tierIndex];
+};
 
 // Component usage
 const NavigationTabs = () => {
-  const { user } = useUser()
-  
+  const { user } = useUser();
+
   return (
     <nav>
       <Tab href="/latest">Latest</Tab>
       <Tab href="/hottest">Hottest</Tab>
-      
+
       {/* Only show if Pro or Premium */}
-      {getFeatureAccess(user, 'show_ai_feed_tab') && (
+      {getFeatureAccess(user, "show_ai_feed_tab") && (
         <Tab href="/ai-feed">🤖 AI Feed</Tab>
       )}
-      
+
       {/* Only show if Premium */}
-      {getFeatureAccess(user, 'show_analytics_page') && (
+      {getFeatureAccess(user, "show_analytics_page") && (
         <Tab href="/analytics">📊 Analytics</Tab>
       )}
     </nav>
-  )
-}
+  );
+};
 
 // Disable feature with visual feedback
 const BookmarkButton = ({ articleUrl }) => {
-  const { user } = useUser()
-  const maxBookmarks = getFeatureAccess(user, 'max_bookmarks')
-  const currentBookmarks = user.publicMetadata.bookmark_count || 0
-  
-  const canBookmark = maxBookmarks === -1 || currentBookmarks < maxBookmarks
-  
+  const { user } = useUser();
+  const maxBookmarks = getFeatureAccess(user, "max_bookmarks");
+  const currentBookmarks = user.publicMetadata.bookmark_count || 0;
+
+  const canBookmark = maxBookmarks === -1 || currentBookmarks < maxBookmarks;
+
   if (!canBookmark) {
     return (
       <button disabled className="opacity-50 cursor-not-allowed">
         ⭐ Bookmark (Limit Reached - Upgrade to Pro)
       </button>
-    )
+    );
   }
-  
-  return <button onClick={() => addBookmark(articleUrl)}>⭐ Bookmark</button>
-}
+
+  return <button onClick={() => addBookmark(articleUrl)}>⭐ Bookmark</button>;
+};
 ```
 
 **Clerk Dashboard Feature Configuration:**
@@ -1147,9 +1191,10 @@ const BookmarkButton = ({ articleUrl }) => {
 In your Clerk dashboard, you can:
 
 **View by Subscription Tier:**
+
 ```
 Users Tab → Filter by Metadata
-  
+
 Filter: publicMetadata.subscription_tier = "pro"
 Result: Shows 1,234 Pro users
 
@@ -1162,17 +1207,19 @@ Click any user → See their features:
 ```
 
 **Bulk Feature Updates:**
+
 ```
 Select All Pro Users → Bulk Actions → Update Metadata
 
 Add new feature to all Pro users:
   publicMetadata.features_enabled.beta_features = true
-  
+
 Result: All Pro users instantly get access to beta features
   (No code deployment needed!)
 ```
 
 **Manual Overrides (Promotions/Refunds):**
+
 ```
 User: influencer@example.com → Edit Metadata
 
@@ -1186,37 +1233,40 @@ Save → User instantly has Premium features
 ```
 
 **Automatic Downgrade on Expiry:**
+
 ```javascript
 // Cron job (runs daily via GitHub Actions)
 // scripts/check-subscriptions.js
 
-const { users } = await clerkClient.users.getUserList({ limit: 100 })
+const { users } = await clerkClient.users.getUserList({ limit: 100 });
 
 for (const user of users) {
-  const expiry = user.publicMetadata.subscription_expiry
-  
+  const expiry = user.publicMetadata.subscription_expiry;
+
   // Check if expired
   if (expiry && new Date(expiry) < new Date()) {
     // Auto-downgrade to free
     await clerkClient.users.updateUser(user.id, {
       publicMetadata: {
         ...user.publicMetadata,
-        subscription_tier: 'free',
+        subscription_tier: "free",
         features_enabled: SUBSCRIPTION_FEATURES.free,
-        previous_tier: user.publicMetadata.subscription_tier // Track for re-subscribe
-      }
-    })
-    
+        previous_tier: user.publicMetadata.subscription_tier, // Track for re-subscribe
+      },
+    });
+
     // Send email: "Your subscription has expired"
-    await sendEmail(user.emailAddresses[0].emailAddress, 
-      'Subscription Expired', 
-      'Renew your Pro subscription to continue enjoying premium features'
-    )
+    await sendEmail(
+      user.emailAddresses[0].emailAddress,
+      "Subscription Expired",
+      "Renew your Pro subscription to continue enjoying premium features"
+    );
   }
 }
 ```
 
 **Benefits:**
+
 - ✅ **No Code Changes**: Update features from dashboard
 - ✅ **Real-Time**: Changes apply instantly (< 1 second)
 - ✅ **Bulk Operations**: Update 1,000 users in one click
@@ -1232,12 +1282,12 @@ const verifySubscription = async (userAddress) => {
   const isActive = await readContract({
     address: SUBSCRIPTION_CONTRACT_ADDRESS,
     abi: SUBSCRIPTION_ABI,
-    functionName: 'isActiveSubscriber',
-    args: [userAddress]
-  })
-  
-  return isActive
-}
+    functionName: "isActiveSubscriber",
+    args: [userAddress],
+  });
+
+  return isActive;
+};
 ```
 
 ---
@@ -1249,6 +1299,7 @@ const verifySubscription = async (userAddress) => {
 **All Formats Supported:** Static Images (JPG, PNG, WebP), Animated GIFs, Videos (MP4, WebM)
 
 **Type 1: Banner Ads**
+
 - **Placements:**
   - Homepage Top Banner: 970x250 (desktop), 320x100 (mobile)
   - Sidebar Rectangles: 300x250
@@ -1260,6 +1311,7 @@ const verifySubscription = async (userAddress) => {
 - **Tenure Options:** 1 week, 2 weeks, 1 month, 3 months (10% discount), 6 months (20% discount)
 
 **Type 2: Sponsored Posts**
+
 - **Format:** Native content in article feed with "Sponsored" badge
 - **Includes:** Title, description, thumbnail (image/video), click-through URL
 - **Pricing (Auction-Based):**
@@ -1268,6 +1320,7 @@ const verifySubscription = async (userAddress) => {
 - **Tenure Options:** 1 week, 2 weeks, 1 month
 
 **Type 3: Promoted Links**
+
 - **Format:** Priority placement at top of category (first 3 slots)
 - **Badge:** "Promoted" tag on article card
 - **Pricing (Auction-Based):**
@@ -1278,6 +1331,7 @@ const verifySubscription = async (userAddress) => {
 ### 3.2 Auction Mechanism (NEW - WITH PARTICIPATION FEE)
 
 **Key Features:**
+
 1. ✅ **1 USDT Non-Refundable Participation Fee** - Required to join any auction
 2. ✅ **Automatic Scheduling** - New auction starts 24 hours before current lease expires
 3. ✅ **Subscription Notifications** - Users get alerts when subscribed ad slots are expiring
@@ -1321,6 +1375,7 @@ STEP 6: New Lease Begins
 ```
 
 **Example Timeline:**
+
 ```
 Day 0: User A wins slot, leases for 7 days (expires Day 7)
 Day 6 at 00:00: Smart contract emits ExpiryWarning event
@@ -1334,6 +1389,7 @@ Day 7 at 00:01: User B & C refunded (150 USDT, 160 USDT) - participation fees NO
 ```
 
 **Subscription System:**
+
 - Users can "subscribe" to specific ad slots (e.g., "Homepage Banner 1")
 - When auction opens for that slot, subscribers get notification
 - Notifications: Email (via Supabase) + Push (via Web Push API)
@@ -1383,67 +1439,69 @@ function getSlotInfo(string slotId) external view returns (
 ```
 
 **Event Monitoring (Backend Listener):**
+
 ```javascript
 // Backend service listens to these events
-contract.on('ExpiryWarning', (slotId, expiryTime) => {
+contract.on("ExpiryWarning", (slotId, expiryTime) => {
   // Send notifications to all subscribers
-  notifySubscribers(slotId, expiryTime)
-})
+  notifySubscribers(slotId, expiryTime);
+});
 
-contract.on('AuctionScheduled', (slotId, startTime, endTime) => {
+contract.on("AuctionScheduled", (slotId, startTime, endTime) => {
   // Update UI to show new auction is live
-  updateAuctionStatus(slotId, 'active')
-})
+  updateAuctionStatus(slotId, "active");
+});
 
-contract.on('AuctionFinalized', (slotId, winner, amount) => {
+contract.on("AuctionFinalized", (slotId, winner, amount) => {
   // Update UI to show new ad
-  activateAd(slotId, winner)
-})
+  activateAd(slotId, winner);
+});
 ```
 
 **User Interaction via Reown:**
+
 ```javascript
 // Example: User joins auction and places bid
-import { useWriteContract } from 'wagmi'
+import { useWriteContract } from "wagmi";
 
 function JoinAndBid() {
-  const { writeContract } = useWriteContract()
-  
+  const { writeContract } = useWriteContract();
+
   const joinAuction = async () => {
     // Step 1: Approve 1 USDT for participation fee
     await writeContract({
       address: USDT_ADDRESS,
       abi: ERC20_ABI,
-      functionName: 'approve',
-      args: [AD_CONTRACT_ADDRESS, ethers.parseUnits('1', 6)] // 1 USDT
-    })
-    
+      functionName: "approve",
+      args: [AD_CONTRACT_ADDRESS, ethers.parseUnits("1", 6)], // 1 USDT
+    });
+
     // Step 2: Join auction
     await writeContract({
       address: AD_CONTRACT_ADDRESS,
       abi: AD_ABI,
-      functionName: 'joinAuction',
-      args: ['homepage_banner_1']
-    })
-  }
-  
+      functionName: "joinAuction",
+      args: ["homepage_banner_1"],
+    });
+  };
+
   const placeBid = async (amount) => {
     // Step 3: Approve bid amount
     await writeContract({
       address: USDT_ADDRESS,
       abi: ERC20_ABI,
-      functionName: 'approve',
-      args: [AD_CONTRACT_ADDRESS, ethers.parseUnits(amount, 6)]
-    })
-    
+      functionName: "approve",
+      args: [AD_CONTRACT_ADDRESS, ethers.parseUnits(amount, 6)],
+    });
+
     // Step 4: Place bid
     await writeContract({
       address: AD_CONTRACT_ADDRESS,
       abi: AD_ABI,
-      functionName: 'placeBid',
-      args: ['homepage_banner_1', ethers.parseUnits(amount, 6), 7] // 7 days
-    })
-  }
+      functionName: "placeBid",
+      args: ["homepage_banner_1", ethers.parseUnits(amount, 6), 7], // 7 days
+    });
+  };
 }
 ```
 
@@ -1454,6 +1512,7 @@ function JoinAndBid() {
 ### 4.1 Points Earning
 
 **How Users Earn Points:**
+
 - Submit quality content (10+ upvotes): **1,000 points**
 - Receive upvote on submission: **10 points per upvote**
 - Quality comment (5+ upvotes): **50 points**
@@ -1464,6 +1523,7 @@ function JoinAndBid() {
 - Subscribe to ad slot (engagement): **10 points** (one-time per slot)
 
 **Anti-Gaming Measures:**
+
 - Upvote weighting: New accounts have lower voting power
 - Content moderation: Spam submissions rejected (no points awarded)
 - Daily limits: Max 5,000 points per user per day from earning activities
@@ -1482,22 +1542,23 @@ function JoinAndBid() {
 **Cooldown Period:** 7-day waiting period between conversions (anti-farming)
 
 **Conversion Flow:**
+
 ```
 User Profile Page:
   Points Balance: 150,000
   USDT Balance: 0.00
-  
+
 Click "Convert Points to USDT"
   → Enter amount: 100,000 points
   → System shows: "You will receive 99 USDT (1% fee = 1 USDT)"
   → Confirm conversion
-  
+
 Backend:
   1. Deduct 100,000 points from Supabase user.points
   2. Add 99 USDT to Supabase user.usdt_balance (off-chain ledger)
   3. Record transaction in points_transactions table
   4. Set last_conversion_at = NOW() (start 7-day cooldown)
-  
+
 User sees:
   Points Balance: 50,000
   USDT Balance: 99.00 USDT
@@ -1510,6 +1571,7 @@ User sees:
 **Minimum Withdrawal:** 10 USDT (to cover gas costs)
 
 **Withdrawal Flow:**
+
 ```
 User goes to /rewards page
   → Click "Withdraw USDT"
@@ -1518,12 +1580,12 @@ User goes to /rewards page
   → Enter amount: 99 USDT
   → System shows: "Net withdrawal: 98.01 USDT (1% fee = 0.99 USDT, gas ~0.5 USDT)"
   → Confirm withdrawal
-  
+
 Reown AppKit executes:
   1. Platform treasury contract transfers 98.01 USDT to user's smart account
   2. Transaction confirmed on blockchain
   3. User's Reown wallet shows +98.01 USDT
-  
+
 User can now:
   - Send to external wallet (CEX, hardware wallet, etc.)
   - Swap to other tokens
@@ -1532,6 +1594,7 @@ User can now:
 ```
 
 **Implementation Notes:**
+
 - Withdrawals are MANUAL initially (owner sends USDT from treasury to user)
 - Phase 2: Automate via backend service listening to withdrawal requests
 - Phase 3: Fully trustless via smart contract (requires audit)
@@ -1539,12 +1602,14 @@ User can now:
 ### 4.4 Economic Health Monitoring
 
 **Target Metrics:**
+
 - **Points Issued vs Redeemed:** Target ratio 2:1 (2x more issued than redeemed)
 - **USDT Inflow vs Outflow:** Target ratio 1.5:1 (ad revenue > user withdrawals)
 - **Treasury Balance:** Maintain 10,000 USDT minimum per chain
 - **Conversion Rate Adjustment:** If ratio drops below 1.2:1, increase to 1,200 points = 1 USDT
 
 **Admin Dashboard (`/admin`):**
+
 - Real-time treasury balance (all chains)
 - Daily/weekly/monthly revenue (ads + fees)
 - Points circulation (issued, redeemed, burned)
@@ -1562,6 +1627,7 @@ User can now:
 **What Dune Analytics Tracks:**
 
 **On-Chain Metrics (Smart Contract Events):**
+
 1. **Advertisement Auctions:**
    - Total ad spend (by chain, by ad type)
    - Number of auctions per day/week/month
@@ -1597,6 +1663,7 @@ User can now:
    - Gas costs paid by platform (if sponsoring)
 
 **Off-Chain Metrics (Supabase + Clerk - NOT Dune):**
+
 - Website traffic (page views, unique visitors)
 - Content metrics (articles fetched, sources used)
 - Social activity (follows, likes, messages)
@@ -1605,6 +1672,7 @@ User can now:
 ### 4.5.2 Dune Dashboard Creation
 
 **Step 1: Create Dune Account** (FREE)
+
 - Sign up at https://dune.com (free forever for public dashboards)
 - No credit card required
 
@@ -1615,7 +1683,7 @@ Dune automatically indexes all major chains (Ethereum, Polygon, BSC, Arbitrum, O
 ```sql
 -- Example Dune SQL Query: Total Ad Revenue by Chain
 
-SELECT 
+SELECT
   blockchain,
   DATE_TRUNC('day', block_time) as date,
   COUNT(*) as auction_count,
@@ -1639,7 +1707,7 @@ ORDER BY date DESC
 
 ```sql
 -- Chart 1: Ad Revenue Over Time (Line Chart)
-SELECT 
+SELECT
   DATE_TRUNC('day', block_time) as date,
   SUM(bid_amount / 1e6) as revenue
 FROM AdPaymentContract_evt_BidPlaced
@@ -1648,14 +1716,14 @@ GROUP BY 1
 ORDER BY 1
 
 -- Chart 2: Revenue by Chain (Pie Chart)
-SELECT 
+SELECT
   blockchain,
   SUM(bid_amount / 1e6) as revenue
 FROM AdPaymentContract_evt_BidPlaced
 GROUP BY 1
 
 -- Chart 3: Top Advertisers (Bar Chart)
-SELECT 
+SELECT
   bidder as advertiser,
   COUNT(*) as total_bids,
   SUM(bid_amount / 1e6) as total_spent_usdt
@@ -1665,7 +1733,7 @@ ORDER BY 3 DESC
 LIMIT 10
 
 -- Chart 4: Subscription Growth (Area Chart)
-SELECT 
+SELECT
   DATE_TRUNC('day', block_time) as date,
   tier,
   COUNT(*) as new_subscriptions
@@ -1675,7 +1743,7 @@ GROUP BY 1, 2
 ORDER BY 1
 
 -- Chart 5: Treasury Balance (Multi-Line Chart)
-SELECT 
+SELECT
   blockchain,
   DATE_TRUNC('day', block_time) as date,
   SUM(amount / 1e6) as cumulative_balance
@@ -1695,6 +1763,7 @@ ORDER BY 1, 2
 **Step 4: Build Dashboard** (like WooFi example)
 
 Dune dashboard structure:
+
 ```
 Web3News Analytics Dashboard
 ├─ Overview Section
@@ -1730,20 +1799,20 @@ Web3News Analytics Dashboard
 
 ```jsx
 // app/analytics/page.tsx
-import { useUser } from '@clerk/nextjs'
+import { useUser } from "@clerk/nextjs";
 
 export default function AnalyticsPage() {
-  const { user } = useUser()
-  const isPremium = user?.publicMetadata?.subscription_tier === 'premium'
-  
+  const { user } = useUser();
+  const isPremium = user?.publicMetadata?.subscription_tier === "premium";
+
   if (!isPremium) {
-    return <UpgradePrompt requiredTier="premium" />
+    return <UpgradePrompt requiredTier="premium" />;
   }
-  
+
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-8">📊 Platform Analytics</h1>
-      
+
       {/* Embed Dune Dashboard */}
       <iframe
         src="https://dune.com/embeds/1234567/5678901/your-dashboard-id"
@@ -1752,7 +1821,7 @@ export default function AnalyticsPage() {
         frameBorder="0"
         className="rounded-lg shadow-lg"
       />
-      
+
       {/* Or embed individual charts */}
       <div className="grid grid-cols-2 gap-4 mt-8">
         <iframe
@@ -1767,7 +1836,7 @@ export default function AnalyticsPage() {
         />
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -1780,15 +1849,18 @@ export function PublicStats() {
     <div className="bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container mx-auto">
         <h2 className="text-2xl font-bold mb-6">📈 Platform Statistics</h2>
-        
+
         <div className="grid grid-cols-4 gap-4 mb-8">
           {/* Big numbers from Dune API */}
           <StatCard title="Total Revenue" value="125,000 USDT" />
-          <StatCard title="Active Subscribers" value="1,234 Pro + 234 Premium" />
+          <StatCard
+            title="Active Subscribers"
+            value="1,234 Pro + 234 Premium"
+          />
           <StatCard title="Treasury Balance" value="85,000 USDT" />
           <StatCard title="Total Users" value="10,234" />
         </div>
-        
+
         {/* Embed mini Dune chart */}
         <iframe
           src="https://dune.com/embeds/your-dashboard/revenue-7days"
@@ -1797,7 +1869,7 @@ export function PublicStats() {
         />
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -1807,38 +1879,39 @@ export function PublicStats() {
 
 ```javascript
 // lib/utils/dune.ts
-const DUNE_API_KEY = process.env.DUNE_API_KEY // Optional for public queries
+const DUNE_API_KEY = process.env.DUNE_API_KEY; // Optional for public queries
 
 export const getDuneData = async (queryId) => {
   const response = await fetch(
     `https://api.dune.com/api/v1/query/${queryId}/results`,
     {
       headers: {
-        'X-Dune-API-Key': DUNE_API_KEY // Optional for public queries
-      }
+        "X-Dune-API-Key": DUNE_API_KEY, // Optional for public queries
+      },
     }
-  )
-  
-  const data = await response.json()
-  return data.result.rows
-}
+  );
+
+  const data = await response.json();
+  return data.result.rows;
+};
 
 // Usage: Display stats on homepage
 const StatsWidget = async () => {
-  const stats = await getDuneData('1234567') // Your query ID
-  
+  const stats = await getDuneData("1234567"); // Your query ID
+
   return (
     <div>
       <h3>Total Revenue: {stats[0].total_revenue} USDT</h3>
       <h3>Active Ads: {stats[0].active_ads}</h3>
     </div>
-  )
-}
+  );
+};
 ```
 
 ### 4.5.5 Analytics Dashboard Split
 
 **Public Analytics** (Free for everyone):
+
 - Total platform revenue (last 30 days)
 - Number of active ads
 - Top content categories
@@ -1846,6 +1919,7 @@ const StatsWidget = async () => {
 - Embedded Dune chart (revenue over time)
 
 **Premium Analytics** (Premium tier only):
+
 - **Full Dune Dashboard Embed:**
   - Revenue breakdown by chain
   - Top advertisers table
@@ -1859,6 +1933,7 @@ const StatsWidget = async () => {
   - Your auction win rate
 
 **Admin Analytics** (`/admin` - Owner only):
+
 - **Dune Dashboard** (full access)
 - **Clerk Dashboard** (user management)
 - **Supabase Dashboard** (database metrics)
@@ -1871,15 +1946,18 @@ const StatsWidget = async () => {
 ### 4.5.6 Implementation Timeline
 
 **Phase 1 (MVP):**
+
 - ✅ Basic stats (total users, total articles, total ads)
 - ✅ Simple Supabase queries (no Dune yet)
 
 **Phase 2 (Beta):**
+
 - ✅ Create Dune dashboard (after smart contracts deployed to mainnet)
 - ✅ Embed Dune charts in `/analytics` page
 - ✅ Public stats widget on homepage
 
 **Phase 3 (Production):**
+
 - ✅ Full Dune dashboard embed (Premium users)
 - ✅ Real-time treasury monitoring
 - ✅ Dune API integration (fetch stats programmatically)
@@ -1909,20 +1987,20 @@ const getRecommendations = async (userId) => {
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(100)
-  
+
   // 2. Find similar users (who bookmarked same articles)
   const similarUsers = await supabase.rpc('find_similar_users', {
     user_id: userId,
     min_overlap: 3 // At least 3 common bookmarks
   })
-  
+
   // 3. Get articles liked by similar users but not by this user
   const recommendations = await supabase.rpc('get_collaborative_recommendations', {
     user_id: userId,
     similar_user_ids: similarUsers.map(u => u.id),
     limit: 50
   })
-  
+
   return recommendations
 }
 
@@ -1944,12 +2022,14 @@ $$ LANGUAGE SQL;
 ```
 
 **Pros:**
+
 - ✅ 100% free (runs in Supabase)
 - ✅ No external APIs needed
 - ✅ Fast execution (< 100ms)
 - ✅ Privacy-friendly
 
 **Cons:**
+
 - ❌ Cold start problem (new users get generic feed)
 - ❌ Less accurate than AI
 
@@ -1980,17 +2060,17 @@ const findSimilarArticles = (userLikedArticles, allArticles) => {
   const userEmbeddings = await Promise.all(
     userLikedArticles.map(getArticleEmbedding)
   )
-  
+
   // 2. Calculate average user profile embedding
   const userProfile = tf.mean(userEmbeddings, 0)
-  
+
   // 3. Calculate similarity with all articles
   const recommendations = allArticles.map(article => {
     const articleEmbedding = article.embedding // Pre-computed
     const similarity = cosineSimilarity(userProfile, articleEmbedding)
     return { article, score: similarity }
   })
-  
+
   // 4. Return top 50 recommendations
   return recommendations
     .sort((a, b) => b.score - a.score)
@@ -1999,11 +2079,13 @@ const findSimilarArticles = (userLikedArticles, allArticles) => {
 ```
 
 **Pros:**
+
 - ✅ 100% free (runs in browser)
 - ✅ Better accuracy than collaborative filtering
 - ✅ No cold start problem (can recommend to new users)
 
 **Cons:**
+
 - ❌ 10 MB model download (one-time)
 - ❌ CPU-intensive (may drain mobile battery)
 
@@ -2024,12 +2106,12 @@ const openai = new OpenAI({
 // Generate embeddings for new articles (run once when article added)
 const generateArticleEmbedding = async (article) => {
   const text = `${article.title}. ${article.description}`
-  
+
   const response = await openai.embeddings.create({
     model: 'text-embedding-3-small', // Cheapest model
     input: text
   })
-  
+
   return response.data[0].embedding // 1536-dimensional vector
 }
 
@@ -2037,21 +2119,21 @@ const generateArticleEmbedding = async (article) => {
 const getPersonalizedFeed = async (userId) => {
   // 1. Get user's reading history
   const history = await getUserHistory(userId)
-  
+
   // 2. Generate user profile embedding
   const userProfile = history.map(a => a.title).join('. ')
   const profileEmbedding = await openai.embeddings.create({
     model: 'text-embedding-3-small',
     input: userProfile
   })
-  
+
   // 3. Find similar articles using Supabase vector search
   const { data } = await supabase.rpc('match_articles', {
     query_embedding: profileEmbedding.data[0].embedding,
     match_threshold: 0.7,
     match_count: 50
   })
-  
+
   return data
 }
 
@@ -2065,7 +2147,7 @@ CREATE OR REPLACE FUNCTION match_articles(
   title TEXT,
   similarity FLOAT
 ) AS $$
-  SELECT 
+  SELECT
     id,
     title,
     1 - (embedding <=> query_embedding) AS similarity
@@ -2077,6 +2159,7 @@ $$ LANGUAGE SQL;
 ```
 
 **Cost Calculation:**
+
 - **Model:** text-embedding-3-small @ $0.02 per 1M tokens
 - **Average article:** 100 tokens
 - **10,000 articles:** 1M tokens = **$0.02** (one-time)
@@ -2086,12 +2169,14 @@ $$ LANGUAGE SQL;
 **Total Cost:** $0.02 (one-time) + $0.06/month = **$0.08/month for 1,000 users** ✅
 
 **Pros:**
+
 - ✅ Extremely cheap ($0.08/month)
 - ✅ Best quality recommendations
 - ✅ Fast execution (< 200ms)
 - ✅ No client-side processing
 
 **Cons:**
+
 - ❌ Not 100% free (but very cheap)
 - ❌ Requires API key
 
@@ -2099,11 +2184,11 @@ $$ LANGUAGE SQL;
 
 ### 4.5.2 Recommendation Algorithm Comparison
 
-| Approach | Cost | Accuracy | Speed | Cold Start |
-|----------|------|----------|-------|-----------|
-| Collaborative Filtering | $0 | 70% | Fast | ❌ Poor |
-| TensorFlow.js | $0 | 80% | Medium | ✅ Good |
-| OpenAI Embeddings | $0.08/mo | 95% | Fast | ✅ Good |
+| Approach                | Cost     | Accuracy | Speed  | Cold Start |
+| ----------------------- | -------- | -------- | ------ | ---------- |
+| Collaborative Filtering | $0       | 70%      | Fast   | ❌ Poor    |
+| TensorFlow.js           | $0       | 80%      | Medium | ✅ Good    |
+| OpenAI Embeddings       | $0.08/mo | 95%      | Fast   | ✅ Good    |
 
 **Recommendation:** Start with **Collaborative Filtering** (MVP), upgrade to **OpenAI** when you have revenue ($10/month ad revenue easily covers $0.08 API costs).
 
@@ -2116,6 +2201,7 @@ $$ LANGUAGE SQL;
 **Feature:** Users can follow other users to see their activity in their feed
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE user_follows (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -2131,42 +2217,45 @@ CREATE INDEX idx_follows_following ON user_follows(following_id);
 ```
 
 **Implementation:**
+
 ```javascript
 // Follow user
 const followUser = async (userId, targetUserId) => {
-  await supabase.from('user_follows').insert({
+  await supabase.from("user_follows").insert({
     follower_id: userId,
-    following_id: targetUserId
-  })
-  
+    following_id: targetUserId,
+  });
+
   // Send notification to target user
-  await supabase.from('notifications').insert({
+  await supabase.from("notifications").insert({
     user_id: targetUserId,
-    type: 'new_follower',
+    type: "new_follower",
     content: `${user.username} started following you`,
-    link: `/profile/${user.username}`
-  })
-}
+    link: `/profile/${user.username}`,
+  });
+};
 
 // Get feed from followed users
 const getFollowingFeed = async (userId) => {
   const { data } = await supabase
-    .from('submissions')
-    .select('*, users!inner(id, username, avatar_url)')
-    .in('user_id', 
+    .from("submissions")
+    .select("*, users!inner(id, username, avatar_url)")
+    .in(
+      "user_id",
       supabase
-        .from('user_follows')
-        .select('following_id')
-        .eq('follower_id', userId)
+        .from("user_follows")
+        .select("following_id")
+        .eq("follower_id", userId)
     )
-    .order('created_at', { ascending: false })
-    .limit(50)
-  
-  return data
-}
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  return data;
+};
 ```
 
 **UI Features:**
+
 - Follow/Unfollow button on user profiles
 - Follower/Following count on profiles
 - "Following" feed tab showing activity from followed users
@@ -2179,6 +2268,7 @@ const getFollowingFeed = async (userId) => {
 **Feature:** Users can like articles and submissions
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE article_likes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -2195,40 +2285,42 @@ CREATE INDEX idx_likes_article ON article_likes(article_url);
 ```
 
 **Implementation:**
+
 ```javascript
 // Like article
 const likeArticle = async (userId, article) => {
-  await supabase.from('article_likes').insert({
+  await supabase.from("article_likes").insert({
     user_id: userId,
     article_url: article.url,
     article_title: article.title,
-    article_source: article.source
-  })
-  
+    article_source: article.source,
+  });
+
   // Award points to article submitter (if exists)
   const { data: submission } = await supabase
-    .from('submissions')
-    .select('user_id')
-    .eq('url', article.url)
-    .single()
-  
+    .from("submissions")
+    .select("user_id")
+    .eq("url", article.url)
+    .single();
+
   if (submission) {
-    await awardPoints(submission.user_id, 10, 'like_received')
+    await awardPoints(submission.user_id, 10, "like_received");
   }
-}
+};
 
 // Get article like count
 const getArticleLikes = async (articleUrl) => {
   const { count } = await supabase
-    .from('article_likes')
-    .select('*', { count: 'exact', head: true })
-    .eq('article_url', articleUrl)
-  
-  return count
-}
+    .from("article_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("article_url", articleUrl);
+
+  return count;
+};
 ```
 
 **UI Features:**
+
 - Heart icon on article cards (filled if liked)
 - Like count displayed
 - "Liked Articles" page showing user's liked content
@@ -2241,6 +2333,7 @@ const getArticleLikes = async (articleUrl) => {
 **Feature:** Users can send private messages to each other
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE conversations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -2266,54 +2359,60 @@ CREATE INDEX idx_messages_unread ON messages(conversation_id, read) WHERE read =
 ```
 
 **Implementation (Supabase Realtime):**
+
 ```javascript
 // Send message
 const sendMessage = async (senderId, recipientId, content) => {
   // 1. Get or create conversation
   const { data: conversation } = await supabase
-    .from('conversations')
+    .from("conversations")
     .upsert({
       participant_1: Math.min(senderId, recipientId),
       participant_2: Math.max(senderId, recipientId),
-      last_message_at: new Date()
+      last_message_at: new Date(),
     })
     .select()
-    .single()
-  
+    .single();
+
   // 2. Insert message
-  await supabase.from('messages').insert({
+  await supabase.from("messages").insert({
     conversation_id: conversation.id,
     sender_id: senderId,
-    content: content
-  })
-  
+    content: content,
+  });
+
   // 3. Send push notification to recipient
   await sendPushNotification(recipientId, {
     title: `New message from ${sender.username}`,
     body: content.substring(0, 100),
-    link: `/messages/${conversation.id}`
-  })
-}
+    link: `/messages/${conversation.id}`,
+  });
+};
 
 // Subscribe to new messages (Supabase Realtime)
 const subscribeToMessages = (conversationId, onNewMessage) => {
   const channel = supabase
     .channel(`conversation:${conversationId}`)
-    .on('postgres_changes', {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'messages',
-      filter: `conversation_id=eq.${conversationId}`
-    }, payload => {
-      onNewMessage(payload.new)
-    })
-    .subscribe()
-  
-  return () => channel.unsubscribe()
-}
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+        filter: `conversation_id=eq.${conversationId}`,
+      },
+      (payload) => {
+        onNewMessage(payload.new);
+      }
+    )
+    .subscribe();
+
+  return () => channel.unsubscribe();
+};
 ```
 
 **UI Features:**
+
 - Messages inbox (like Twitter DMs)
 - Real-time message updates (Supabase Realtime)
 - Unread message count badge
@@ -2332,36 +2431,42 @@ const subscribeToMessages = (conversationId, onNewMessage) => {
 **What Users Can Vote On:**
 
 **1. Content Moderation (Community Decisions)**
+
 - Approve/reject flagged content
 - Ban users (requires 51% approval)
 - Update community guidelines
 - Example: "Should we allow political content?" (Yes/No/Abstain)
 
 **2. Economic Policy (Platform Economics)**
+
 - Adjust points-to-USDT conversion rate (currently 1,000 points = 1 USDT)
 - Adjust platform fees (currently 1% conversion, 1% withdrawal)
 - Adjust ad slot pricing minimums
 - Example: "Reduce withdrawal fee from 1% to 0.5%?" (Yes/No)
 
 **3. Feature Prioritization (Development Roadmap)**
+
 - Vote on next features to build (AI search, mobile app, video support)
 - Vote on which content sources to add next
 - Vote on UI/UX improvements
 - Example: "Prioritize mobile app or AI search?" (Option A/B)
 
 **4. Treasury Spending (Financial Decisions)**
+
 - Allocate treasury funds for development
 - Fund developer bounties (e.g., $5,000 to add TikTok integration)
 - Marketing campaigns (e.g., $10,000 for influencer partnerships)
 - Example: "Allocate $20,000 for smart contract audit?" (Yes/No)
 
 **5. Ad Slot Policies (Advertising Rules)**
+
 - Special auction rules (e.g., charity gets 50% discount)
 - Blacklist advertisers
 - Ad content policies
 - Example: "Ban gambling ads?" (Yes/No)
 
 **6. Partnership Decisions (Strategic Partnerships)**
+
 - Partnerships with other platforms
 - Integrations (e.g., integrate with Lens Protocol?)
 - Sponsorship deals
@@ -2376,30 +2481,31 @@ Users earn voting power through contributions, not just holding tokens:
 ```javascript
 // Calculate user's voting power
 const calculateVotingPower = (user) => {
-  let power = 0
-  
+  let power = 0;
+
   // Base power: 1 vote per user (democratic)
-  power += 1
-  
+  power += 1;
+
   // Content contribution: +1 vote per 10 approved submissions
-  power += Math.floor(user.approved_submissions / 10)
-  
+  power += Math.floor(user.approved_submissions / 10);
+
   // Quality bonus: +1 vote per 1,000 upvotes received
-  power += Math.floor(user.total_upvotes / 1000)
-  
+  power += Math.floor(user.total_upvotes / 1000);
+
   // Longevity bonus: +1 vote per 100 days as member
-  const daysSinceJoin = (Date.now() - user.created_at) / (1000 * 60 * 60 * 24)
-  power += Math.floor(daysSinceJoin / 100)
-  
+  const daysSinceJoin = (Date.now() - user.created_at) / (1000 * 60 * 60 * 24);
+  power += Math.floor(daysSinceJoin / 100);
+
   // Points stake: +1 vote per 10,000 points balance
-  power += Math.floor(user.points / 10000)
-  
+  power += Math.floor(user.points / 10000);
+
   // Cap voting power at 100 votes (prevent whale domination)
-  return Math.min(power, 100)
-}
+  return Math.min(power, 100);
+};
 ```
 
 **Voting Power Tiers:**
+
 - **Tier 1** (1-5 votes): New users, lurkers
 - **Tier 2** (6-20 votes): Regular contributors
 - **Tier 3** (21-50 votes): Power users
@@ -2408,6 +2514,7 @@ const calculateVotingPower = (user) => {
 ### 4.7.3 Smart Contract Implementation
 
 **GovernanceContract.sol:**
+
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
@@ -2423,26 +2530,26 @@ contract Governance {
         bool passed;
         address proposer;
     }
-    
+
     mapping(uint256 => Proposal) public proposals;
     mapping(uint256 => mapping(address => bool)) public hasVoted;
     mapping(uint256 => mapping(address => uint256)) public votingPower; // Store voting power at proposal time
-    
+
     uint256 public nextProposalId;
     uint256 public constant QUORUM = 10; // 10% of voting power must participate
     uint256 public constant VOTING_PERIOD = 7 days;
-    
+
     event ProposalCreated(uint256 proposalId, string title, address proposer);
     event VoteCast(uint256 proposalId, address voter, bool support, uint256 power);
     event ProposalExecuted(uint256 proposalId, bool passed);
-    
+
     // Create new proposal
     function createProposal(
         string memory title,
         string memory description
     ) external returns (uint256) {
         uint256 proposalId = nextProposalId++;
-        
+
         proposals[proposalId] = Proposal({
             title: title,
             description: description,
@@ -2453,52 +2560,52 @@ contract Governance {
             passed: false,
             proposer: msg.sender
         });
-        
+
         emit ProposalCreated(proposalId, title, msg.sender);
         return proposalId;
     }
-    
+
     // Cast vote
     function vote(uint256 proposalId, bool support, uint256 power) external {
         Proposal storage proposal = proposals[proposalId];
-        
+
         require(block.timestamp < proposal.deadline, "Voting period ended");
         require(!hasVoted[proposalId][msg.sender], "Already voted");
         require(power > 0, "No voting power");
-        
+
         // Record vote
         if (support) {
             proposal.votesFor += power;
         } else {
             proposal.votesAgainst += power;
         }
-        
+
         hasVoted[proposalId][msg.sender] = true;
         votingPower[proposalId][msg.sender] = power;
-        
+
         emit VoteCast(proposalId, msg.sender, support, power);
     }
-    
+
     // Execute proposal after voting period
     function executeProposal(uint256 proposalId) external {
         Proposal storage proposal = proposals[proposalId];
-        
+
         require(block.timestamp >= proposal.deadline, "Voting still active");
         require(!proposal.executed, "Already executed");
-        
+
         uint256 totalVotes = proposal.votesFor + proposal.votesAgainst;
         uint256 totalPower = getTotalVotingPower(); // From off-chain oracle
-        
+
         // Check quorum (10% participation)
         require(totalVotes >= (totalPower * QUORUM) / 100, "Quorum not reached");
-        
+
         // Check if passed (simple majority)
         proposal.passed = proposal.votesFor > proposal.votesAgainst;
         proposal.executed = true;
-        
+
         emit ProposalExecuted(proposalId, proposal.passed);
     }
-    
+
     // Get total voting power (set by oracle)
     function getTotalVotingPower() public view returns (uint256) {
         // This would be updated by off-chain oracle based on Supabase data
@@ -2511,6 +2618,7 @@ contract Governance {
 ### 4.7.4 Voting UI
 
 **Proposal Page (`/governance`):**
+
 - List of active proposals
 - Vote For/Against buttons
 - Voting power displayed
@@ -2519,10 +2627,11 @@ contract Governance {
 - Proposal details modal
 
 **Example Vote:**
+
 ```
 Proposal #12: Reduce Withdrawal Fee
 
-Description: Reduce withdrawal fee from 1% to 0.5% to encourage more 
+Description: Reduce withdrawal fee from 1% to 0.5% to encourage more
 user withdrawals and improve platform competitiveness.
 
 Proposed by: @alice (100 days ago)
@@ -2531,7 +2640,7 @@ Ends in: 3 days 5 hours
 Current Results:
   For: 12,456 votes (68%)
   Against: 5,821 votes (32%)
-  
+
 Your Voting Power: 15 votes
 Status: Not voted yet
 
@@ -2543,6 +2652,7 @@ Status: Not voted yet
 **Proposal Cost:** 1,000 points (to prevent spam)
 
 **Voting Rewards:**
+
 - Vote on proposal: 10 points
 - Proposal passes (if you voted with majority): 50 bonus points
 - Create proposal that passes: 500 bonus points
@@ -2557,7 +2667,8 @@ Status: Not voted yet
 
 **Limits:** 500 MB storage, 2 GB bandwidth/month
 
-**Architecture Change:** 
+**Architecture Change:**
+
 - ❌ **NO users table** (stored in Clerk metadata instead!)
 - ✅ **Only content data** (70% database reduction)
 - ✅ **Better performance** (no user table joins)
@@ -2787,14 +2898,15 @@ CREATE INDEX idx_notifications_clerk_unread ON notifications(clerk_id, read) WHE
 
 **Database Size Comparison:**
 
-| Component | Old Approach (with users table) | New Approach (Clerk metadata) |
-|-----------|----------------------------------|-------------------------------|
-| Users table | 10,000 users × 500 bytes = 5 MB | ❌ Removed (0 MB) |
-| Indexes | 3 MB | ❌ Removed (0 MB) |
-| Content tables | 50 MB | 50 MB (unchanged) |
-| **Total** | **58 MB** | **50 MB (14% reduction)** |
+| Component      | Old Approach (with users table) | New Approach (Clerk metadata) |
+| -------------- | ------------------------------- | ----------------------------- |
+| Users table    | 10,000 users × 500 bytes = 5 MB | ❌ Removed (0 MB)             |
+| Indexes        | 3 MB                            | ❌ Removed (0 MB)             |
+| Content tables | 50 MB                           | 50 MB (unchanged)             |
+| **Total**      | **58 MB**                       | **50 MB (14% reduction)**     |
 
 **Benefits:**
+
 - ✅ 14% database size reduction
 - ✅ No user table joins (faster queries)
 - ✅ User data reads from Clerk cache (< 10ms)
@@ -2802,6 +2914,7 @@ CREATE INDEX idx_notifications_clerk_unread ON notifications(clerk_id, read) WHE
 - ✅ Subscription management for free (Clerk)
 
 **Data Cleanup (Free Tier Optimization):**
+
 - Delete old submissions (rejected > 30 days)
 - Archive expired ads (> 90 days old) to JSON export
 - Remove old points transactions (> 1 year) after aggregation
@@ -2810,6 +2923,7 @@ CREATE INDEX idx_notifications_clerk_unread ON notifications(clerk_id, read) WHE
 ### 5.2 Supabase Storage
 
 **Buckets:**
+
 - `ad-creatives` (public): Images/GIFs/videos uploaded by advertisers
 - `user-avatars` (public): Profile pictures
 - `user-content` (public): User-submitted images/videos
@@ -2819,6 +2933,7 @@ CREATE INDEX idx_notifications_clerk_unread ON notifications(clerk_id, read) WHE
 **File Naming Convention:** `{userId}_{timestamp}_{filename}`
 
 **Max File Sizes:**
+
 - Ad creatives: 10 MB (images/GIFs), 50 MB (videos)
 - User avatars: 2 MB
 - User content: 20 MB
@@ -2830,6 +2945,7 @@ CREATE INDEX idx_notifications_clerk_unread ON notifications(clerk_id, read) WHE
 **Implementation:** localforage library (wrapper for IndexedDB)
 
 **Stores:**
+
 - `articles` (30-min cache, 2,000 item limit)
 - `bookmarks` (synced with Supabase when online)
 - `readHistory` (last 500 articles viewed)
@@ -2839,48 +2955,50 @@ CREATE INDEX idx_notifications_clerk_unread ON notifications(clerk_id, read) WHE
 - `leaderboard` (top contributors, 1-hour cache)
 
 **Storage Limits:**
+
 - **Chrome/Edge:** ~60% of available disk space (typically 10+ GB)
 - **Safari iOS:** 50 MB (cleared when storage is full)
 - **Firefox:** 50% of free disk space
 - **Recommendation:** Keep under 100 MB (safe across all browsers)
 
 **Code Example:**
+
 ```javascript
-import localforage from 'localforage'
+import localforage from "localforage";
 
 // Configure stores
 const articleStore = localforage.createInstance({
-  name: 'web3news',
-  storeName: 'articles',
-  description: 'Cached articles'
-})
+  name: "web3news",
+  storeName: "articles",
+  description: "Cached articles",
+});
 
 const prefStore = localforage.createInstance({
-  name: 'web3news',
-  storeName: 'preferences'
-})
+  name: "web3news",
+  storeName: "preferences",
+});
 
 // Cache management
 const cacheArticles = async (category, articles) => {
-  const cacheKey = `${category}_${Date.now()}`
+  const cacheKey = `${category}_${Date.now()}`;
   await articleStore.setItem(cacheKey, {
     articles,
-    cachedAt: Date.now()
-  })
-}
+    cachedAt: Date.now(),
+  });
+};
 
 // Auto-cleanup old cache (keep last 30 days only)
 const cleanupOldCache = async () => {
-  const keys = await articleStore.keys()
-  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000
-  
+  const keys = await articleStore.keys();
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+
   for (const key of keys) {
-    const item = await articleStore.getItem(key)
+    const item = await articleStore.getItem(key);
     if (item.cachedAt < thirtyDaysAgo) {
-      await articleStore.removeItem(key) // Delete old cache
+      await articleStore.removeItem(key); // Delete old cache
     }
   }
-}
+};
 ```
 
 ---
@@ -2890,6 +3008,7 @@ const cleanupOldCache = async () => {
 **Implementation:** Hive (NoSQL database, Flutter's IndexedDB equivalent)
 
 **Stores (Same Logic, Different API):**
+
 ```dart
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -2920,12 +3039,14 @@ if (isExpired) {
 ```
 
 **Key Difference:**
+
 - **PWA:** Uses IndexedDB (browser API)
 - **Flutter:** Uses Hive (native database)
 - **Logic:** Identical (30-min cache, same data structure)
 - **Migration:** Zero effort (same JSON schema)
 
 **Storage Limits (Flutter):**
+
 - **iOS:** Unlimited (uses device storage)
 - **Android:** Unlimited (uses device storage)
 - **Recommendation:** Still keep under 100 MB (user courtesy)
@@ -2938,71 +3059,75 @@ if (isExpired) {
 
 ```javascript
 // lib/utils/ratelimit.ts
-const rateLimits = new Map()
+const rateLimits = new Map();
 
 export const checkRateLimit = (endpoint, maxRequests, windowMs) => {
-  const now = Date.now()
-  const key = endpoint
-  
+  const now = Date.now();
+  const key = endpoint;
+
   // Get current window
-  const limit = rateLimits.get(key) || { count: 0, resetAt: now + windowMs }
-  
+  const limit = rateLimits.get(key) || { count: 0, resetAt: now + windowMs };
+
   // Reset if window expired
   if (now > limit.resetAt) {
-    limit.count = 0
-    limit.resetAt = now + windowMs
+    limit.count = 0;
+    limit.resetAt = now + windowMs;
   }
-  
+
   // Check limit
   if (limit.count >= maxRequests) {
-    const waitSeconds = Math.ceil((limit.resetAt - now) / 1000)
-    throw new Error(`Rate limit exceeded. Try again in ${waitSeconds} seconds.`)
+    const waitSeconds = Math.ceil((limit.resetAt - now) / 1000);
+    throw new Error(
+      `Rate limit exceeded. Try again in ${waitSeconds} seconds.`
+    );
   }
-  
+
   // Increment counter
-  limit.count++
-  rateLimits.set(key, limit)
-  
-  return true
-}
+  limit.count++;
+  rateLimits.set(key, limit);
+
+  return true;
+};
 
 // Usage: Prevent API abuse
 const fetchArticles = async (source) => {
   // Max 10 requests per minute per source
-  checkRateLimit(source, 10, 60 * 1000)
-  
-  const response = await fetch(sourceAPI)
-  return response.json()
-}
+  checkRateLimit(source, 10, 60 * 1000);
+
+  const response = await fetch(sourceAPI);
+  return response.json();
+};
 ```
 
 **Benefits:**
+
 - ✅ No server needed (pure client-side)
 - ✅ Protects API quotas (CoinGecko: 30 calls/min)
 - ✅ Better UX (prevents users from spamming refresh)
 
 **For Flutter:**
+
 ```dart
 // Same rate limiting logic in Dart
 class RateLimiter {
   final Map<String, RateLimit> _limits = {};
-  
+
   bool checkLimit(String endpoint, int maxRequests, int windowMs) {
     final now = DateTime.now().millisecondsSinceEpoch;
     final limit = _limits[endpoint] ?? RateLimit(0, now + windowMs);
-    
+
     // Reset if window expired
     if (now > limit.resetAt) {
       limit.count = 0;
       limit.resetAt = now + windowMs;
     }
-    
+
     // Check limit
     if (limit.count >= maxRequests) {
       final waitSeconds = ((limit.resetAt - now) / 1000).ceil();
       throw Exception('Rate limit exceeded. Try again in $waitSeconds seconds.');
     }
-    
+
     limit.count++;
     _limits[endpoint] = limit;
     return true;
@@ -3019,6 +3144,7 @@ class RateLimiter {
 **Primary:** GitHub Pages (Static Hosting - Free Forever)
 
 **Architecture:**
+
 - Next.js static export (`output: 'export'`)
 - All HTML/CSS/JS pre-rendered at build time
 - No server-side rendering (SSR)
@@ -3046,19 +3172,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-      
+          node-version: "20"
+          cache: "pnpm"
+
       - name: Install pnpm
         run: npm install -g pnpm
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Build Next.js static site
         run: pnpm build
         env:
@@ -3075,12 +3201,12 @@ jobs:
           NEXT_PUBLIC_CONTRACT_GOVERNANCE_ETHEREUM: ${{ secrets.CONTRACT_GOVERNANCE_ETHEREUM }}
           NEXT_PUBLIC_CONTRACT_GOVERNANCE_POLYGON: ${{ secrets.CONTRACT_GOVERNANCE_POLYGON }}
           NEXT_PUBLIC_CONTRACT_GOVERNANCE_BSC: ${{ secrets.CONTRACT_GOVERNANCE_BSC }}
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
-  
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -3102,51 +3228,77 @@ jobs:
 ```javascript
 // Deploy 3 contracts to 6 chains each (18 total deployments)
 const chains = [
-  { name: 'ethereum', usdtAddress: '0xdac17f958d2ee523a2206206994597c13d831ec7' },
-  { name: 'polygon', usdtAddress: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f' },
-  { name: 'bsc', usdtAddress: '0x55d398326f99059ff775485246999027b3197955' },
-  { name: 'arbitrum', usdtAddress: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9' },
-  { name: 'optimism', usdtAddress: '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58' },
-  { name: 'base', usdtAddress: '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb' }, // Base USDT
-]
+  {
+    name: "ethereum",
+    usdtAddress: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  },
+  {
+    name: "polygon",
+    usdtAddress: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+  },
+  { name: "bsc", usdtAddress: "0x55d398326f99059ff775485246999027b3197955" },
+  {
+    name: "arbitrum",
+    usdtAddress: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+  },
+  {
+    name: "optimism",
+    usdtAddress: "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
+  },
+  { name: "base", usdtAddress: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb" }, // Base USDT
+];
 
 for (const chain of chains) {
-  console.log(`\nDeploying to ${chain.name}...`)
-  
+  console.log(`\nDeploying to ${chain.name}...`);
+
   // 1. Deploy AdPaymentContract (auction system)
-  const AdPayment = await ethers.getContractFactory("AdPaymentContract")
-  const adContract = await AdPayment.deploy(chain.usdtAddress, TREASURY_ADDRESS)
-  await adContract.deployed()
-  console.log(`  AdPayment: ${adContract.address}`)
-  
+  const AdPayment = await ethers.getContractFactory("AdPaymentContract");
+  const adContract = await AdPayment.deploy(
+    chain.usdtAddress,
+    TREASURY_ADDRESS
+  );
+  await adContract.deployed();
+  console.log(`  AdPayment: ${adContract.address}`);
+
   // 2. Deploy SubscriptionManager (subscription system)
-  const Subscription = await ethers.getContractFactory("SubscriptionManager")
-  const subContract = await Subscription.deploy(chain.usdtAddress, TREASURY_ADDRESS)
-  await subContract.deployed()
-  console.log(`  Subscription: ${subContract.address}`)
-  
+  const Subscription = await ethers.getContractFactory("SubscriptionManager");
+  const subContract = await Subscription.deploy(
+    chain.usdtAddress,
+    TREASURY_ADDRESS
+  );
+  await subContract.deployed();
+  console.log(`  Subscription: ${subContract.address}`);
+
   // 3. Deploy Governance (voting system)
-  const Governance = await ethers.getContractFactory("Governance")
-  const govContract = await Governance.deploy()
-  await govContract.deployed()
-  console.log(`  Governance: ${govContract.address}`)
-  
+  const Governance = await ethers.getContractFactory("Governance");
+  const govContract = await Governance.deploy();
+  await govContract.deployed();
+  console.log(`  Governance: ${govContract.address}`);
+
   // Verify on block explorer
-  await verifyContract(adContract.address, [chain.usdtAddress, TREASURY_ADDRESS])
-  await verifyContract(subContract.address, [chain.usdtAddress, TREASURY_ADDRESS])
-  await verifyContract(govContract.address, [])
+  await verifyContract(adContract.address, [
+    chain.usdtAddress,
+    TREASURY_ADDRESS,
+  ]);
+  await verifyContract(subContract.address, [
+    chain.usdtAddress,
+    TREASURY_ADDRESS,
+  ]);
+  await verifyContract(govContract.address, []);
 }
 
-console.log('\n✅ All contracts deployed successfully!')
+console.log("\n✅ All contracts deployed successfully!");
 ```
 
 **Contracts to Deploy:**
+
 1. **AdPaymentContract** - Ad auction system (6 chains)
 2. **SubscriptionManager** - Subscription payments (6 chains)
 3. **Governance** - DAO voting (6 chains)
 4. **Total:** 18 contract deployments
 
 **Deployment Steps:**
+
 1. Deploy to testnets first (Sepolia, Mumbai, BSC Testnet)
 2. Test all functions (joinAuction, placeBid, finalize)
 3. Security audit (Slither, Mythril, manual review)
@@ -3157,6 +3309,7 @@ console.log('\n✅ All contracts deployed successfully!')
 ### 6.4 Environment Variables
 
 **GitHub Secrets:**
+
 ```bash
 # Reown AppKit
 REOWN_PROJECT_ID=xxx
@@ -3206,33 +3359,33 @@ OPENAI_API_KEY=xxx
 
 ```javascript
 // scripts/event-listener.js
-const { ethers } = require('ethers')
-const { createClient } = require('@supabase/supabase-js')
+const { ethers } = require("ethers");
+const { createClient } = require("@supabase/supabase-js");
 
-const provider = new ethers.providers.JsonRpcProvider(RPC_URL)
-const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider)
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Listen to ExpiryWarning event
-contract.on('ExpiryWarning', async (slotId, expiryTime) => {
-  console.log(`Auction opening for slot: ${slotId}`)
-  
+contract.on("ExpiryWarning", async (slotId, expiryTime) => {
+  console.log(`Auction opening for slot: ${slotId}`);
+
   // Get all subscribers for this slot
   const { data: subscribers } = await supabase
-    .from('slot_subscriptions')
-    .select('user_id, users(email)')
-    .eq('slot_id', slotId)
-  
+    .from("slot_subscriptions")
+    .select("user_id, users(email)")
+    .eq("slot_id", slotId);
+
   // Send notifications
   for (const sub of subscribers) {
     if (sub.notification_email) {
-      await sendEmail(sub.users.email, slotId, expiryTime)
+      await sendEmail(sub.users.email, slotId, expiryTime);
     }
     if (sub.notification_push) {
-      await sendPushNotification(sub.user_id, slotId)
+      await sendPushNotification(sub.user_id, slotId);
     }
   }
-})
+});
 ```
 
 **Deployment:** Run on Heroku free tier or Railway (only needs to run during Phase 2+)
@@ -3244,30 +3397,35 @@ contract.on('ExpiryWarning', async (slotId, expiryTime) => {
 ### 7.1 Phase 1: MVP (8 Weeks)
 
 **Week 1-2: Foundation**
+
 - ✅ Next.js project setup
 - ✅ Reown AppKit integration
 - ✅ Supabase & Upstash setup
 - ✅ Basic UI (homepage, category pages)
 
 **Week 3-4: Content Aggregation**
+
 - ✅ Client-side fetching from 15 sources
 - ✅ Article cards, infinite scroll
 - ✅ Caching (IndexedDB + Redis)
 - ✅ Search & filter
 
 **Week 5-6: Web3 Features**
+
 - ✅ Smart contract development (AdPayment)
 - ✅ Deploy to testnets
 - ✅ Auction UI (join, bid, subscribe)
 - ✅ Points system (earning, conversion)
 
 **Week 7-8: Testing & Launch**
+
 - ✅ E2E tests (Playwright)
 - ✅ PWA setup (service worker, manifest)
 - ✅ GitHub Pages deployment
 - ✅ Beta launch (100 users)
 
 **MVP Success Metrics:**
+
 - [ ] 15+ content sources aggregating
 - [ ] 100 beta users signed up
 - [ ] 10 auction participants (testnet)
@@ -3278,29 +3436,34 @@ contract.on('ExpiryWarning', async (slotId, expiryTime) => {
 ### 7.2 Phase 2: Beta (12 Weeks from Start)
 
 **Week 9-10: Chinese Platforms**
+
 - ✅ Add 抖音, 百度, 今日头条, 微博 sources
 - ✅ Multi-language support (EN, 中文)
 - ✅ Mobile app (React Native)
 
 **Week 11-12: Mainnet Preparation**
+
 - ✅ Smart contract audit (OpenZeppelin or Trail of Bits)
 - ✅ Deploy to mainnets (6 chains)
 - ✅ Gnosis Safe treasury setup (3/5 multi-sig)
 - ✅ Dune Analytics dashboard
 
 **Week 13-14: Advanced Features**
+
 - ✅ AI-powered recommendations (user feed)
 - ✅ Content moderation tools
 - ✅ Backend event listener (notifications)
 - ✅ Admin dashboard
 
 **Week 15-16: Beta Testing**
+
 - ✅ 1,000 beta users
 - ✅ $1,000 ad revenue (testnet simulation)
 - ✅ Points economy balancing
 - ✅ Performance optimization
 
 **Beta Success Metrics:**
+
 - [ ] 25+ content sources
 - [ ] 1,000 active users
 - [ ] $1,000 ad revenue simulated
@@ -3311,23 +3474,27 @@ contract.on('ExpiryWarning', async (slotId, expiryTime) => {
 ### 7.3 Phase 3: Launch (16 Weeks from Start)
 
 **Week 17: Mainnet Launch**
+
 - ✅ Switch to mainnet contracts
 - ✅ Real USDT auction live
 - ✅ Marketing campaign (Twitter, Reddit, crypto news)
 
 **Week 18-20: Growth**
+
 - ✅ Partnerships with crypto news outlets
 - ✅ Influencer marketing
 - ✅ Content creator incentives
 - ✅ Referral program boost
 
 **Week 21-22: Optimization**
+
 - ✅ Performance tuning
 - ✅ A/B testing (UI, pricing)
 - ✅ User feedback implementation
 - ✅ DAO governance planning
 
 **Launch Success Metrics:**
+
 - [ ] 10,000 DAU
 - [ ] $10,000/month ad revenue (real USDT)
 - [ ] 100,000+ articles aggregated
@@ -3338,22 +3505,26 @@ contract.on('ExpiryWarning', async (slotId, expiryTime) => {
 ### 7.4 Long-Term Vision (6-12 Months)
 
 **Platform Token Launch:**
+
 - Issue governance token (Web3News Token - W3N)
 - Staking for premium features
 - DAO voting on platform decisions
 
 **Mobile Apps:**
+
 - React Native apps (iOS + Android)
 - Push notifications
 - Offline reading mode
 
 **Advanced Features:**
+
 - AI content summarization
 - Multi-language support (10+ languages)
 - Podcast/video content aggregation
 - NFT rewards for top contributors
 
 **Target Metrics (Year 1):**
+
 - 50,000 DAU
 - $50,000+/month ad revenue
 - 500,000+ articles
@@ -3370,53 +3541,57 @@ Before starting the project, please clarify:
 2. **Initial Categories:** Confirm 10 categories:
    - Hottest, Latest, Tech, Crypto, DeFi, NFTs, Finance, Entertainment, Politics, Science?
 
-3. **Content Moderation:** 
+3. **Content Moderation:**
    - Manual review by owner initially?
    - AI moderation (OpenAI Moderation API - $0.002 per 1k calls)?
    - Community voting (DAO governance)?
 
-4. **Ad Approval:** 
+4. **Ad Approval:**
    - Instant live after auction win?
    - 24-hour manual review for first-time advertisers only?
 
-5. **Treasury Setup:** 
+5. **Treasury Setup:**
    - Gnosis Safe multi-sig (3/5 signers) - need to identify co-signers?
    - Start with single owner wallet (you) for MVP?
 
-6. **Legal Entity:** 
+6. **Legal Entity:**
    - Register LLC/Foundation before launch?
    - Operate as individual for MVP, incorporate later?
 
-7. **Compliance:** 
+7. **Compliance:**
    - Target jurisdictions: US, EU, Asia, or global?
    - GDPR/CCPA compliance needed? (affects cookie consent, data deletion)
 
-8. **Platform Token:** 
+8. **Platform Token:**
    - Issue governance token (W3N) in Phase 3 (6 months)?
    - Stay USDT-only forever (simpler economics)?
 
-9. **Smart Contract Audit:** 
+9. **Smart Contract Audit:**
    - Budget $10,000-15,000 for professional audit (CertiK, Trail of Bits)?
    - Community audit first (free, lower trust)?
    - Launch on testnets indefinitely (safest, no real money risk)?
 
-10. **Backend Services:** 
-   - Run Node.js event listener for auction notifications (requires VPS - $5/month)?
-   - Keep 100% client-side for MVP (no notifications, manual auction tracking)?
+10. **Backend Services:**
+
+- Run Node.js event listener for auction notifications (requires VPS - $5/month)?
+- Keep 100% client-side for MVP (no notifications, manual auction tracking)?
 
 11. **AI Recommendations:**
-   - Start with free collaborative filtering (70% accuracy)?
-   - Pay $0.08/month for OpenAI (95% accuracy, better UX)?
+
+- Start with free collaborative filtering (70% accuracy)?
+- Pay $0.08/month for OpenAI (95% accuracy, better UX)?
 
 12. **Subscription Plans:**
-   - Launch with Pro ($30 USDT) + Premium ($100 USDT)?
-   - Start with Free tier only, add paid tiers in Phase 2?
+
+- Launch with Pro ($30 USDT) + Premium ($100 USDT)?
+- Start with Free tier only, add paid tiers in Phase 2?
 
 ---
 
 ## SECTION 9: TECHNICAL CONSTRAINTS
 
 **Critical Requirements:**
+
 - ✅ No backend servers (pure client-side)
 - ✅ GitHub Pages only (free static hosting)
 - ✅ Free tier services only for MVP (Supabase 500MB, Upstash 10k cmds/day)
@@ -3424,18 +3599,21 @@ Before starting the project, please clarify:
 - ✅ Smart contracts on 6 chains (Ethereum, Polygon, BSC, Arbitrum, Optimism, Base)
 
 **Performance Targets:**
+
 - First Contentful Paint (FCP): < 1.5s
 - Time to Interactive (TTI): < 3.5s
 - Largest Contentful Paint (LCP): < 2.5s
 - Lighthouse Score: > 95
 
 **Browser Compatibility:**
+
 - Chrome/Edge: Last 2 versions
 - Firefox: Last 2 versions
 - Safari: Last 2 versions (iOS Safari for PWA)
 - Mobile: iOS 14+, Android 10+
 
 **Scalability:**
+
 - Handle 10,000 DAU on free tiers
 - 100,000+ articles cached
 - Infinite scroll with virtual scrolling (render only visible items)
@@ -3469,6 +3647,7 @@ Based on project complexity, recommended agent sequence:
 **Estimated Development Time:** 16 weeks (4 months) for full launch, 8 weeks for MVP
 
 **Budget:**
+
 - Infrastructure: $0 (all free tiers)
 - Smart Contract Audit: $10,000-15,000 (Phase 2, optional)
 - Marketing: $5,000 (Phase 3, optional)
@@ -3477,20 +3656,24 @@ Based on project complexity, recommended agent sequence:
 **Tech Stack Summary:**
 
 **Frontend:**
+
 - Next.js 14 (App Router, Static Export), TypeScript, Tailwind CSS, shadcn/ui
 - React 18, Zustand (state management)
 
 **Authentication (Optimized):**
+
 - Reown AppKit (PRIMARY - social login + smart accounts)
 - Clerk (SECONDARY - user management + subscriptions)
 - Integration: Reown → auto-create Clerk user → email verification
 
 **Web3:**
+
 - Reown AppKit (smart accounts, on-ramp, multi-chain)
 - wagmi + viem (contract interactions)
 - ERC-4337 Account Abstraction
 
 **Database & Storage (Optimized):**
+
 - ❌ NO Supabase users table (Clerk metadata instead)
 - ✅ Supabase (content only): Articles, comments, likes, messages, bids, votes
 - ✅ IndexedDB (client-side cache - PWA/web browsers)
@@ -3498,11 +3681,13 @@ Based on project complexity, recommended agent sequence:
 - ✅ LocalStorage (user preferences, theme)
 
 **AI/ML (FREE Options):**
+
 - Collaborative Filtering (Supabase SQL) - MVP
 - TensorFlow.js (client-side) - Beta
 - OpenAI Embeddings ($0.08/mo) - Production
 
 **Smart Contracts (3 types × 6 chains = 18 deployments):**
+
 - AdPaymentContract (auction system)
 - SubscriptionManager (subscription payments)
 - Governance (DAO voting)
@@ -3510,22 +3695,26 @@ Based on project complexity, recommended agent sequence:
 - Deployed on: Ethereum, Polygon, BSC, Arbitrum, Optimism, Base
 
 **Content Sources (20+ FREE):**
+
 - Price APIs: CoinGecko, CryptoCompare, CoinCap, Messari
 - News RSS: CoinDesk, CoinTelegraph, Decrypt, Bitcoin Magazine, The Block
 - Tech APIs: Hacker News, Product Hunt, GitHub, Reddit
 - General: Medium, HackerNoon, MarketWatch
 
 **Deployment:**
+
 - GitHub Pages (static hosting - free forever)
 - GitHub Actions (CI/CD)
 - No serverless functions needed!
 
 **Analytics:**
+
 - Dune Analytics (on-chain metrics)
 - Supabase Analytics (content metrics)
 - Clerk Analytics (user growth)
 
 **Payments:**
+
 - USDT multi-chain (6 chains)
 - Reown on-ramp (MoonPay, Transak, Ramp, Wyre)
 - Gnosis Safe (multi-sig treasury)
@@ -3547,17 +3736,20 @@ Based on project complexity, recommended agent sequence:
 ### Key Optimizations Implemented:
 
 **1. Reown-First Authentication** ✅
+
 - Reown handles login (social + smart account creation)
 - Users get Web3 wallet immediately (no separate MetaMask needed)
 - Clerk handles user management (profiles, subscriptions, admin)
 
 **2. No Users Table in Supabase** ✅
+
 - All user data stored in Clerk metadata (14% database reduction)
 - Faster queries (no joins with users table)
 - Better performance (Clerk cache < 10ms)
 - Admin dashboard for free (Clerk)
 
 **3. Subscription via Smart Contract** ✅
+
 - USDT-only payments (multi-chain)
 - Built-in Reown on-ramp (buy USDT with credit card)
 - On-chain verification (trustless)
@@ -3574,6 +3766,7 @@ Based on project complexity, recommended agent sequence:
 | **Total Cost** | **$0** | **MVP ready!** |
 
 **5. Smart Contracts Deployed:**
+
 - AdPaymentContract (6 chains) - Auction system
 - SubscriptionManager (6 chains) - Subscriptions
 - Governance (6 chains) - DAO voting
@@ -3597,25 +3790,25 @@ User Subscription Purchase:
 
 ### Performance Metrics:
 
-| Operation | Old (with users table) | New (Clerk metadata) | Improvement |
-|-----------|------------------------|----------------------|-------------|
-| User profile read | 150ms (Supabase query) | < 10ms (Clerk cache) | **15x faster** |
-| Subscription check | 200ms (DB query + join) | < 10ms (Clerk metadata) | **20x faster** |
-| Points update | 100ms (DB write) | 50ms (Clerk API) | **2x faster** |
-| Database size | 58 MB | 50 MB | **14% reduction** |
+| Operation          | Old (with users table)  | New (Clerk metadata)    | Improvement       |
+| ------------------ | ----------------------- | ----------------------- | ----------------- |
+| User profile read  | 150ms (Supabase query)  | < 10ms (Clerk cache)    | **15x faster**    |
+| Subscription check | 200ms (DB query + join) | < 10ms (Clerk metadata) | **20x faster**    |
+| Points update      | 100ms (DB write)        | 50ms (Clerk API)        | **2x faster**     |
+| Database size      | 58 MB                   | 50 MB                   | **14% reduction** |
 
 ### Cost Breakdown (1,000 Users):
 
-| Component | Cost |
-|-----------|------|
-| Hosting (GitHub Pages) | $0 |
-| Authentication (Clerk + Reown) | $0 |
-| Database (Supabase) | $0 (under 500 MB) |
-| Cache (IndexedDB - client-side) | $0 (browser storage) |
-| AI Recommendations | $0 (collaborative filtering) |
-| Smart Contracts | $0 (users pay gas) |
-| On-Ramp | $0 (users pay 2.9-3.9% fee) |
-| **TOTAL MONTHLY COST** | **$0** ✅ |
+| Component                       | Cost                         |
+| ------------------------------- | ---------------------------- |
+| Hosting (GitHub Pages)          | $0                           |
+| Authentication (Clerk + Reown)  | $0                           |
+| Database (Supabase)             | $0 (under 500 MB)            |
+| Cache (IndexedDB - client-side) | $0 (browser storage)         |
+| AI Recommendations              | $0 (collaborative filtering) |
+| Smart Contracts                 | $0 (users pay gas)           |
+| On-Ramp                         | $0 (users pay 2.9-3.9% fee)  |
+| **TOTAL MONTHLY COST**          | **$0** ✅                    |
 
 ### Scalability:
 
@@ -3627,48 +3820,48 @@ User Subscription Purchase:
 
 ## COMPLETE FEATURE MATRIX (ALL $0 COST)
 
-| Feature Category | Features | Implementation | Cost |
-|------------------|----------|----------------|------|
-| **Authentication** | Social login (Google, Email, Twitter, etc.) | Reown AppKit | $0 |
-|  | Smart accounts (ERC-4337) | Reown AppKit | $0 |
-|  | Email verification | Clerk magic links | $0 |
-|  | Session management | Clerk JWT | $0 |
-|  | Admin dashboard | Clerk | $0 |
-| **Content** | 20+ sources (tech, crypto, news) | Public APIs + RSS | $0 |
-|  | Real-time price data | CoinGecko, CryptoCompare | $0 |
-|  | Client-side aggregation | React (PWA) / Flutter (native) | $0 |
-|  | Local cache (PWA) | IndexedDB (30-min TTL) | $0 |
-|  | Local cache (Flutter) | Hive (30-min TTL) | $0 |
-| **Social** | Follow users | Supabase | $0 |
-|  | Like articles | Supabase | $0 |
-|  | Direct messages | Supabase Realtime | $0 |
-|  | Notifications | Web Push API | $0 |
-| **Monetization** | Ad auctions (tenure-based) | Smart contract | $0 |
-|  | Participation fee (1 USDT) | Smart contract | $0 |
-|  | Subscription (Pro, Premium) | Smart contract | $0 |
-|  | Points earning | Clerk metadata | $0 |
-|  | Points → USDT conversion | Off-chain ledger | $0 |
-|  | USDT withdrawal | Reown AppKit | $0 |
-| **Web3** | Multi-chain USDT (6 chains) | Reown + wagmi | $0 |
-|  | On-ramp (buy USDT) | Reown (MoonPay, Transak) | $0 |
-|  | Gas sponsorship | Reown dashboard | $0 |
-|  | Batched transactions | ERC-4337 | $0 |
-| **AI** | Recommendations (collaborative) | Supabase SQL | $0 |
-|  | Recommendations (TensorFlow.js) | Client-side ML | $0 |
-|  | Recommendations (OpenAI) | Optional upgrade | $0.08/mo |
-| **Governance** | DAO proposals | Smart contract | $0 |
-|  | Meritocratic voting | Smart contract | $0 |
-|  | Voting rewards | Clerk metadata | $0 |
-| **Analytics** | On-chain metrics | Dune Analytics | $0 |
-|  | Content metrics | Supabase | $0 |
-|  | User growth | Clerk | $0 |
-| **Deployment** | Static hosting | GitHub Pages | $0 |
-|  | CI/CD | GitHub Actions | $0 |
-|  | Custom domain | GitHub Pages | $0 |
-| **PWA** | Offline support | Service Worker | $0 |
-|  | Push notifications | Web Push API | $0 |
-|  | Installable | PWA manifest | $0 |
-| **TOTAL** |  |  | **$0/month** ✅ |
+| Feature Category   | Features                                    | Implementation                 | Cost            |
+| ------------------ | ------------------------------------------- | ------------------------------ | --------------- |
+| **Authentication** | Social login (Google, Email, Twitter, etc.) | Reown AppKit                   | $0              |
+|                    | Smart accounts (ERC-4337)                   | Reown AppKit                   | $0              |
+|                    | Email verification                          | Clerk magic links              | $0              |
+|                    | Session management                          | Clerk JWT                      | $0              |
+|                    | Admin dashboard                             | Clerk                          | $0              |
+| **Content**        | 20+ sources (tech, crypto, news)            | Public APIs + RSS              | $0              |
+|                    | Real-time price data                        | CoinGecko, CryptoCompare       | $0              |
+|                    | Client-side aggregation                     | React (PWA) / Flutter (native) | $0              |
+|                    | Local cache (PWA)                           | IndexedDB (30-min TTL)         | $0              |
+|                    | Local cache (Flutter)                       | Hive (30-min TTL)              | $0              |
+| **Social**         | Follow users                                | Supabase                       | $0              |
+|                    | Like articles                               | Supabase                       | $0              |
+|                    | Direct messages                             | Supabase Realtime              | $0              |
+|                    | Notifications                               | Web Push API                   | $0              |
+| **Monetization**   | Ad auctions (tenure-based)                  | Smart contract                 | $0              |
+|                    | Participation fee (1 USDT)                  | Smart contract                 | $0              |
+|                    | Subscription (Pro, Premium)                 | Smart contract                 | $0              |
+|                    | Points earning                              | Clerk metadata                 | $0              |
+|                    | Points → USDT conversion                    | Off-chain ledger               | $0              |
+|                    | USDT withdrawal                             | Reown AppKit                   | $0              |
+| **Web3**           | Multi-chain USDT (6 chains)                 | Reown + wagmi                  | $0              |
+|                    | On-ramp (buy USDT)                          | Reown (MoonPay, Transak)       | $0              |
+|                    | Gas sponsorship                             | Reown dashboard                | $0              |
+|                    | Batched transactions                        | ERC-4337                       | $0              |
+| **AI**             | Recommendations (collaborative)             | Supabase SQL                   | $0              |
+|                    | Recommendations (TensorFlow.js)             | Client-side ML                 | $0              |
+|                    | Recommendations (OpenAI)                    | Optional upgrade               | $0.08/mo        |
+| **Governance**     | DAO proposals                               | Smart contract                 | $0              |
+|                    | Meritocratic voting                         | Smart contract                 | $0              |
+|                    | Voting rewards                              | Clerk metadata                 | $0              |
+| **Analytics**      | On-chain metrics                            | Dune Analytics                 | $0              |
+|                    | Content metrics                             | Supabase                       | $0              |
+|                    | User growth                                 | Clerk                          | $0              |
+| **Deployment**     | Static hosting                              | GitHub Pages                   | $0              |
+|                    | CI/CD                                       | GitHub Actions                 | $0              |
+|                    | Custom domain                               | GitHub Pages                   | $0              |
+| **PWA**            | Offline support                             | Service Worker                 | $0              |
+|                    | Push notifications                          | Web Push API                   | $0              |
+|                    | Installable                                 | PWA manifest                   | $0              |
+| **TOTAL**          |                                             |                                | **$0/month** ✅ |
 
 **Note:** Smart contract deployment costs ~$500-2,000 one-time (gas fees), but this is only required when launching to mainnet (Phase 3). MVP runs on testnets (free).
 

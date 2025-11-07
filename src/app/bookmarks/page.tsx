@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { useUser } from '@clerk/nextjs';
-import { useBookmarks } from '@/lib/hooks/useArticles';
-import { Bookmark, ExternalLink } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { useBookmarks } from "@/lib/hooks/useArticles";
+import { Bookmark, ExternalLink } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 export default function BookmarksPage() {
   const { user, isLoaded } = useUser();
@@ -56,7 +56,7 @@ export default function BookmarksPage() {
             {bookmarks.map((bookmark) => (
               <Link
                 key={bookmark.id}
-                href={`/article/${encodeURIComponent(bookmark.article_id)}`}
+                href={`/article?url=${encodeURIComponent(bookmark.article_id)}`}
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start justify-between mb-3">
@@ -74,7 +74,9 @@ export default function BookmarksPage() {
                     </>
                   )}
                   <span>
-                    {formatDistanceToNow(new Date(bookmark.created_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(bookmark.created_at), {
+                      addSuffix: true,
+                    })}
                   </span>
                 </div>
               </Link>

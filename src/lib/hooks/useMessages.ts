@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
-import { supabase } from './supabase';
-import { messageQueue, type QueuedMessage } from './messageQueue';
-import { useAppStore } from '@/lib/stores/appStore';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/services/supabase";
+import { messageQueue, type QueuedMessage } from "@/lib/services/messageQueue";
+import { useAppStore } from "@/lib/stores/appStore";
 
 export interface Message {
   id: string;
@@ -11,7 +11,7 @@ export interface Message {
   content: string;
   is_read: boolean;
   created_at: string;
-  status?: 'pending' | 'sending' | 'sent' | 'failed'; // For queued messages
+  status?: "pending" | "sending" | "sent" | "failed"; // For queued messages
 }
 
 /**
@@ -24,13 +24,13 @@ export function useMessages(conversationId: string) {
 
   // Load messages from Supabase
   const { data: supabaseMessages = [], isLoading } = useQuery({
-    queryKey: ['messages', conversationId],
+    queryKey: ["messages", conversationId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
       return (data || []) as Message[];
@@ -61,36 +61,43 @@ export function useMessages(conversationId: string) {
     const channel = supabase
       .channel(`messages:${conversationId}`)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          queryClient.setQueryData<Message[]>(['messages', conversationId], (old = []) => {
-            // Check if message already exists
-            if (old.some(m => m.id === newMessage.id)) {
-              return old;
+          queryClient.setQueryData<Message[]>(
+            ["messages", conversationId],
+            (old = []) => {
+              // Check if message already exists
+              if (old.some((m) => m.id === newMessage.id)) {
+                return old;
+              }
+              return [...old, newMessage];
             }
-            return [...old, newMessage];
-          });
+          );
         }
       )
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
           const updatedMessage = payload.new as Message;
-          queryClient.setQueryData<Message[]>(['messages', conversationId], (old = []) =>
-            old.map(msg => (msg.id === updatedMessage.id ? updatedMessage : msg))
+          queryClient.setQueryData<Message[]>(
+            ["messages", conversationId],
+            (old = []) =>
+              old.map((msg) =>
+                msg.id === updatedMessage.id ? updatedMessage : msg
+              )
           );
         }
       )
@@ -104,7 +111,7 @@ export function useMessages(conversationId: string) {
   // Merge Supabase messages with queued messages
   const allMessages: Message[] = [
     ...supabaseMessages,
-    ...queuedMessages.map(qm => ({
+    ...queuedMessages.map((qm) => ({
       id: qm.id,
       conversation_id: qm.conversationId,
       sender_id: qm.senderId,
@@ -113,8 +120,9 @@ export function useMessages(conversationId: string) {
       created_at: new Date(qm.createdAt).toISOString(),
       status: qm.status,
     })),
-  ].sort((a, b) => 
-    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  ].sort(
+    (a, b) =>
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
   return {
@@ -139,7 +147,7 @@ export function useSendMessage() {
       conversationId: string;
       content: string;
     }) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
 
       // Optimistic update - add to UI immediately
       const optimisticMessage: Message = {
@@ -149,14 +157,14 @@ export function useSendMessage() {
         content,
         is_read: false,
         created_at: new Date().toISOString(),
-        status: 'pending',
+        status: "pending",
       };
 
       // Update cache optimistically
-      queryClient.setQueryData<Message[]>(['messages', conversationId], (old = []) => [
-        ...old,
-        optimisticMessage,
-      ]);
+      queryClient.setQueryData<Message[]>(
+        ["messages", conversationId],
+        (old = []) => [...old, optimisticMessage]
+      );
 
       // Queue message (handles offline/online)
       const messageId = await messageQueue.queueMessage({
@@ -172,8 +180,9 @@ export function useSendMessage() {
     },
     onError: (error, variables) => {
       // Remove optimistic message on error
-      queryClient.setQueryData<Message[]>(['messages', variables.conversationId], (old = []) =>
-        old.filter(msg => !msg.id.startsWith('temp-'))
+      queryClient.setQueryData<Message[]>(
+        ["messages", variables.conversationId],
+        (old = []) => old.filter((msg) => !msg.id.startsWith("temp-"))
       );
     },
   });
@@ -194,15 +203,19 @@ export function useMarkMessageRead() {
       messageId: string;
     }) => {
       const { error } = await supabase
-        .from('messages')
+        .from("messages")
         .update({ is_read: true })
-        .eq('id', messageId);
+        .eq("id", messageId);
 
       if (error) throw error;
 
       // Update cache
-      queryClient.setQueryData<Message[]>(['messages', conversationId], (old = []) =>
-        old.map(msg => (msg.id === messageId ? { ...msg, is_read: true } : msg))
+      queryClient.setQueryData<Message[]>(
+        ["messages", conversationId],
+        (old = []) =>
+          old.map((msg) =>
+            msg.id === messageId ? { ...msg, is_read: true } : msg
+          )
       );
     },
   });
@@ -213,15 +226,15 @@ export function useMarkMessageRead() {
  */
 export function useConversations(userId: string | null) {
   return useQuery({
-    queryKey: ['conversations', userId],
+    queryKey: ["conversations", userId],
     queryFn: async () => {
       if (!userId) return [];
 
       const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
+        .from("conversations")
+        .select("*")
         .or(`participant_1_id.eq.${userId},participant_2_id.eq.${userId}`)
-        .order('last_message_at', { ascending: false });
+        .order("last_message_at", { ascending: false });
 
       if (error) throw error;
       return data || [];
@@ -246,9 +259,11 @@ export function useCreateConversation() {
     }) => {
       // Check if conversation already exists
       const { data: existing } = await supabase
-        .from('conversations')
-        .select('*')
-        .or(`and(participant_1_id.eq.${userId1},participant_2_id.eq.${userId2}),and(participant_1_id.eq.${userId2},participant_2_id.eq.${userId1})`)
+        .from("conversations")
+        .select("*")
+        .or(
+          `and(participant_1_id.eq.${userId1},participant_2_id.eq.${userId2}),and(participant_1_id.eq.${userId2},participant_2_id.eq.${userId1})`
+        )
         .single();
 
       if (existing) {
@@ -256,15 +271,19 @@ export function useCreateConversation() {
       }
 
       // Create new conversation
-      const { data, error } = await supabase.from('conversations').insert({
-        participant_1_id: userId1 < userId2 ? userId1 : userId2,
-        participant_2_id: userId1 < userId2 ? userId2 : userId1,
-      }).select().single();
+      const { data, error } = await supabase
+        .from("conversations")
+        .insert({
+          participant_1_id: userId1 < userId2 ? userId1 : userId2,
+          participant_2_id: userId1 < userId2 ? userId2 : userId1,
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
       // Invalidate conversations list
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
 
       return data;
     },
@@ -296,4 +315,3 @@ export function useMessageQueueStats() {
 
   return stats;
 }
-

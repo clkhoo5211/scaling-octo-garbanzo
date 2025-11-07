@@ -1,13 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { AuthStatus } from '@/components/auth/AuthStatus';
-import { WalletConnect } from '@/components/web3/WalletConnect';
+import Link from "next/link";
+import { AuthStatus } from "@/components/auth/AuthStatus";
+import { WalletConnect } from "@/components/web3/WalletConnect";
 
 export function Header() {
-  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
@@ -16,9 +13,13 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-black dark:bg-white flex items-center justify-center">
-              <span className="text-white dark:text-black font-bold text-lg">W3</span>
+              <span className="text-white dark:text-black font-bold text-lg">
+                W3
+              </span>
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-gray-100">Web3News</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              Web3News
+            </span>
           </Link>
 
           {/* Search Bar (Desktop) */}
@@ -45,4 +46,3 @@ export function Header() {
     </header>
   );
 }
-

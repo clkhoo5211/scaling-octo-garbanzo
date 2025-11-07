@@ -3,13 +3,13 @@
  * React Query hooks for user submissions
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getSubmissions,
   createSubmission,
   type Submission,
-} from '@/lib/api/supabaseApi';
-import { useAppStore } from '@/lib/stores/appStore';
+} from "@/lib/api/supabaseApi";
+import { useAppStore } from "@/lib/stores/appStore";
 
 /**
  * Hook to fetch submissions
@@ -17,11 +17,11 @@ import { useAppStore } from '@/lib/stores/appStore';
 export function useSubmissions(filters?: {
   userId?: string;
   category?: string;
-  status?: 'pending' | 'approved' | 'rejected';
+  status?: "pending" | "approved" | "rejected";
   limit?: number;
 }) {
   return useQuery({
-    queryKey: ['submissions', filters],
+    queryKey: ["submissions", filters],
     queryFn: async () => {
       const { data, error } = await getSubmissions(filters);
       if (error) throw error;
@@ -43,9 +43,9 @@ export function useCreateSubmission() {
       title: string;
       url: string;
       source: string;
-      category: 'tech' | 'crypto' | 'social' | 'general';
+      category: "tech" | "crypto" | "social" | "general";
     }) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
 
       const { error } = await createSubmission({
         userId,
@@ -55,11 +55,10 @@ export function useCreateSubmission() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      queryClient.invalidateQueries({ queryKey: ["submissions"] });
     },
     onError: (error: Error) => {
-      console.error('Failed to create submission:', error);
+      console.error("Failed to create submission:", error);
     },
   });
 }
-

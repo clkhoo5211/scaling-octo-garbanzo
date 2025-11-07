@@ -1,7 +1,13 @@
 // Type definitions for Supabase database schema
 // This should match the database-schema-20251107-003428.sql
 
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 export interface Database {
   public: {
@@ -13,7 +19,7 @@ export interface Database {
           title: string;
           url: string;
           source: string;
-          category: 'tech' | 'crypto' | 'social' | 'general';
+          category: "tech" | "crypto" | "social" | "general";
           upvotes: number;
           created_at: string;
           updated_at: string;
@@ -24,7 +30,7 @@ export interface Database {
           title: string;
           url: string;
           source: string;
-          category: 'tech' | 'crypto' | 'social' | 'general';
+          category: "tech" | "crypto" | "social" | "general";
           upvotes?: number;
           created_at?: string;
           updated_at?: string;
@@ -35,7 +41,7 @@ export interface Database {
           title?: string;
           url?: string;
           source?: string;
-          category?: 'tech' | 'crypto' | 'social' | 'general';
+          category?: "tech" | "crypto" | "social" | "general";
           upvotes?: number;
           created_at?: string;
           updated_at?: string;
@@ -211,7 +217,7 @@ export interface Database {
           id: string;
           proposal_id: string;
           voter_id: string;
-          vote_option: 'yes' | 'no' | 'abstain';
+          vote_option: "yes" | "no" | "abstain";
           voting_power: number;
           transaction_hash: string;
           created_at: string;
@@ -220,7 +226,7 @@ export interface Database {
           id?: string;
           proposal_id: string;
           voter_id: string;
-          vote_option: 'yes' | 'no' | 'abstain';
+          vote_option: "yes" | "no" | "abstain";
           voting_power: number;
           transaction_hash: string;
           created_at?: string;
@@ -229,7 +235,7 @@ export interface Database {
           id?: string;
           proposal_id?: string;
           voter_id?: string;
-          vote_option?: 'yes' | 'no' | 'abstain';
+          vote_option?: "yes" | "no" | "abstain";
           voting_power?: number;
           transaction_hash?: string;
           created_at?: string;
@@ -331,4 +337,3 @@ export interface Database {
     };
   };
 }
-

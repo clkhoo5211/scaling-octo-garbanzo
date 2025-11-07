@@ -13,26 +13,31 @@ This directory contains infrastructure as code configurations and deployment scr
 ## Deployment Platforms
 
 ### GitHub Pages (Primary)
+
 - Free hosting
 - Automatic HTTPS
 - CDN distribution
 - Automatic deployments via GitHub Actions
 
 ### Vercel (Alternative)
+
 - Configuration: `vercel.json`
 - Features: Edge functions, analytics, preview deployments
 
 ### Netlify (Alternative)
+
 - Configuration: `netlify.toml`
 - Features: Form handling, split testing, edge functions
 
 ## Environment Setup
 
 ### Development
+
 - Local development server: `npm run dev`
 - Environment file: `.env.local`
 
 ### Production
+
 - Build command: `npm run build`
 - Output directory: `out/`
 - Environment variables: Set in GitHub Secrets
@@ -40,22 +45,26 @@ This directory contains infrastructure as code configurations and deployment scr
 ## Monitoring
 
 ### Application Monitoring
+
 - Supabase Analytics (database metrics)
 - Clerk Analytics (user metrics)
 - Dune Analytics (on-chain metrics)
 
 ### Error Tracking
+
 - Error logging via `errorHandler.ts`
 - Future: Sentry integration (optional)
 
 ## Security
 
 ### Secrets Management
+
 - GitHub Secrets for CI/CD
 - Environment variables for build-time
 - Supabase RLS for database security
 
 ### Security Scanning
+
 - npm audit (weekly)
 - Snyk security scan (optional)
 - Dependabot for dependency updates
@@ -63,22 +72,25 @@ This directory contains infrastructure as code configurations and deployment scr
 ## Backup & Recovery
 
 ### Database
+
 - Supabase automatic backups
 - Point-in-time recovery (Supabase Pro)
 
 ### Code
+
 - Git repository (GitHub)
 - GitHub Actions artifacts
 
 ## Scaling
 
 ### Current Setup
+
 - Static site (no server scaling needed)
 - CDN caching via GitHub Pages
 - Database scaling handled by Supabase
 
 ### Future Scaling
+
 - Add CDN (CloudFlare) for better performance
 - Database read replicas (Supabase Pro)
 - Edge functions for dynamic content (Vercel)
-

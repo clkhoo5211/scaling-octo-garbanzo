@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useConversations, useCreateConversation } from '@/lib/hooks/useMessages';
-import { useAppStore } from '@/lib/stores/appStore';
-import { formatDistanceToNow } from 'date-fns';
-import { MessageCircle, User } from 'lucide-react';
+import { useState } from "react";
+import {
+  useConversations,
+  useCreateConversation,
+} from "@/lib/hooks/useMessages";
+import { useAppStore } from "@/lib/stores/appStore";
+import { formatDistanceToNow } from "date-fns";
+import { MessageCircle, User } from "lucide-react";
 
 interface ConversationListProps {
   onSelectConversation: (conversationId: string, otherUserId: string) => void;
@@ -21,9 +24,12 @@ export function ConversationList({
 }: ConversationListProps) {
   const { userId } = useAppStore();
   const { data: conversations = [], isLoading } = useConversations(userId);
-  const createConversation = useCreateConversation();
 
-  const handleConversationClick = (conversation: any) => {
+  const handleConversationClick = (conversation: {
+    id: string;
+    participant_1_id: string;
+    participant_2_id: string;
+  }) => {
     const otherUserId =
       conversation.participant_1_id === userId
         ? conversation.participant_2_id
@@ -34,7 +40,9 @@ export function ConversationList({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-pulse text-gray-500">Loading conversations...</div>
+        <div className="animate-pulse text-gray-500">
+          Loading conversations...
+        </div>
       </div>
     );
   }
@@ -44,7 +52,9 @@ export function ConversationList({
       <div className="flex flex-col items-center justify-center h-full text-gray-500 p-8">
         <MessageCircle className="w-12 h-12 mb-4 opacity-50" />
         <p className="text-sm">No conversations yet</p>
-        <p className="text-xs mt-2 opacity-75">Start a conversation by messaging a user</p>
+        <p className="text-xs mt-2 opacity-75">
+          Start a conversation by messaging a user
+        </p>
       </div>
     );
   }
@@ -63,7 +73,9 @@ export function ConversationList({
             key={conversation.id}
             onClick={() => handleConversationClick(conversation)}
             className={`flex items-start gap-3 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-              isSelected ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500' : ''
+              isSelected
+                ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                : ""
             }`}
           >
             <div className="flex-shrink-0">
@@ -78,9 +90,12 @@ export function ConversationList({
                 </span>
                 {conversation.last_message_at && (
                   <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 ml-2">
-                    {formatDistanceToNow(new Date(conversation.last_message_at), {
-                      addSuffix: true,
-                    })}
+                    {formatDistanceToNow(
+                      new Date(conversation.last_message_at),
+                      {
+                        addSuffix: true,
+                      }
+                    )}
                   </span>
                 )}
               </div>
@@ -96,4 +111,3 @@ export function ConversationList({
     </div>
   );
 }
-

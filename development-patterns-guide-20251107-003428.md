@@ -1,4 +1,5 @@
 # 🛠️ Development Patterns Guide
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -39,7 +40,7 @@
 // src/lib/services/knowledgeGraph.ts
 interface KnowledgeNode {
   id: string;
-  type: 'article' | 'topic' | 'source' | 'user';
+  type: "article" | "topic" | "source" | "user";
   data: any;
   relationships: Relationship[];
 }
@@ -47,7 +48,12 @@ interface KnowledgeNode {
 interface Relationship {
   from: string;
   to: string;
-  type: 'related-to' | 'similar-to' | 'mentions' | 'authored-by' | 'tagged-with';
+  type:
+    | "related-to"
+    | "similar-to"
+    | "mentions"
+    | "authored-by"
+    | "tagged-with";
   strength: number; // 0-1
 }
 
@@ -67,7 +73,7 @@ class KnowledgeGraph {
       relationships.push({
         from: article.id,
         to: topic.id,
-        type: 'tagged-with',
+        type: "tagged-with",
         strength: 0.8,
       });
     }
@@ -80,7 +86,7 @@ class KnowledgeGraph {
         relationships.push({
           from: article.id,
           to: linkedArticle.id,
-          type: 'mentions',
+          type: "mentions",
           strength: 0.6,
         });
       }
@@ -92,7 +98,7 @@ class KnowledgeGraph {
       relationships.push({
         from: article.id,
         to: similarArticle.id,
-        type: 'similar-to',
+        type: "similar-to",
         strength: this.calculateSimilarity(article, similarArticle),
       });
     }
@@ -105,13 +111,13 @@ class KnowledgeGraph {
    */
   private async extractTopics(article: Article): Promise<Topic[]> {
     // Use keywords, tags, categories
-    const text = `${article.title} ${article.excerpt} ${article.content || ''}`;
-    
+    const text = `${article.title} ${article.excerpt} ${article.content || ""}`;
+
     // Simple keyword extraction (can be enhanced with NLP)
     const keywords = this.extractKeywords(text);
-    
+
     // Map to existing topics or create new ones
-    return keywords.map(keyword => ({
+    return keywords.map((keyword) => ({
       id: `topic-${keyword.toLowerCase()}`,
       name: keyword,
       category: article.category,
@@ -127,21 +133,21 @@ class KnowledgeGraph {
   ): Promise<Article[]> {
     // Query Supabase for articles with similar topics
     const { data } = await supabase
-      .from('articles')
-      .select('*')
-      .in('category', [article.category])
-      .neq('id', article.id)
+      .from("articles")
+      .select("*")
+      .in("category", [article.category])
+      .neq("id", article.id)
       .limit(10);
 
     // Calculate similarity scores
     return data
-      .map(other => ({
+      .map((other) => ({
         article: other,
         similarity: this.calculateTopicOverlap(topics, other.topics || []),
       }))
-      .filter(item => item.similarity > 0.3)
+      .filter((item) => item.similarity > 0.3)
       .sort((a, b) => b.similarity - a.similarity)
-      .map(item => item.article);
+      .map((item) => item.article);
   }
 }
 ```
@@ -163,7 +169,7 @@ class LinkExtractor {
 
     // 1. Extract markdown links: [text](url)
     const markdownLinks = content.match(/\[([^\]]+)\]\(([^)]+)\)/g) || [];
-    markdownLinks.forEach(match => {
+    markdownLinks.forEach((match) => {
       const url = match.match(/\(([^)]+)\)/)?.[1];
       if (url) links.push(url);
     });
@@ -175,9 +181,9 @@ class LinkExtractor {
 
     // 3. Extract HTML links: <a href="url">
     const htmlLinks = content.match(/href=["']([^"']+)["']/g) || [];
-    htmlLinks.forEach(match => {
+    htmlLinks.forEach((match) => {
       const url = match.match(/["']([^"']+)["']/)?.[1];
-      if (url && url.startsWith('http')) links.push(url);
+      if (url && url.startsWith("http")) links.push(url);
     });
 
     // 4. Normalize and deduplicate
@@ -193,33 +199,33 @@ class LinkExtractor {
 
       // Remove tracking parameters
       const trackingParams = [
-        'utm_source',
-        'utm_medium',
-        'utm_campaign',
-        'utm_term',
-        'utm_content',
-        'ref',
-        'fbclid',
-        'gclid',
-        'source',
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_term",
+        "utm_content",
+        "ref",
+        "fbclid",
+        "gclid",
+        "source",
       ];
-      trackingParams.forEach(param => parsed.searchParams.delete(param));
+      trackingParams.forEach((param) => parsed.searchParams.delete(param));
 
       // Normalize protocol (always HTTPS)
-      parsed.protocol = 'https:';
+      parsed.protocol = "https:";
 
       // Normalize www subdomain
-      if (parsed.hostname.startsWith('www.')) {
+      if (parsed.hostname.startsWith("www.")) {
         parsed.hostname = parsed.hostname.substring(4);
       }
 
       // Remove trailing slash (except root)
-      if (parsed.pathname !== '/' && parsed.pathname.endsWith('/')) {
+      if (parsed.pathname !== "/" && parsed.pathname.endsWith("/")) {
         parsed.pathname = parsed.pathname.slice(0, -1);
       }
 
       // Remove fragment (hash)
-      parsed.hash = '';
+      parsed.hash = "";
 
       return parsed.toString();
     } catch {
@@ -231,7 +237,7 @@ class LinkExtractor {
    * Normalize and deduplicate links
    */
   normalizeAndDeduplicate(links: string[]): string[] {
-    const normalized = links.map(link => this.normalizeUrl(link));
+    const normalized = links.map((link) => this.normalizeUrl(link));
     return Array.from(new Set(normalized));
   }
 
@@ -240,8 +246,10 @@ class LinkExtractor {
    */
   async extractFromGitHubRepo(repoUrl: string): Promise<string[]> {
     // Fetch README.md content
-    const readmeUrl = repoUrl.replace('/github.com/', '/raw.githubusercontent.com/') + '/main/README.md';
-    
+    const readmeUrl =
+      repoUrl.replace("/github.com/", "/raw.githubusercontent.com/") +
+      "/main/README.md";
+
     try {
       const response = await fetch(readmeUrl);
       const content = await response.text();
@@ -256,9 +264,11 @@ class LinkExtractor {
    */
   async extractFromRedditPost(postId: string): Promise<string[]> {
     // Reddit API returns post content
-    const response = await fetch(`https://www.reddit.com/r/all/comments/${postId}.json`);
+    const response = await fetch(
+      `https://www.reddit.com/r/all/comments/${postId}.json`
+    );
     const data = await response.json();
-    
+
     const links: string[] = [];
     if (data[0]?.data?.children) {
       data[0].data.children.forEach((child: any) => {
@@ -266,12 +276,12 @@ class LinkExtractor {
         if (post.selftext) {
           links.push(...this.extractLinks(post.selftext));
         }
-        if (post.url && post.url.startsWith('http')) {
+        if (post.url && post.url.startsWith("http")) {
           links.push(post.url);
         }
       });
     }
-    
+
     return this.normalizeAndDeduplicate(links);
   }
 }
@@ -320,12 +330,16 @@ class ArticleEnricher {
     }
 
     // Extract from source-specific content
-    if (article.source === 'GitHub' && article.url) {
-      links.push(...await this.linkExtractor.extractFromGitHubRepo(article.url));
+    if (article.source === "GitHub" && article.url) {
+      links.push(
+        ...(await this.linkExtractor.extractFromGitHubRepo(article.url))
+      );
     }
 
-    if (article.source === 'Reddit' && article.id) {
-      links.push(...await this.linkExtractor.extractFromRedditPost(article.id));
+    if (article.source === "Reddit" && article.id) {
+      links.push(
+        ...(await this.linkExtractor.extractFromRedditPost(article.id))
+      );
     }
 
     return this.linkExtractor.normalizeAndDeduplicate(links);
@@ -341,27 +355,29 @@ class ArticleEnricher {
     topics.push({
       id: `category-${article.category}`,
       name: article.category,
-      type: 'category',
+      type: "category",
     });
 
     // 2. From article tags (if available)
     if (article.tags) {
-      article.tags.forEach(tag => {
+      article.tags.forEach((tag) => {
         topics.push({
           id: `tag-${tag.toLowerCase()}`,
           name: tag,
-          type: 'tag',
+          type: "tag",
         });
       });
     }
 
     // 3. From content keywords (simple extraction)
-    const keywords = this.extractKeywords(`${article.title} ${article.excerpt}`);
-    keywords.forEach(keyword => {
+    const keywords = this.extractKeywords(
+      `${article.title} ${article.excerpt}`
+    );
+    keywords.forEach((keyword) => {
       topics.push({
         id: `keyword-${keyword.toLowerCase()}`,
         name: keyword,
-        type: 'keyword',
+        type: "keyword",
       });
     });
 
@@ -397,12 +413,13 @@ class ContentAggregator {
 
     // 2. Extract links from each article
     const enrichedArticles = await Promise.all(
-      articles.map(article => this.articleEnricher.enrichArticle(article))
+      articles.map((article) => this.articleEnricher.enrichArticle(article))
     );
 
     // 3. Build knowledge graph relationships
     for (const article of enrichedArticles) {
-      const relationships = await this.knowledgeGraph.extractRelationships(article);
+      const relationships =
+        await this.knowledgeGraph.extractRelationships(article);
       await this.knowledgeGraph.addRelationships(relationships);
     }
 
@@ -420,8 +437,10 @@ class ContentAggregator {
 
     // After fetching repos, extract links from READMEs
     const enrichedRepos = await Promise.all(
-      repos.map(async repo => {
-        const links = await this.linkExtractor.extractFromGitHubRepo(repo.html_url);
+      repos.map(async (repo) => {
+        const links = await this.linkExtractor.extractFromGitHubRepo(
+          repo.html_url
+        );
         return {
           ...repo,
           links,
@@ -451,7 +470,7 @@ interface QueuedMessage {
   conversationId: string;
   senderId: string;
   content: string;
-  status: 'pending' | 'sending' | 'sent' | 'failed';
+  status: "pending" | "sending" | "sent" | "failed";
   createdAt: number;
   retries: number;
 }
@@ -462,26 +481,28 @@ class MessageQueue {
 
   constructor() {
     this.queue = localforage.createInstance({
-      name: 'web3news',
-      storeName: 'messageQueue',
+      name: "web3news",
+      storeName: "messageQueue",
     });
   }
 
   /**
    * Add message to queue (offline or online)
    */
-  async queueMessage(message: Omit<QueuedMessage, 'id' | 'status' | 'createdAt' | 'retries'>): Promise<string> {
+  async queueMessage(
+    message: Omit<QueuedMessage, "id" | "status" | "createdAt" | "retries">
+  ): Promise<string> {
     const queuedMessage: QueuedMessage = {
       ...message,
       id: `msg-${Date.now()}-${Math.random()}`,
-      status: 'pending',
+      status: "pending",
       createdAt: Date.now(),
       retries: 0,
     };
 
-    const queue = await this.queue.getItem<QueuedMessage[]>('queue') || [];
+    const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
     queue.push(queuedMessage);
-    await this.queue.setItem('queue', queue);
+    await this.queue.setItem("queue", queue);
 
     // Try to send immediately if online
     if (navigator.onLine) {
@@ -497,33 +518,35 @@ class MessageQueue {
   async processQueue(): Promise<void> {
     if (!navigator.onLine) return;
 
-    const queue = await this.queue.getItem<QueuedMessage[]>('queue') || [];
-    const pending = queue.filter(msg => msg.status === 'pending' || msg.status === 'failed');
+    const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
+    const pending = queue.filter(
+      (msg) => msg.status === "pending" || msg.status === "failed"
+    );
 
     for (const message of pending) {
       try {
-        message.status = 'sending';
+        message.status = "sending";
         await this.updateQueue(queue);
 
         // Send to Supabase
-        await supabase.from('messages').insert({
+        await supabase.from("messages").insert({
           conversation_id: message.conversationId,
           sender_id: message.senderId,
           content: message.content,
         });
 
-        message.status = 'sent';
+        message.status = "sent";
         await this.updateQueue(queue);
 
         // Remove from queue after successful send
-        const updatedQueue = queue.filter(msg => msg.id !== message.id);
-        await this.queue.setItem('queue', updatedQueue);
+        const updatedQueue = queue.filter((msg) => msg.id !== message.id);
+        await this.queue.setItem("queue", updatedQueue);
       } catch (error) {
         message.retries++;
         if (message.retries >= this.maxRetries) {
-          message.status = 'failed';
+          message.status = "failed";
         } else {
-          message.status = 'pending';
+          message.status = "pending";
         }
         await this.updateQueue(queue);
       }
@@ -531,17 +554,18 @@ class MessageQueue {
   }
 
   private async updateQueue(queue: QueuedMessage[]): Promise<void> {
-    await this.queue.setItem('queue', queue);
+    await this.queue.setItem("queue", queue);
   }
 
   /**
    * Get queued messages for a conversation
    */
   async getQueuedMessages(conversationId: string): Promise<QueuedMessage[]> {
-    const queue = await this.queue.getItem<QueuedMessage[]>('queue') || [];
-    return queue.filter(msg => 
-      msg.conversationId === conversationId && 
-      (msg.status === 'pending' || msg.status === 'sending')
+    const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
+    return queue.filter(
+      (msg) =>
+        msg.conversationId === conversationId &&
+        (msg.status === "pending" || msg.status === "sending")
     );
   }
 }
@@ -562,7 +586,7 @@ export function useMessages(conversationId: string) {
 
   // Load messages from Supabase
   const { data: supabaseMessages } = useQuery({
-    queryKey: ['messages', conversationId],
+    queryKey: ["messages", conversationId],
     queryFn: () => getMessages(conversationId),
   });
 
@@ -575,7 +599,7 @@ export function useMessages(conversationId: string) {
   useEffect(() => {
     const allMessages = [
       ...(supabaseMessages || []),
-      ...queuedMessages.map(qm => ({
+      ...queuedMessages.map((qm) => ({
         id: qm.id,
         conversation_id: qm.conversationId,
         sender_id: qm.senderId,
@@ -584,8 +608,9 @@ export function useMessages(conversationId: string) {
         created_at: new Date(qm.createdAt).toISOString(),
         status: qm.status, // 'pending' | 'sending' | 'sent'
       })),
-    ].sort((a, b) => 
-      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    ].sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
 
     setMessages(allMessages);
@@ -606,10 +631,10 @@ export function useMessages(conversationId: string) {
       content,
       is_read: false,
       created_at: new Date().toISOString(),
-      status: 'pending',
+      status: "pending",
     };
 
-    setMessages(prev => [...prev, optimisticMessage]);
+    setMessages((prev) => [...prev, optimisticMessage]);
 
     // 2. Queue message (handles offline/online)
     await messageQueue.queueMessage({
@@ -702,30 +727,30 @@ export function useRealtimeMessages(conversationId: string) {
     const channel = supabase
       .channel(`messages:${conversationId}`)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          setMessages(prev => [...prev, newMessage]);
+          setMessages((prev) => [...prev, newMessage]);
         }
       )
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
           const updatedMessage = payload.new as Message;
-          setMessages(prev =>
-            prev.map(msg =>
+          setMessages((prev) =>
+            prev.map((msg) =>
               msg.id === updatedMessage.id ? updatedMessage : msg
             )
           );
@@ -759,15 +784,15 @@ class MessageSync {
     serverMessages: Message[]
   ): Promise<Message[]> {
     const merged: Message[] = [];
-    const localMap = new Map(localMessages.map(m => [m.id, m]));
-    const serverMap = new Map(serverMessages.map(m => [m.id, m]));
+    const localMap = new Map(localMessages.map((m) => [m.id, m]));
+    const serverMap = new Map(serverMessages.map((m) => [m.id, m]));
 
     // 1. Add all server messages (source of truth)
-    serverMessages.forEach(msg => merged.push(msg));
+    serverMessages.forEach((msg) => merged.push(msg));
 
     // 2. Add local messages that don't exist on server (pending sends)
-    localMessages.forEach(localMsg => {
-      if (!serverMap.has(localMsg.id) && localMsg.status === 'pending') {
+    localMessages.forEach((localMsg) => {
+      if (!serverMap.has(localMsg.id) && localMsg.status === "pending") {
         merged.push(localMsg);
       }
     });
@@ -849,18 +874,21 @@ class MessageSync {
 ## 🎯 PRIORITY ORDER
 
 ### Phase 1: Data Collection (High Priority)
+
 1. LinkExtractor implementation
 2. Enhanced ContentAggregator with link extraction
 3. Pagination support for APIs
 4. Enhanced rate limiter
 
 ### Phase 2: Messaging (Medium Priority)
+
 1. MessageQueue implementation
 2. Optimistic UI updates
 3. Real-time sync with Supabase
 4. Message status indicators
 
 ### Phase 3: Knowledge Graph (Low Priority - Future)
+
 1. KnowledgeGraph implementation
 2. ArticleEnricher with relationships
 3. Topic clustering
@@ -879,4 +907,3 @@ class MessageSync {
 
 **Status:** ✅ Development Patterns Guide Complete  
 **Next:** Implement patterns in development phase
-

@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { cn } from "@/lib/utils";
+import { ReactNode, createContext, useContext, useState } from "react";
 
 interface Toast {
   id: string;
   message: string;
-  type: 'success' | 'error' | 'info' | 'warning';
+  type: "success" | "error" | "info" | "warning";
   duration?: number;
 }
 
 interface ToastContextType {
   toasts: Toast[];
-  addToast: (toast: Omit<Toast, 'id'>) => void;
+  addToast: (toast: Omit<Toast, "id">) => void;
   removeToast: (id: string) => void;
 }
 
@@ -21,7 +21,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = (toast: Omit<Toast, 'id'>) => {
+  const addToast = (toast: Omit<Toast, "id">) => {
     const id = `${Date.now()}-${Math.random()}`;
     const newToast = { ...toast, id };
     setToasts((prev) => [...prev, newToast]);
@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within ToastProvider');
+    throw new Error("useToast must be used within ToastProvider");
   }
   return context;
 }
@@ -62,7 +62,11 @@ function ToastContainer({
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
       {toasts.map((toast) => (
-        <ToastItem key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
+        <ToastItem
+          key={toast.id}
+          toast={toast}
+          onClose={() => removeToast(toast.id)}
+        />
       ))}
     </div>
   );
@@ -70,25 +74,25 @@ function ToastContainer({
 
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   const typeStyles = {
-    success: 'bg-green-500 text-white',
-    error: 'bg-red-500 text-white',
-    info: 'bg-blue-500 text-white',
-    warning: 'bg-yellow-500 text-white',
+    success: "bg-green-500 text-white",
+    error: "bg-red-500 text-white",
+    info: "bg-blue-500 text-white",
+    warning: "bg-yellow-500 text-white",
   };
 
   const icons = {
-    success: '✓',
-    error: '✕',
-    info: 'ℹ',
-    warning: '⚠',
+    success: "✓",
+    error: "✕",
+    info: "ℹ",
+    warning: "⚠",
   };
 
   return (
     <div
       className={cn(
-        'flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[300px] max-w-md',
+        "flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[300px] max-w-md",
         typeStyles[toast.type],
-        'animate-in slide-in-from-right'
+        "animate-in slide-in-from-right"
       )}
     >
       <span className="text-lg font-semibold">{icons[toast.type]}</span>
@@ -98,7 +102,12 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
         className="text-white/80 hover:text-white transition-colors"
         aria-label="Close toast"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -110,4 +119,3 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
     </div>
   );
 }
-

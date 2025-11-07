@@ -1,11 +1,11 @@
-import type { Article } from './indexedDBCache';
-import { linkExtractor } from './linkExtractor';
+import type { Article } from "./indexedDBCache";
+import { linkExtractor } from "./linkExtractor";
 
 interface SourceConfig {
   name: string;
-  type: 'firebase' | 'graphql' | 'rest' | 'rss';
+  type: "firebase" | "graphql" | "rest" | "rss";
   endpoint: string;
-  category: 'tech' | 'crypto' | 'social' | 'general';
+  category: "tech" | "crypto" | "social" | "general";
   enabled: boolean;
 }
 
@@ -43,7 +43,9 @@ class RateLimiter {
     const timeSinceLastRetry = Date.now() - lastRetry;
 
     if (timeSinceLastRetry < delay) {
-      await new Promise((resolve) => setTimeout(resolve, delay - timeSinceLastRetry));
+      await new Promise((resolve) =>
+        setTimeout(resolve, delay - timeSinceLastRetry)
+      );
     }
 
     this.retryDelays.set(source, Date.now());
@@ -65,80 +67,80 @@ class ContentAggregator {
     this.rateLimiter = new RateLimiter();
     this.sources = [
       {
-        name: 'Hacker News',
-        type: 'firebase',
-        endpoint: 'https://hacker-news.firebaseio.com/v0',
-        category: 'tech',
+        name: "Hacker News",
+        type: "firebase",
+        endpoint: "https://hacker-news.firebaseio.com/v0",
+        category: "tech",
         enabled: true,
       },
       {
-        name: 'Product Hunt',
-        type: 'graphql',
-        endpoint: 'https://api.producthunt.com/v2/api/graphql',
-        category: 'tech',
+        name: "Product Hunt",
+        type: "graphql",
+        endpoint: "https://api.producthunt.com/v2/api/graphql",
+        category: "tech",
         enabled: true,
       },
       {
-        name: 'GitHub Trending',
-        type: 'rest',
-        endpoint: 'https://api.github.com',
-        category: 'tech',
+        name: "GitHub Trending",
+        type: "rest",
+        endpoint: "https://api.github.com",
+        category: "tech",
         enabled: true,
       },
       {
-        name: 'Reddit',
-        type: 'rest',
-        endpoint: 'https://www.reddit.com',
-        category: 'tech',
+        name: "Reddit",
+        type: "rest",
+        endpoint: "https://www.reddit.com",
+        category: "tech",
         enabled: true,
       },
       {
-        name: 'Medium',
-        type: 'rss',
-        endpoint: 'https://medium.com/feed',
-        category: 'tech',
+        name: "Medium",
+        type: "rss",
+        endpoint: "https://medium.com/feed",
+        category: "tech",
         enabled: true,
       },
       {
-        name: 'CoinDesk',
-        type: 'rss',
-        endpoint: 'https://www.coindesk.com/arc/outboundfeeds/rss/',
-        category: 'crypto',
+        name: "CoinDesk",
+        type: "rss",
+        endpoint: "https://www.coindesk.com/arc/outboundfeeds/rss/",
+        category: "crypto",
         enabled: true,
       },
       {
-        name: 'CoinTelegraph',
-        type: 'rss',
-        endpoint: 'https://cointelegraph.com/rss',
-        category: 'crypto',
+        name: "CoinTelegraph",
+        type: "rss",
+        endpoint: "https://cointelegraph.com/rss",
+        category: "crypto",
         enabled: true,
       },
       {
-        name: 'Decrypt',
-        type: 'rss',
-        endpoint: 'https://decrypt.co/feed',
-        category: 'crypto',
+        name: "Decrypt",
+        type: "rss",
+        endpoint: "https://decrypt.co/feed",
+        category: "crypto",
         enabled: true,
       },
       {
-        name: 'Bitcoin Magazine',
-        type: 'rss',
-        endpoint: 'https://bitcoinmagazine.com/.rss/full/',
-        category: 'crypto',
+        name: "Bitcoin Magazine",
+        type: "rss",
+        endpoint: "https://bitcoinmagazine.com/.rss/full/",
+        category: "crypto",
         enabled: true,
       },
       {
-        name: 'The Block',
-        type: 'rss',
-        endpoint: 'https://www.theblock.co/rss.xml',
-        category: 'crypto',
+        name: "The Block",
+        type: "rss",
+        endpoint: "https://www.theblock.co/rss.xml",
+        category: "crypto",
         enabled: true,
       },
       {
-        name: 'CoinGecko',
-        type: 'rest',
-        endpoint: 'https://api.coingecko.com/api/v3',
-        category: 'crypto',
+        name: "CoinGecko",
+        type: "rest",
+        endpoint: "https://api.coingecko.com/api/v3",
+        category: "crypto",
         enabled: true,
       },
     ];
@@ -148,44 +150,47 @@ class ContentAggregator {
    * Fetch from Hacker News Firebase API
    */
   private async fetchHackerNews(limit = 30): Promise<Article[]> {
-    await this.rateLimiter.wait('hackernews');
+    await this.rateLimiter.wait("hackernews");
 
     try {
       // Fetch top story IDs
       const response = await fetch(
-        'https://hacker-news.firebaseio.com/v0/topstories.json'
+        "https://hacker-news.firebaseio.com/v0/topstories.json"
       );
       const storyIds: number[] = await response.json();
 
       // Fetch story details (parallel)
       const stories = await Promise.allSettled(
-        storyIds.slice(0, limit).map((id) =>
-          fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(
-            (r) => r.json()
+        storyIds
+          .slice(0, limit)
+          .map((id) =>
+            fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(
+              (r) => r.json()
+            )
           )
-        )
       );
 
       return stories
-        .filter((result) => result.status === 'fulfilled')
+        .filter((result) => result.status === "fulfilled")
         .map((result) => {
           const story = (result as PromiseFulfilledResult<any>).value;
           return {
             id: `hn-${story.id}`,
             title: story.title,
-            url: story.url || `https://news.ycombinator.com/item?id=${story.id}`,
-            source: 'Hacker News',
-            category: 'tech' as const,
+            url:
+              story.url || `https://news.ycombinator.com/item?id=${story.id}`,
+            source: "Hacker News",
+            category: "tech" as const,
             upvotes: story.score || 0,
             comments: story.descendants || 0,
             publishedAt: story.time * 1000,
             author: story.by,
-            urlHash: '',
+            urlHash: "",
             cachedAt: 0,
           };
         });
     } catch (error) {
-      console.error('Error fetching Hacker News:', error);
+      console.error("Error fetching Hacker News:", error);
       return [];
     }
   }
@@ -194,7 +199,7 @@ class ContentAggregator {
    * Fetch from Product Hunt GraphQL API
    */
   private async fetchProductHunt(limit = 20): Promise<Article[]> {
-    await this.rateLimiter.wait('producthunt');
+    await this.rateLimiter.wait("producthunt");
 
     try {
       const query = `
@@ -218,17 +223,20 @@ class ContentAggregator {
         }
       `;
 
-      const response = await fetch('https://api.producthunt.com/v2/api/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PRODUCT_HUNT_TOKEN || ''}`,
-        },
-        body: JSON.stringify({
-          query,
-          variables: { first: limit },
-        }),
-      });
+      const response = await fetch(
+        "https://api.producthunt.com/v2/api/graphql",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_PRODUCT_HUNT_TOKEN || ""}`,
+          },
+          body: JSON.stringify({
+            query,
+            variables: { first: limit },
+          }),
+        }
+      );
 
       const data = await response.json();
       const posts = data.data?.posts?.edges || [];
@@ -239,19 +247,19 @@ class ContentAggregator {
           id: `ph-${post.id}`,
           title: post.name,
           url: post.url,
-          source: 'Product Hunt',
-          category: 'tech' as const,
+          source: "Product Hunt",
+          category: "tech" as const,
           upvotes: post.votesCount || 0,
           comments: post.commentsCount || 0,
           publishedAt: new Date(post.createdAt).getTime(),
           author: post.user?.username,
           excerpt: post.tagline,
-          urlHash: '',
+          urlHash: "",
           cachedAt: 0,
         };
       });
     } catch (error) {
-      console.error('Error fetching Product Hunt:', error);
+      console.error("Error fetching Product Hunt:", error);
       return [];
     }
   }
@@ -264,7 +272,7 @@ class ContentAggregator {
     limit = 30,
     page = 1
   ): Promise<Article[]> {
-    await this.rateLimiter.wait('github');
+    await this.rateLimiter.wait("github");
 
     try {
       const url = language
@@ -272,25 +280,28 @@ class ContentAggregator {
         : `https://api.github.com/search/repositories?q=stars:>1000&sort=stars&order=desc&per_page=${Math.min(limit, 100)}&page=${page}`;
 
       const headers: HeadersInit = {
-        'Accept': 'application/vnd.github.v3+json',
+        Accept: "application/vnd.github.v3+json",
       };
 
       // Add auth token if available (increases rate limit)
       const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
       if (token) {
-        headers['Authorization'] = `token ${token}`;
+        headers["Authorization"] = `token ${token}`;
       }
 
       const response = await fetch(url, { headers });
 
       // Handle rate limiting with exponential backoff
       if (response.status === 403) {
-        const retryAfter = response.headers.get('Retry-After');
+        const retryAfter = response.headers.get("Retry-After");
         if (retryAfter) {
-          await this.rateLimiter.waitWithBackoff('github', parseInt(retryAfter));
+          await this.rateLimiter.waitWithBackoff(
+            "github",
+            parseInt(retryAfter)
+          );
           return this.fetchGitHubTrending(language, limit, page);
         }
-        await this.rateLimiter.waitWithBackoff('github');
+        await this.rateLimiter.waitWithBackoff("github");
         return this.fetchGitHubTrending(language, limit, page);
       }
 
@@ -305,15 +316,15 @@ class ContentAggregator {
         id: `gh-${repo.id}`,
         title: repo.name,
         url: repo.html_url,
-        source: 'GitHub',
-        category: 'tech' as const,
+        source: "GitHub",
+        category: "tech" as const,
         upvotes: repo.stargazers_count || 0,
         comments: repo.open_issues_count || 0,
         publishedAt: new Date(repo.created_at).getTime(),
         author: repo.owner?.login,
         excerpt: repo.description,
         thumbnail: repo.owner?.avatar_url,
-        urlHash: '',
+        urlHash: "",
         cachedAt: 0,
       }));
 
@@ -321,7 +332,9 @@ class ContentAggregator {
       const enrichedArticles = await Promise.all(
         articles.map(async (article) => {
           try {
-            const links = await linkExtractor.extractFromGitHubRepo(article.url);
+            const links = await linkExtractor.extractFromGitHubRepo(
+              article.url
+            );
             return {
               ...article,
               links: links.length > 0 ? links : undefined,
@@ -334,7 +347,7 @@ class ContentAggregator {
 
       return enrichedArticles;
     } catch (error) {
-      console.error('Error fetching GitHub Trending:', error);
+      console.error("Error fetching GitHub Trending:", error);
       return [];
     }
   }
@@ -375,7 +388,7 @@ class ContentAggregator {
     limit = 25,
     after?: string
   ): Promise<{ articles: Article[]; nextAfter?: string }> {
-    await this.rateLimiter.wait('reddit');
+    await this.rateLimiter.wait("reddit");
 
     try {
       let url = `https://www.reddit.com/r/${subreddit}/hot.json?limit=${Math.min(limit, 100)}`;
@@ -385,7 +398,7 @@ class ContentAggregator {
 
       const response = await fetch(url, {
         headers: {
-          'User-Agent': 'Web3News/1.0',
+          "User-Agent": "Web3News/1.0",
         },
       });
 
@@ -404,14 +417,16 @@ class ContentAggregator {
           title: post.title,
           url: post.url,
           source: `Reddit r/${subreddit}`,
-          category: 'tech' as const,
+          category: "tech" as const,
           upvotes: post.ups || 0,
           comments: post.num_comments || 0,
           publishedAt: post.created_utc * 1000,
           author: post.author,
           excerpt: post.selftext?.substring(0, 200),
-          thumbnail: post.thumbnail?.startsWith('http') ? post.thumbnail : undefined,
-          urlHash: '',
+          thumbnail: post.thumbnail?.startsWith("http")
+            ? post.thumbnail
+            : undefined,
+          urlHash: "",
           cachedAt: 0,
         };
 
@@ -428,7 +443,7 @@ class ContentAggregator {
 
       return { articles, nextAfter };
     } catch (error) {
-      console.error('Error fetching Reddit:', error);
+      console.error("Error fetching Reddit:", error);
       return { articles: [] };
     }
   }
@@ -445,7 +460,11 @@ class ContentAggregator {
     let page = 1;
 
     while (page <= maxPages) {
-      const { articles, nextAfter } = await this.fetchReddit(subreddit, 100, after);
+      const { articles, nextAfter } = await this.fetchReddit(
+        subreddit,
+        100,
+        after
+      );
       allArticles.push(...articles);
 
       if (!nextAfter) break;
@@ -464,8 +483,11 @@ class ContentAggregator {
   /**
    * Fetch from RSS feed
    */
-  private async fetchRSSFeed(url: string, sourceName: string): Promise<Article[]> {
-    await this.rateLimiter.wait('rss');
+  private async fetchRSSFeed(
+    url: string,
+    sourceName: string
+  ): Promise<Article[]> {
+    await this.rateLimiter.wait("rss");
 
     try {
       // Use CORS proxy for RSS feeds
@@ -479,12 +501,12 @@ class ContentAggregator {
         title: item.title,
         url: item.link,
         source: sourceName,
-        category: 'crypto' as const,
+        category: "crypto" as const,
         publishedAt: new Date(item.pubDate).getTime(),
         author: item.author,
         excerpt: item.description?.substring(0, 200),
         thumbnail: item.enclosure?.link,
-        urlHash: '',
+        urlHash: "",
         cachedAt: 0,
       }));
     } catch (error) {
@@ -497,7 +519,7 @@ class ContentAggregator {
    * Get sources for a specific category
    */
   private getSourcesForCategory(
-    category?: 'tech' | 'crypto' | 'social' | 'general'
+    category?: "tech" | "crypto" | "social" | "general"
   ): SourceConfig[] {
     if (!category) {
       return this.sources.filter((s) => s.enabled);
@@ -508,35 +530,38 @@ class ContentAggregator {
   /**
    * Fetch from a single source
    */
-  private async fetchSource(source: SourceConfig, usePagination = false): Promise<Article[]> {
+  private async fetchSource(
+    source: SourceConfig,
+    usePagination = false
+  ): Promise<Article[]> {
     try {
       switch (source.name) {
-        case 'Hacker News':
+        case "Hacker News":
           return await this.fetchHackerNews();
-        case 'Product Hunt':
+        case "Product Hunt":
           return await this.fetchProductHunt();
-        case 'GitHub Trending':
+        case "GitHub Trending":
           // Use pagination for GitHub if enabled
           return usePagination
             ? await this.fetchGitHubTrendingAllPages()
             : await this.fetchGitHubTrending();
-        case 'Reddit':
+        case "Reddit":
           // Use pagination for Reddit if enabled
           return usePagination
-            ? await this.fetchRedditAllPages('technology')
-            : (await this.fetchReddit('technology')).articles;
-        case 'Medium':
-          return await this.fetchRSSFeed(source.endpoint, 'Medium');
-        case 'CoinDesk':
-          return await this.fetchRSSFeed(source.endpoint, 'CoinDesk');
-        case 'CoinTelegraph':
-          return await this.fetchRSSFeed(source.endpoint, 'CoinTelegraph');
-        case 'Decrypt':
-          return await this.fetchRSSFeed(source.endpoint, 'Decrypt');
-        case 'Bitcoin Magazine':
-          return await this.fetchRSSFeed(source.endpoint, 'Bitcoin Magazine');
-        case 'The Block':
-          return await this.fetchRSSFeed(source.endpoint, 'The Block');
+            ? await this.fetchRedditAllPages("technology")
+            : (await this.fetchReddit("technology")).articles;
+        case "Medium":
+          return await this.fetchRSSFeed(source.endpoint, "Medium");
+        case "CoinDesk":
+          return await this.fetchRSSFeed(source.endpoint, "CoinDesk");
+        case "CoinTelegraph":
+          return await this.fetchRSSFeed(source.endpoint, "CoinTelegraph");
+        case "Decrypt":
+          return await this.fetchRSSFeed(source.endpoint, "Decrypt");
+        case "Bitcoin Magazine":
+          return await this.fetchRSSFeed(source.endpoint, "Bitcoin Magazine");
+        case "The Block":
+          return await this.fetchRSSFeed(source.endpoint, "The Block");
         default:
           return [];
       }
@@ -556,7 +581,7 @@ class ContentAggregator {
     const seenUrls = new Set<string>();
 
     results.forEach((result) => {
-      if (result.status === 'fulfilled') {
+      if (result.status === "fulfilled") {
         result.value.forEach((article) => {
           const normalizedUrl = linkExtractor.normalizeUrl(article.url);
           if (!seenUrls.has(normalizedUrl)) {
@@ -583,7 +608,7 @@ class ContentAggregator {
    * Aggregate articles from all sources with optional pagination and link extraction
    */
   async aggregateSources(
-    category?: 'tech' | 'crypto' | 'social' | 'general',
+    category?: "tech" | "crypto" | "social" | "general",
     options?: { usePagination?: boolean; extractLinks?: boolean }
   ): Promise<Article[]> {
     const sources = this.getSourcesForCategory(category);
@@ -621,4 +646,3 @@ class ContentAggregator {
 
 // Export singleton instance
 export const contentAggregator = new ContentAggregator();
-

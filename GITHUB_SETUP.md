@@ -1,4 +1,5 @@
 # GitHub Repository Setup Guide
+
 ## Web3News - Blockchain Content Aggregator
 
 **Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo  
@@ -19,6 +20,7 @@
 - ✅ **issue-labeler.yml** - Issue labeling
 
 **Configuration Verified:**
+
 - ✅ Next.js basePath configured for GitHub Pages
 - ✅ Environment variables documented
 - ✅ Build output path correct (`out/`)
@@ -77,12 +79,14 @@ git push -u origin main
 Go to repository Settings → Secrets and variables → Actions → New repository secret
 
 **Required Secrets:**
+
 - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
 - `NEXT_PUBLIC_REOWN_PROJECT_ID` - Your Reown AppKit project ID
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Your Clerk publishable key
 
 **Optional Secrets:**
+
 - `SNYK_TOKEN` - For Snyk security scanning (optional)
 - `NEXT_PUBLIC_PRODUCT_HUNT_TOKEN` - For Product Hunt API (optional)
 - `NEXT_PUBLIC_GITHUB_TOKEN` - For GitHub API (optional)
@@ -92,6 +96,7 @@ Go to repository Settings → Secrets and variables → Actions → New reposito
 Go to repository Settings → Branches → Add rule
 
 **For `main` branch:**
+
 - Require pull request reviews before merging
 - Require status checks to pass before merging
   - Select: `CI - Format, Typecheck and Lint`
@@ -101,6 +106,7 @@ Go to repository Settings → Branches → Add rule
 ### 6. Dependabot Configuration
 
 Dependabot is already configured via `.github/dependabot.yml`:
+
 - Weekly dependency updates
 - Auto-labeling with "dependencies"
 - Conventional commit messages
@@ -108,6 +114,7 @@ Dependabot is already configured via `.github/dependabot.yml`:
 ### 7. Issue Templates
 
 Issue templates are configured:
+
 - Bug Report: `.github/ISSUE_TEMPLATE/bug_report.md`
 - Feature Request: `.github/ISSUE_TEMPLATE/feature_request.md`
 
@@ -211,4 +218,3 @@ After initial push:
 
 **Status**: ✅ Ready for GitHub push  
 **Next**: Push code and configure secrets
-

@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Merge Tailwind CSS classes with clsx
@@ -13,7 +13,7 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function formatRelativeTime(date: number | Date): string {
   const now = Date.now();
-  const timestamp = typeof date === 'number' ? date : date.getTime();
+  const timestamp = typeof date === "number" ? date : date.getTime();
   const diff = now - timestamp;
 
   const seconds = Math.floor(diff / 1000);
@@ -30,7 +30,7 @@ export function formatRelativeTime(date: number | Date): string {
   if (days > 0) return `${days}d ago`;
   if (hours > 0) return `${hours}h ago`;
   if (minutes > 0) return `${minutes}m ago`;
-  return 'just now';
+  return "just now";
 }
 
 /**
@@ -38,7 +38,7 @@ export function formatRelativeTime(date: number | Date): string {
  */
 export function truncate(text: string, length: number): string {
   if (text.length <= length) return text;
-  return text.substring(0, length).trim() + '...';
+  return text.substring(0, length).trim() + "...";
 }
 
 /**
@@ -83,7 +83,7 @@ export function throttle<T extends (...args: any[]) => any>(
  * Check if device is mobile
  */
 export function isMobile(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
   return window.innerWidth < 768;
 }
 
@@ -91,7 +91,7 @@ export function isMobile(): boolean {
  * Check if device is tablet
  */
 export function isTablet(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
   return window.innerWidth >= 768 && window.innerWidth < 1024;
 }
 
@@ -99,7 +99,7 @@ export function isTablet(): boolean {
  * Check if device is desktop
  */
 export function isDesktop(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
   return window.innerWidth >= 1024;
 }
 
@@ -138,7 +138,7 @@ export async function shareContent(data: {
  */
 export function generateExcerpt(content: string, maxLength = 200): string {
   // Remove HTML tags
-  const text = content.replace(/<[^>]*>/g, '');
+  const text = content.replace(/<[^>]*>/g, "");
   return truncate(text, maxLength);
 }
 
@@ -158,7 +158,7 @@ export function isValidUrl(url: string): boolean {
  * Format number with commas
  */
 export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num);
+  return new Intl.NumberFormat("en-US").format(num);
 }
 
 /**
@@ -166,11 +166,10 @@ export function formatNumber(num: number): string {
  */
 export function formatLargeNumber(num: number): string {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
+    return (num / 1000000).toFixed(1) + "M";
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
+    return (num / 1000).toFixed(1) + "K";
   }
   return num.toString();
 }
-

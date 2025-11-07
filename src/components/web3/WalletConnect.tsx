@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useAccount, useAppKit } from '@reown/appkit/react';
-import { Wallet, LogOut, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
+import { Wallet, LogOut, Copy, Check } from "lucide-react";
+import { useState } from "react";
 
 /**
  * WalletConnect Component
  * Connects wallet using Reown AppKit
  */
 export function WalletConnect() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useAppKitAccount();
   const { open } = useAppKit();
   const [copied, setCopied] = useState(false);
 
@@ -37,7 +37,7 @@ export function WalletConnect() {
         <button
           onClick={handleCopyAddress}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          aria-label={copied ? 'Address copied' : 'Copy address'}
+          aria-label={copied ? "Address copied" : "Copy address"}
         >
           {copied ? (
             <Check className="w-4 h-4 text-green-500" />
@@ -46,7 +46,7 @@ export function WalletConnect() {
           )}
         </button>
         <button
-          onClick={() => open({ view: 'Account' })}
+          onClick={() => open({ view: "Account" })}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           aria-label="Open account menu"
         >
@@ -66,4 +66,3 @@ export function WalletConnect() {
     </button>
   );
 }
-

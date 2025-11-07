@@ -1,4 +1,5 @@
 # 🔬 R&D Report: Data Collection & Database Solutions
+
 ## Web3News - Blockchain Content Aggregator
 
 **Created:** 2025-11-07  
@@ -30,6 +31,7 @@
 ## 🔍 PART 1: learn-anything Data Collection Analysis
 
 ### Repository Overview
+
 - **Repository:** [learn-anything/past-snapshot-before-rewrite](https://github.com/learn-anything/past-snapshot-before-rewrite)
 - **Tech Stack:** TypeScript (94.2%), Rust, Nix
 - **Purpose:** Organize world's knowledge, explore connections, curate learning paths
@@ -43,6 +45,7 @@ Based on research and analysis of knowledge graph platforms:
 
 **1. Knowledge Graph Approach:**
 learn-anything appears to use a **knowledge graph** structure where:
+
 - Nodes represent topics, resources, links, concepts
 - Edges represent relationships (learns-from, related-to, contains)
 - Data is collected from multiple sources and linked together
@@ -50,6 +53,7 @@ learn-anything appears to use a **knowledge graph** structure where:
 **2. Data Sources (Inferred from Knowledge Graph Patterns):**
 
 **a) Public Knowledge Bases:**
+
 - **Wikidata** - Structured data from Wikipedia
 - **DBpedia** - Structured data extracted from Wikipedia
 - **GitHub Repositories** - Code repositories, documentation
@@ -57,11 +61,13 @@ learn-anything appears to use a **knowledge graph** structure where:
 - **API Aggregation** - Multiple public APIs
 
 **b) Community Contributions:**
+
 - User submissions
 - Curated lists
 - Community edits
 
 **c) Web Scraping (Likely):**
+
 - Educational websites
 - Documentation sites
 - Tutorial platforms
@@ -70,46 +76,48 @@ learn-anything appears to use a **knowledge graph** structure where:
 **3. Collection Mechanisms:**
 
 **a) GitHub API Integration:**
+
 ```typescript
 // Pattern for collecting GitHub repositories
 async function collectGitHubRepos(topic: string) {
   const repos = [];
   let page = 1;
-  
+
   while (true) {
     const response = await githubAPI.search.repos({
       q: `topic:${topic} language:typescript`,
       page,
       per_page: 100,
-      sort: 'stars',
+      sort: "stars",
     });
-    
+
     if (response.data.items.length === 0) break;
     repos.push(...response.data.items);
     page++;
-    
+
     // Rate limit handling
     await sleep(1000);
   }
-  
+
   return repos;
 }
 ```
 
 **b) Knowledge Graph Construction:**
+
 ```typescript
 // Pattern for building knowledge graph
 class KnowledgeGraph {
   async collectFromSources() {
     // 1. Collect from multiple sources in parallel
-    const [githubRepos, rssFeeds, wikidata, userSubmissions] = 
+    const [githubRepos, rssFeeds, wikidata, userSubmissions] =
       await Promise.allSettled([
         this.collectGitHubRepos(),
         this.collectRSSFeeds(),
         this.collectWikidata(),
         this.collectUserSubmissions(),
       ]);
-    
+
     // 2. Normalize data
     const normalized = this.normalizeData([
       githubRepos,
@@ -117,71 +125,75 @@ class KnowledgeGraph {
       wikidata,
       userSubmissions,
     ]);
-    
+
     // 3. Extract relationships
     const relationships = this.extractRelationships(normalized);
-    
+
     // 4. Build graph
     return this.buildGraph(normalized, relationships);
   }
-  
+
   extractRelationships(items: Item[]): Relationship[] {
     const relationships = [];
-    
+
     for (const item of items) {
       // Extract topics/tags
       const topics = this.extractTopics(item);
-      
+
       // Link to related items
       for (const topic of topics) {
         const related = this.findRelatedItems(topic);
         relationships.push({
           from: item.id,
           to: related.id,
-          type: 'related-to',
+          type: "related-to",
         });
       }
     }
-    
+
     return relationships;
   }
 }
 ```
 
 **c) RSS Feed Aggregation:**
+
 ```typescript
 // Pattern for RSS feed collection
 async function collectRSSFeeds() {
   const sources = [
-    'https://dev.to/feed',
-    'https://medium.com/feed/tag/javascript',
-    'https://hackernoon.com/feed',
+    "https://dev.to/feed",
+    "https://medium.com/feed/tag/javascript",
+    "https://hackernoon.com/feed",
     // ... many more RSS feeds
   ];
-  
+
   const allItems = [];
-  
+
   for (const feedUrl of sources) {
     try {
       const feed = await parseRSS(feedUrl);
-      allItems.push(...feed.items.map(item => ({
-        title: item.title,
-        url: item.link,
-        description: item.description,
-        publishedAt: item.pubDate,
-        source: extractDomain(feedUrl),
-        topics: extractTopics(item.title + item.description),
-      })));
+      allItems.push(
+        ...feed.items.map((item) => ({
+          title: item.title,
+          url: item.link,
+          description: item.description,
+          publishedAt: item.pubDate,
+          source: extractDomain(feedUrl),
+          topics: extractTopics(item.title + item.description),
+        }))
+      );
     } catch (error) {
       console.error(`Failed to parse ${feedUrl}:`, error);
     }
   }
-  
+
   return allItems;
 }
 ```
 
 **d) Wikidata/DBpedia Integration:**
+
 ```typescript
 // Pattern for Wikidata/DBpedia queries
 async function collectFromWikidata(topic: string) {
@@ -194,22 +206,22 @@ async function collectFromWikidata(topic: string) {
     }
     LIMIT 100
   `;
-  
+
   const response = await fetch(
     `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`,
     {
       headers: {
-        'Accept': 'application/sparql-results+json',
+        Accept: "application/sparql-results+json",
       },
     }
   );
-  
+
   const data = await response.json();
-  return data.results.bindings.map(binding => ({
+  return data.results.bindings.map((binding) => ({
     id: binding.item.value,
     label: binding.itemLabel.value,
     description: binding.description?.value,
-    source: 'Wikidata',
+    source: "Wikidata",
   }));
 }
 ```
@@ -217,38 +229,43 @@ async function collectFromWikidata(topic: string) {
 **4. Link Discovery Patterns:**
 
 **a) From GitHub Repositories:**
+
 - Extract README.md links
 - Extract documentation links
 - Extract website URLs from repository metadata
 - Extract related repositories (dependencies, forks)
 
 **b) From RSS Feeds:**
+
 - Extract article links
 - Extract author links
 - Extract related article links
 - Extract tag/category links
 
 **c) From Knowledge Bases:**
+
 - Wikidata entity links
 - Wikipedia article links
 - External reference links
 - Related concept links
 
 **d) From Web Scraping:**
+
 - Extract links from HTML pages
 - Follow sitemaps
 - Extract structured data (JSON-LD, Microdata)
 - Extract social media links
 
 **5. Deduplication & Normalization:**
+
 ```typescript
 // Pattern for deduplication
 function deduplicateLinks(links: Link[]): Link[] {
   const seen = new Map<string, Link>();
-  
+
   for (const link of links) {
     const normalizedUrl = normalizeUrl(link.url);
-    
+
     if (!seen.has(normalizedUrl)) {
       seen.set(normalizedUrl, link);
     } else {
@@ -258,7 +275,7 @@ function deduplicateLinks(links: Link[]): Link[] {
       existing.sources = [...new Set([...existing.sources, ...link.source])];
     }
   }
-  
+
   return Array.from(seen.values());
 }
 
@@ -266,13 +283,13 @@ function normalizeUrl(url: string): string {
   try {
     const parsed = new URL(url);
     // Remove tracking parameters
-    parsed.searchParams.delete('utm_source');
-    parsed.searchParams.delete('utm_medium');
-    parsed.searchParams.delete('ref');
+    parsed.searchParams.delete("utm_source");
+    parsed.searchParams.delete("utm_medium");
+    parsed.searchParams.delete("ref");
     // Normalize protocol
-    parsed.protocol = 'https:';
+    parsed.protocol = "https:";
     // Normalize www
-    if (parsed.hostname.startsWith('www.')) {
+    if (parsed.hostname.startsWith("www.")) {
       parsed.hostname = parsed.hostname.substring(4);
     }
     return parsed.toString();
@@ -314,38 +331,38 @@ class ContentAggregator {
   async extractLinksFromContent(content: string): Promise<string[]> {
     // Extract URLs from markdown
     const markdownLinks = content.match(/\[([^\]]+)\]\(([^)]+)\)/g) || [];
-    
+
     // Extract plain URLs
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const plainUrls = content.match(urlRegex) || [];
-    
+
     // Extract from HTML
     const htmlLinks = content.match(/href=["']([^"']+)["']/g) || [];
-    
+
     const allLinks = [
-      ...markdownLinks.map(m => m.match(/\(([^)]+)\)/)?.[1]).filter(Boolean),
+      ...markdownLinks.map((m) => m.match(/\(([^)]+)\)/)?.[1]).filter(Boolean),
       ...plainUrls,
-      ...htmlLinks.map(h => h.match(/["']([^"']+)["']/)?.[1]).filter(Boolean),
+      ...htmlLinks.map((h) => h.match(/["']([^"']+)["']/)?.[1]).filter(Boolean),
     ];
-    
+
     // Normalize and deduplicate
     return Array.from(new Set(allLinks.map(normalizeUrl)));
   }
-  
+
   async enrichArticleWithLinks(article: Article): Promise<Article> {
     // Fetch article content (if available)
     const content = await this.fetchArticleContent(article.url);
-    
+
     // Extract links
     const links = await this.extractLinksFromContent(content);
-    
+
     // Extract topics from links
     const topics = await this.extractTopicsFromLinks(links);
-    
+
     return {
       ...article,
       links,
-      topics: [...new Set([...article.topics || [], ...topics])],
+      topics: [...new Set([...(article.topics || []), ...topics])],
     };
   }
 }
@@ -360,11 +377,13 @@ class ContentAggregator {
 **Important Finding:** Jazz only supports React, React Native, and Svelte - **NOT Next.js directly**
 
 According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748912):
+
 - Jazz currently supports: React, React Native (experimental), Svelte
 - Next.js support is **planned but not yet available**
 - Quote: "After that will be really good support for Next.JS (Jazz for both SSR and client)"
 
 **Impact on Web3News:**
+
 - ❌ **Jazz is NOT compatible** with Next.js 14 App Router
 - ❌ Cannot use Jazz in current architecture
 - ✅ **Supabase remains the only viable option** for Next.js 14
@@ -402,6 +421,7 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
    - Self-host option available
 
 **⚠️ Limitations:**
+
 - **No Next.js support** (only React/React Native/Svelte)
 - Cannot be used with Next.js 14 App Router
 - Would require complete framework migration
@@ -434,27 +454,28 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 
 ### Detailed Comparison
 
-| Feature | Jazz | Supabase | Winner |
-|---------|------|----------|--------|
-| **Offline-First** | ✅ Native CRDT, works offline | ⚠️ Requires IndexedDB + Service Worker | **Jazz** |
-| **Conflict Resolution** | ✅ Automatic (CRDT) | ⚠️ Manual (last-write-wins) | **Jazz** |
-| **Real-time Sync** | ✅ Built-in, automatic | ✅ WebSocket subscriptions | **Tie** |
-| **Query Language** | ⚠️ JavaScript/TypeScript | ✅ SQL (powerful) | **Supabase** |
-| **Maturity** | ⚠️ Newer (2024) | ✅ Mature (2020+) | **Supabase** |
-| **Community** | ⚠️ Smaller | ✅ Large | **Supabase** |
-| **Documentation** | ⚠️ Growing | ✅ Extensive | **Supabase** |
-| **Self-Hosting** | ✅ Available | ✅ Available | **Tie** |
-| **PWA Support** | ✅ Perfect fit | ⚠️ Requires setup | **Jazz** |
-| **Multiplayer/Collaboration** | ✅ Built-in | ⚠️ Manual | **Jazz** |
-| **Encryption** | ✅ Built-in | ⚠️ Manual | **Jazz** |
-| **Type Safety** | ✅ TypeScript-first | ✅ TypeScript (generated) | **Tie** |
-| **Cost** | ⚠️ Unknown (new) | ✅ Free tier available | **Supabase** |
-| **Next.js Support** | ❌ **NOT AVAILABLE** | ✅ Full support | **Supabase** |
-| **Framework Compatibility** | ⚠️ React/RN/Svelte only | ✅ Any framework | **Supabase** |
+| Feature                       | Jazz                          | Supabase                               | Winner       |
+| ----------------------------- | ----------------------------- | -------------------------------------- | ------------ |
+| **Offline-First**             | ✅ Native CRDT, works offline | ⚠️ Requires IndexedDB + Service Worker | **Jazz**     |
+| **Conflict Resolution**       | ✅ Automatic (CRDT)           | ⚠️ Manual (last-write-wins)            | **Jazz**     |
+| **Real-time Sync**            | ✅ Built-in, automatic        | ✅ WebSocket subscriptions             | **Tie**      |
+| **Query Language**            | ⚠️ JavaScript/TypeScript      | ✅ SQL (powerful)                      | **Supabase** |
+| **Maturity**                  | ⚠️ Newer (2024)               | ✅ Mature (2020+)                      | **Supabase** |
+| **Community**                 | ⚠️ Smaller                    | ✅ Large                               | **Supabase** |
+| **Documentation**             | ⚠️ Growing                    | ✅ Extensive                           | **Supabase** |
+| **Self-Hosting**              | ✅ Available                  | ✅ Available                           | **Tie**      |
+| **PWA Support**               | ✅ Perfect fit                | ⚠️ Requires setup                      | **Jazz**     |
+| **Multiplayer/Collaboration** | ✅ Built-in                   | ⚠️ Manual                              | **Jazz**     |
+| **Encryption**                | ✅ Built-in                   | ⚠️ Manual                              | **Jazz**     |
+| **Type Safety**               | ✅ TypeScript-first           | ✅ TypeScript (generated)              | **Tie**      |
+| **Cost**                      | ⚠️ Unknown (new)              | ✅ Free tier available                 | **Supabase** |
+| **Next.js Support**           | ❌ **NOT AVAILABLE**          | ✅ Full support                        | **Supabase** |
+| **Framework Compatibility**   | ⚠️ React/RN/Svelte only       | ✅ Any framework                       | **Supabase** |
 
 ### Use Case Analysis for Web3News
 
 #### Current Architecture:
+
 - **Client-Side PWA** (Next.js static export)
 - **IndexedDB** for caching (30-min TTL)
 - **Supabase** for content storage
@@ -507,12 +528,14 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 ### Recommendation: **Keep Supabase** (Jazz Not Compatible)
 
 **❌ Jazz is NOT an option:**
+
 - Does not support Next.js 14 (only React/React Native/Svelte)
 - Would require complete framework migration
 - Next.js support is planned but not available yet
 - **Cannot be used in current architecture**
 
 **✅ Keep Supabase for:**
+
 - Content storage (articles, submissions)
 - Analytics data
 - User metadata (via Clerk)
@@ -520,6 +543,7 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 - **Full Next.js 14 compatibility**
 
 **📝 Rationale:**
+
 - Jazz is **incompatible** with Next.js 14 App Router
 - Supabase is proven and mature for content storage
 - Current architecture already works well
@@ -532,12 +556,14 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 ### 1. Data Collection Enhancements
 
 **✅ Immediate Actions:**
+
 - Add pagination support for GitHub API
 - Add pagination support for Reddit API
 - Implement exponential backoff for rate limits
 - Add GitHub Actions workflow for scheduled collection (optional)
 
 **📝 Code Changes:**
+
 ```typescript
 // Update contentAggregator.ts
 - Add fetchAllPages() method
@@ -551,6 +577,7 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 **✅ Recommendation: Keep Supabase**
 
 **Rationale:**
+
 - Supabase is proven and mature for content storage
 - Current architecture already works well
 - Lower risk than migration
@@ -559,16 +586,19 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 **📝 Implementation Plan:**
 
 **Option A: Keep Current Architecture (Recommended)**
+
 - ✅ Keep Supabase for content storage
 - ✅ Keep IndexedDB for caching
 - ✅ Enhance offline sync with Service Worker
 - ❌ **Jazz not compatible** - cannot use with Next.js 14
 
 **Option B: Hybrid Approach (NOT POSSIBLE)**
+
 - ❌ Jazz doesn't support Next.js - cannot implement
 - Would require framework migration (not recommended)
 
 **Option C: Full Jazz Migration (NOT POSSIBLE)**
+
 - ❌ Jazz doesn't support Next.js - cannot migrate
 - Would require complete rewrite in React (not recommended)
 
@@ -576,17 +606,17 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 
 ## 📊 DECISION MATRIX
 
-| Criteria | Weight | Supabase | Jazz | Hybrid |
-|----------|--------|----------|------|--------|
-| **Offline Support** | 25% | 7/10 | 10/10 | 9/10 |
-| **Maturity** | 20% | 10/10 | 6/10 | 8/10 |
-| **Learning Curve** | 15% | 9/10 | 6/10 | 7/10 |
-| **Cost** | 15% | 9/10 | 7/10 | 8/10 |
-| **PWA Fit** | 15% | 7/10 | 10/10 | 9/10 |
-| **Content Storage** | 10% | 10/10 | 7/10 | 9/10 |
-| **Next.js Support** | 0% | 100% | 100% |
-| **Framework Compatibility** | 0% | 100% | 100% |
-| **Total Score** | 100% | **8.5/10** | **N/A (Not Compatible)** | **8.4/10** |
+| Criteria                    | Weight | Supabase   | Jazz                     | Hybrid     |
+| --------------------------- | ------ | ---------- | ------------------------ | ---------- |
+| **Offline Support**         | 25%    | 7/10       | 10/10                    | 9/10       |
+| **Maturity**                | 20%    | 10/10      | 6/10                     | 8/10       |
+| **Learning Curve**          | 15%    | 9/10       | 6/10                     | 7/10       |
+| **Cost**                    | 15%    | 9/10       | 7/10                     | 8/10       |
+| **PWA Fit**                 | 15%    | 7/10       | 10/10                    | 9/10       |
+| **Content Storage**         | 10%    | 10/10      | 7/10                     | 9/10       |
+| **Next.js Support**         | 0%     | 100%       | 100%                     |
+| **Framework Compatibility** | 0%     | 100%       | 100%                     |
+| **Total Score**             | 100%   | **8.5/10** | **N/A (Not Compatible)** | **8.4/10** |
 
 **Winner: Supabase (Current Choice)** ✅  
 **Jazz: NOT COMPATIBLE** ❌ - Does not support Next.js 14
@@ -625,4 +655,3 @@ According to [Hacker News discussion](https://news.ycombinator.com/item?id=41748
 - [GitHub API Documentation](https://docs.github.com/en/rest)
 - [Supabase Documentation](https://supabase.com/docs)
 - [Jazz Documentation](https://jazz.tools/docs)
-

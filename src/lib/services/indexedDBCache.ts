@@ -1,11 +1,11 @@
-import localforage from 'localforage';
+import localforage from "localforage";
 
 export interface Article {
   id: string;
   title: string;
   url: string;
   source: string;
-  category: 'tech' | 'crypto' | 'social' | 'general';
+  category: "tech" | "crypto" | "social" | "general";
   author?: string;
   publishedAt: number;
   thumbnail?: string;
@@ -37,9 +37,9 @@ class IndexedDBCache {
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.store = localforage.createInstance({
-      name: 'web3news',
-      storeName: 'articles',
-      description: 'Cached articles with TTL',
+      name: "web3news",
+      storeName: "articles",
+      description: "Cached articles with TTL",
     });
   }
 
@@ -49,9 +49,9 @@ class IndexedDBCache {
   private normalizeUrl(url: string): string {
     try {
       const urlObj = new URL(url);
-      urlObj.search = '';
-      urlObj.hash = '';
-      return urlObj.toString().replace(/\/$/, '');
+      urlObj.search = "";
+      urlObj.hash = "";
+      return urlObj.toString().replace(/\/$/, "");
     } catch {
       return url;
     }
@@ -64,9 +64,9 @@ class IndexedDBCache {
     const normalized = this.normalizeUrl(url);
     const encoder = new TextEncoder();
     const data = encoder.encode(normalized);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
   /**
@@ -100,7 +100,7 @@ class IndexedDBCache {
       // Sort by publishedAt (newest first)
       return articles.sort((a, b) => b.publishedAt - a.publishedAt);
     } catch (error) {
-      console.error('Error getting articles from cache:', error);
+      console.error("Error getting articles from cache:", error);
       return [];
     }
   }
@@ -132,7 +132,7 @@ class IndexedDBCache {
       // Cleanup old articles
       await this.cleanupOldArticles();
     } catch (error) {
-      console.error('Error storing articles in cache:', error);
+      console.error("Error storing articles in cache:", error);
     }
   }
 
@@ -156,13 +156,16 @@ class IndexedDBCache {
         articles.sort((a, b) => a.cachedAt - b.cachedAt);
 
         // Remove oldest articles
-        const toRemove = articles.slice(0, articles.length - this.config.maxArticles);
+        const toRemove = articles.slice(
+          0,
+          articles.length - this.config.maxArticles
+        );
         for (const article of toRemove) {
           await this.store.removeItem(article.urlHash);
         }
       }
     } catch (error) {
-      console.error('Error cleaning up old articles:', error);
+      console.error("Error cleaning up old articles:", error);
     }
   }
 
@@ -202,7 +205,7 @@ class IndexedDBCache {
     try {
       await this.store.clear();
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      console.error("Error clearing cache:", error);
     }
   }
 
@@ -239,4 +242,3 @@ class IndexedDBCache {
 
 // Export singleton instance
 export const indexedDBCache = new IndexedDBCache();
-

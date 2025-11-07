@@ -1,4 +1,5 @@
 # 🔑 GitHub Secrets Setup Guide
+
 ## Web3News - Blockchain Content Aggregator
 
 **Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo  
@@ -10,12 +11,12 @@
 
 You need to add these 4 secrets to your GitHub repository for the deployment to work:
 
-| # | Secret Name | Purpose | Where to Get It |
-|---|-------------|---------|-----------------|
-| 1 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Supabase Dashboard |
-| 2 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase public API key | Supabase Dashboard |
-| 3 | `NEXT_PUBLIC_REOWN_PROJECT_ID` | Reown AppKit project ID | Reown Cloud Dashboard |
-| 4 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk authentication key | Clerk Dashboard |
+| #   | Secret Name                         | Purpose                  | Where to Get It       |
+| --- | ----------------------------------- | ------------------------ | --------------------- |
+| 1   | `NEXT_PUBLIC_SUPABASE_URL`          | Supabase project URL     | Supabase Dashboard    |
+| 2   | `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Supabase public API key  | Supabase Dashboard    |
+| 3   | `NEXT_PUBLIC_REOWN_PROJECT_ID`      | Reown AppKit project ID  | Reown Cloud Dashboard |
+| 4   | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk authentication key | Clerk Dashboard       |
 
 ---
 
@@ -55,7 +56,8 @@ You need to add these 4 secrets to your GitHub repository for the deployment to 
 6. **Click** the eye icon to reveal the key
 7. **Copy** the entire key (long string starting with `eyJ...`)
 
-**Important**: 
+**Important**:
+
 - Use the `anon` `public` key (NOT the `service_role` key)
 - This key is safe to expose in frontend code
 - It's protected by Row Level Security (RLS) policies
@@ -82,6 +84,7 @@ You need to add these 4 secrets to your GitHub repository for the deployment to 
 5. **Copy** the Project ID
 
 **Alternative**: If you already have a project:
+
 - Go to your project dashboard
 - Project ID is shown at the top or in project settings
 
@@ -109,6 +112,7 @@ You need to add these 4 secrets to your GitHub repository for the deployment to 
    - Example: `pk_test_abcdefghijklmnopqrstuvwxyz1234567890`
 
 **Important**:
+
 - Use the **Publishable key** (NOT the Secret key)
 - Publishable keys start with `pk_`
 - Secret keys start with `sk_` and should NEVER be exposed
@@ -157,11 +161,13 @@ After adding all secrets, verify:
 ## 🚨 Important Notes
 
 ### Security:
+
 - ✅ **Publishable keys** are safe to expose (they're meant for frontend)
 - ❌ **Secret keys** should NEVER be added as secrets (they're for backend only)
 - ✅ All keys starting with `NEXT_PUBLIC_` are safe for frontend use
 
 ### Format Requirements:
+
 - **No extra spaces** before or after the value
 - **Case-sensitive** - Names must match exactly
 - **Complete values** - Copy the entire key/URL
@@ -169,14 +175,17 @@ After adding all secrets, verify:
 ### If You Don't Have Accounts Yet:
 
 **Supabase** (Free tier available):
+
 - Sign up: https://supabase.com
 - Free tier includes: 500MB database, 2GB bandwidth, 50,000 monthly active users
 
 **Reown** (Free tier available):
+
 - Sign up: https://cloud.reown.com
 - Free tier includes: Basic project features
 
 **Clerk** (Free tier available):
+
 - Sign up: https://clerk.com
 - Free tier includes: 10,000 monthly active users, basic authentication
 
@@ -203,4 +212,3 @@ After adding all secrets, verify:
 **All are free to set up** and have free tiers available!
 
 Once you add all 4 secrets, the GitHub Actions workflow will automatically deploy your site to GitHub Pages! 🚀
-

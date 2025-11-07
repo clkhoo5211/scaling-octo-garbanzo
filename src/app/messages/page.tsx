@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { MessagesView } from '@/components/messages/MessagesView';
-import { useUser } from '@clerk/nextjs';
-import { MessageCircle } from 'lucide-react';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { MessagesView } from "@/components/messages/MessagesView";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { MessageCircle } from "lucide-react";
 
 export default function MessagesPage() {
   const { user, isLoaded } = useUser();
@@ -44,4 +44,3 @@ export default function MessagesPage() {
     </ErrorBoundary>
   );
 }
-

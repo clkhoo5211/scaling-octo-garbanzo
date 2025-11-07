@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { Coins, TrendingUp, TrendingDown, Clock } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { useUser } from '@clerk/nextjs';
-import { usePointsTransactions } from '@/lib/hooks/useArticles';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/services/supabase';
+import { Coins, TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { usePointsTransactions } from "@/lib/hooks/useArticles";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/services/supabase";
 
 interface PointsDisplayProps {
   points?: number;
@@ -26,18 +26,18 @@ export function PointsDisplay({
   const { data: transactions = [] } = usePointsTransactions(user?.id || null);
 
   const { data: points } = useQuery({
-    queryKey: ['user-points', user?.id],
+    queryKey: ["user-points", user?.id],
     queryFn: async () => {
       if (!user?.id) return 0;
       const { data, error } = await supabase
-        .from('points_transactions')
-        .select('points_amount, transaction_type')
-        .eq('user_id', user.id);
+        .from("points_transactions")
+        .select("points_amount, transaction_type")
+        .eq("user_id", user.id);
 
       if (error) throw error;
       return (
         data?.reduce((total, tx) => {
-          return tx.transaction_type === 'earn'
+          return tx.transaction_type === "earn"
             ? total + tx.points_amount
             : total - tx.points_amount;
         }, 0) || 0
@@ -48,11 +48,14 @@ export function PointsDisplay({
   });
 
   const conversionRate = 1000; // 1000 points = 1 USDT
-  const usdtValue = propUsdtValue !== undefined 
-    ? propUsdtValue 
-    : points ? points / conversionRate : 0;
+  const usdtValue =
+    propUsdtValue !== undefined
+      ? propUsdtValue
+      : points
+        ? points / conversionRate
+        : 0;
 
-  const displayPoints = propPoints !== undefined ? propPoints : (points || 0);
+  const displayPoints = propPoints !== undefined ? propPoints : points || 0;
 
   return (
     <div className="space-y-8">
@@ -74,7 +77,9 @@ export function PointsDisplay({
               <span className="text-4xl font-bold text-gray-900 dark:text-gray-100">
                 {displayPoints.toLocaleString()}
               </span>
-              <span className="text-lg text-gray-500 dark:text-gray-400">points</span>
+              <span className="text-lg text-gray-500 dark:text-gray-400">
+                points
+              </span>
             </div>
             {showConversion && (
               <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -93,7 +98,7 @@ export function PointsDisplay({
         <TransactionHistory
           transactions={transactions.map((tx) => ({
             id: tx.id,
-            type: tx.transaction_type as 'earn' | 'spend' | 'convert',
+            type: tx.transaction_type as "earn" | "spend" | "convert",
             points: tx.points_amount,
             usdt: tx.usdt_amount || undefined,
             source: tx.source || undefined,
@@ -108,7 +113,7 @@ export function PointsDisplay({
 interface TransactionHistoryProps {
   transactions: Array<{
     id: string;
-    type: 'earn' | 'spend' | 'convert';
+    type: "earn" | "spend" | "convert";
     points: number;
     usdt?: number;
     source?: string;
@@ -133,8 +138,8 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
   return (
     <div className="space-y-2">
       {transactions.map((tx) => {
-        const isEarn = tx.type === 'earn';
-        const isConvert = tx.type === 'convert';
+        const isEarn = tx.type === "earn";
+        const isConvert = tx.type === "convert";
 
         return (
           <div
@@ -152,7 +157,8 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
               <div>
                 <div className="font-medium text-sm">
                   {isEarn && `Earned ${tx.points} points`}
-                  {isConvert && `Converted ${tx.points} points to ${tx.usdt} USDT`}
+                  {isConvert &&
+                    `Converted ${tx.points} points to ${tx.usdt} USDT`}
                   {!isEarn && !isConvert && `Spent ${tx.points} points`}
                 </div>
                 {tx.source && (
@@ -162,16 +168,20 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
                 )}
                 <div className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-1">
                   <Clock className="w-3 h-3" />
-                  {formatDistanceToNow(new Date(tx.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(tx.createdAt), {
+                    addSuffix: true,
+                  })}
                 </div>
               </div>
             </div>
             <div
               className={`text-sm font-medium ${
-                isEarn ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                isEarn
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
               }`}
             >
-              {isEarn ? '+' : '-'}
+              {isEarn ? "+" : "-"}
               {tx.points}
             </div>
           </div>
@@ -180,4 +190,3 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
     </div>
   );
 }
-

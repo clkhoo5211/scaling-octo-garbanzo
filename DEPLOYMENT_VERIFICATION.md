@@ -1,4 +1,5 @@
 # GitHub Pages Deployment Verification
+
 ## Web3News - Blockchain Content Aggregator
 
 **Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo  
@@ -14,6 +15,7 @@
 **Status**: ✅ Properly Configured
 
 **Key Features:**
+
 - ✅ Triggers on push to `main` branch
 - ✅ Manual trigger via `workflow_dispatch`
 - ✅ Proper permissions (contents: read, pages: write, id-token: write)
@@ -25,8 +27,9 @@
 - ✅ Deployment step configured
 
 **Build Configuration:**
+
 ```yaml
-GITHUB_REPOSITORY_NAME: redesigned-giggle  # Sets basePath in Next.js
+GITHUB_REPOSITORY_NAME: redesigned-giggle # Sets basePath in Next.js
 NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
 NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 NEXT_PUBLIC_REOWN_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_REOWN_PROJECT_ID }}
@@ -38,6 +41,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 **Status**: ✅ GitHub Pages Compatible
 
 **Configuration:**
+
 - ✅ `output: 'export'` - Static export for GitHub Pages
 - ✅ `basePath` - Dynamically set from `GITHUB_REPOSITORY_NAME` env var
 - ✅ `images: { unoptimized: true }` - No server-side image optimization needed
@@ -46,6 +50,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 - ✅ `swcMinify: true` - Fast minification
 
 **basePath Logic:**
+
 - If `GITHUB_REPOSITORY_NAME` is set → `/redesigned-giggle`
 - If not set → `/` (for root domain deployments)
 
@@ -115,6 +120,7 @@ After pushing to `main` branch:
 **Issue**: Build step fails in GitHub Actions
 
 **Solutions:**
+
 1. Check build logs in Actions tab
 2. Verify all secrets are set correctly
 3. Check `package.json` build script
@@ -126,6 +132,7 @@ After pushing to `main` branch:
 **Issue**: Deploy step fails
 
 **Solutions:**
+
 1. Verify GitHub Pages is enabled (Settings → Pages)
 2. Check source is set to "GitHub Actions"
 3. Verify `out/` directory is generated (check build logs)
@@ -137,6 +144,7 @@ After pushing to `main` branch:
 **Issue**: Site loads but shows 404 or blank page
 
 **Solutions:**
+
 1. Verify basePath is set correctly in `next.config.js`
 2. Check if repository name matches `GITHUB_REPOSITORY_NAME`
 3. Verify `out/` directory structure is correct
@@ -148,6 +156,7 @@ After pushing to `main` branch:
 **Issue**: CSS/JS files return 404
 
 **Solutions:**
+
 1. Verify basePath includes all asset paths
 2. Check `_next/static/` directory exists in `out/`
 3. Verify asset paths in HTML start with basePath
@@ -158,6 +167,7 @@ After pushing to `main` branch:
 **Issue**: Build succeeds but app doesn't work (API calls fail)
 
 **Solutions:**
+
 1. Verify all secrets are set in GitHub repository
 2. Check secret names match exactly (case-sensitive)
 3. Verify `NEXT_PUBLIC_*` prefix is used for client-side vars
@@ -213,13 +223,13 @@ After pushing to `main` branch:
 **Workflow Configuration**: ✅ Complete  
 **Next.js Configuration**: ✅ GitHub Pages Compatible  
 **Build Script**: ✅ Correct  
-**Documentation**: ✅ Complete  
+**Documentation**: ✅ Complete
 
 **Next Steps:**
+
 1. Push code to GitHub
 2. Configure GitHub Secrets
 3. Enable GitHub Pages
 4. Verify deployment
 
 **Status**: Ready for deployment verification 🚀
-

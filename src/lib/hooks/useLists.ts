@@ -3,7 +3,7 @@
  * React Query hooks for curated lists functionality
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getLists,
   getList,
@@ -19,8 +19,8 @@ import {
   type List,
   type ListArticle,
   type ListSubscription,
-} from '@/lib/api/supabaseApi';
-import { useAppStore } from '@/lib/stores/appStore';
+} from "@/lib/api/supabaseApi";
+import { useAppStore } from "@/lib/stores/appStore";
 
 /**
  * Hook to fetch lists
@@ -31,7 +31,7 @@ export function useLists(filters?: {
   limit?: number;
 }) {
   return useQuery({
-    queryKey: ['lists', filters],
+    queryKey: ["lists", filters],
     queryFn: async () => {
       const { data, error } = await getLists(filters);
       if (error) throw error;
@@ -46,7 +46,7 @@ export function useLists(filters?: {
  */
 export function useList(listId: string) {
   return useQuery({
-    queryKey: ['list', listId],
+    queryKey: ["list", listId],
     queryFn: async () => {
       const { data, error } = await getList(listId);
       if (error) throw error;
@@ -74,7 +74,7 @@ export function useCreateList() {
       description?: string;
       isPublic?: boolean;
     }) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { data, error } = await createList({
         userId,
         name,
@@ -85,7 +85,7 @@ export function useCreateList() {
       return data as List;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
     },
   });
 }
@@ -118,8 +118,8 @@ export function useUpdateList() {
       return data as List;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
-      queryClient.invalidateQueries({ queryKey: ['list', data.id] });
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
+      queryClient.invalidateQueries({ queryKey: ["list", data.id] });
     },
   });
 }
@@ -136,7 +136,7 @@ export function useDeleteList() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
     },
   });
 }
@@ -146,7 +146,7 @@ export function useDeleteList() {
  */
 export function useListArticles(listId: string) {
   return useQuery({
-    queryKey: ['list-articles', listId],
+    queryKey: ["list-articles", listId],
     queryFn: async () => {
       const { data, error } = await getListArticles(listId);
       if (error) throw error;
@@ -178,7 +178,7 @@ export function useAddArticleToList() {
       articleUrl?: string;
       articleSource?: string;
     }) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { data, error } = await addArticleToList({
         listId,
         articleId,
@@ -191,7 +191,9 @@ export function useAddArticleToList() {
       return data as ListArticle;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['list-articles', data.list_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["list-articles", data.list_id],
+      });
     },
   });
 }
@@ -214,7 +216,9 @@ export function useRemoveArticleFromList() {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['list-articles', variables.listId] });
+      queryClient.invalidateQueries({
+        queryKey: ["list-articles", variables.listId],
+      });
     },
   });
 }
@@ -228,15 +232,15 @@ export function useSubscribeToList() {
 
   return useMutation({
     mutationFn: async (listId: string) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { data, error } = await subscribeToList({ listId, userId });
       if (error) throw error;
       return data as ListSubscription;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
-      queryClient.invalidateQueries({ queryKey: ['list', data.list_id] });
-      queryClient.invalidateQueries({ queryKey: ['list-subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
+      queryClient.invalidateQueries({ queryKey: ["list", data.list_id] });
+      queryClient.invalidateQueries({ queryKey: ["list-subscriptions"] });
     },
   });
 }
@@ -250,13 +254,13 @@ export function useUnsubscribeFromList() {
 
   return useMutation({
     mutationFn: async (listId: string) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       const { error } = await unsubscribeFromList({ listId, userId });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
-      queryClient.invalidateQueries({ queryKey: ['list-subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
+      queryClient.invalidateQueries({ queryKey: ["list-subscriptions"] });
     },
   });
 }
@@ -266,7 +270,7 @@ export function useUnsubscribeFromList() {
  */
 export function useListSubscriptions(userId: string | null) {
   return useQuery({
-    queryKey: ['list-subscriptions', userId],
+    queryKey: ["list-subscriptions", userId],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await getListSubscriptions(userId);
@@ -277,4 +281,3 @@ export function useListSubscriptions(userId: string | null) {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
-

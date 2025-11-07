@@ -1,26 +1,31 @@
-'use client';
+"use client";
 
-import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { useFollowing, useFollowUser, useUnfollowUser, useArticles } from '@/lib/hooks/useArticles';
-import { useUser } from '@clerk/nextjs';
-import { useAppStore } from '@/lib/stores/appStore';
-import { Users } from 'lucide-react';
+import { Header } from "@/components/layout/Header";
+import { BottomNav } from "@/components/layout/BottomNav";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import {
+  useFollowing,
+  useArticles,
+} from "@/lib/hooks/useArticles";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { useAppStore } from "@/lib/stores/appStore";
+import { Users } from "lucide-react";
 
 export default function SocialPage() {
-  const { user, isLoaded } = useUser();
+  const { isLoaded } = useUser();
   const { userId } = useAppStore();
-  const { data: following, isLoading: isLoadingFollowing } = useFollowing(userId);
-  const followMutation = useFollowUser();
-  const unfollowMutation = useUnfollowUser();
+  const { data: following, isLoading: isLoadingFollowing } =
+    useFollowing(userId);
 
   // Get articles from users you follow
-  const { data: followingArticles, isLoading: isLoadingFeed } = useArticles(undefined, {
-    usePagination: true,
-  });
+  const { data: followingArticles, isLoading: isLoadingFeed } = useArticles(
+    undefined,
+    {
+      usePagination: true,
+    }
+  );
 
   const followingIds = following || [];
   const isLoading = isLoadingFollowing || isLoadingFeed;
@@ -38,7 +43,9 @@ export default function SocialPage() {
 
           {/* Following Feed */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">Following Feed</h2>
+            <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">
+              Following Feed
+            </h2>
             {isLoadingFeed ? (
               <LoadingState message="Loading feed..." />
             ) : !followingArticles || followingArticles.length === 0 ? (
@@ -46,8 +53,8 @@ export default function SocialPage() {
                 title="No articles yet"
                 message={
                   followingIds.length === 0
-                    ? 'Follow users to see their articles here'
-                    : 'No articles from users you follow'
+                    ? "Follow users to see their articles here"
+                    : "No articles from users you follow"
                 }
                 icon={<Users className="w-12 h-12 text-gray-400" />}
               />
@@ -62,7 +69,8 @@ export default function SocialPage() {
                       {article.title}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {article.source} • {new Date(article.publishedAt).toLocaleDateString()}
+                      {article.source} •{" "}
+                      {new Date(article.publishedAt).toLocaleDateString()}
                     </p>
                   </div>
                 ))}
@@ -77,7 +85,9 @@ export default function SocialPage() {
 
           {/* Discover Users */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">Discover Users</h2>
+            <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">
+              Discover Users
+            </h2>
             {isLoading ? (
               <LoadingState message="Loading users..." />
             ) : (

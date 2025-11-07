@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { AuctionCard } from '@/components/auction/AuctionCard';
-import { useAuctions } from '@/lib/hooks/useAuctions';
-import { Gavel } from 'lucide-react';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { AuctionCard } from "@/components/auction/AuctionCard";
+import { useAuctions } from "@/lib/hooks/useAuctions";
+import { Gavel } from "lucide-react";
 
 export default function AuctionsPage() {
   const { data: auctions, isLoading, error } = useAuctions();

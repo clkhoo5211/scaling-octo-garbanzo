@@ -3,7 +3,7 @@
  * React Query hooks for auction features
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAuctions,
   getAuctionBids,
@@ -11,19 +11,19 @@ import {
   updateAuction,
   type Auction,
   type AuctionBid,
-} from '@/lib/api/supabaseApi';
-import { useAppStore } from '@/lib/stores/appStore';
-import { useAccount } from '@reown/appkit/react';
+} from "@/lib/api/supabaseApi";
+import { useAppStore } from "@/lib/stores/appStore";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 /**
  * Hook to fetch auctions
  */
 export function useAuctions(filters?: {
-  status?: 'active' | 'ended' | 'settled';
+  status?: "active" | "ended" | "settled";
   limit?: number;
 }) {
   return useQuery({
-    queryKey: ['auctions', filters],
+    queryKey: ["auctions", filters],
     queryFn: async () => {
       const { data, error } = await getAuctions(filters);
       if (error) throw error;
@@ -39,7 +39,7 @@ export function useAuctions(filters?: {
  */
 export function useAuctionBids(auctionId: string) {
   return useQuery({
-    queryKey: ['auction-bids', auctionId],
+    queryKey: ["auction-bids", auctionId],
     queryFn: async () => {
       const { data, error } = await getAuctionBids(auctionId);
       if (error) throw error;
@@ -57,7 +57,7 @@ export function useAuctionBids(auctionId: string) {
 export function usePlaceBid() {
   const queryClient = useQueryClient();
   const { userId } = useAppStore();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useAppKitAccount();
 
   return useMutation({
     mutationFn: async (data: {
@@ -65,9 +65,9 @@ export function usePlaceBid() {
       bidAmount: number;
       transactionHash?: string;
     }) => {
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new Error("User not authenticated");
       if (!isConnected || !address) {
-        throw new Error('Wallet not connected');
+        throw new Error("Wallet not connected");
       }
 
       const { error } = await createAuctionBid({
@@ -80,11 +80,13 @@ export function usePlaceBid() {
       if (error) throw error;
     },
     onSuccess: (_, data) => {
-      queryClient.invalidateQueries({ queryKey: ['auction-bids', data.auctionId] });
-      queryClient.invalidateQueries({ queryKey: ['auctions'] });
+      queryClient.invalidateQueries({
+        queryKey: ["auction-bids", data.auctionId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["auctions"] });
     },
     onError: (error: Error) => {
-      console.error('Failed to place bid:', error);
+      console.error("Failed to place bid:", error);
     },
   });
 }
@@ -94,7 +96,7 @@ export function usePlaceBid() {
  */
 export function useUserBids(userAddress: string | null) {
   return useQuery({
-    queryKey: ['user-bids', userAddress],
+    queryKey: ["user-bids", userAddress],
     queryFn: async () => {
       if (!userAddress) return [];
 
@@ -104,12 +106,16 @@ export function useUserBids(userAddress: string | null) {
 
       const userBids: Array<AuctionBid & { auction: Auction }> = [];
       for (const auction of auctions || []) {
-        const { data: bids, error: bidsError } = await getAuctionBids(auction.id);
+        const { data: bids, error: bidsError } = await getAuctionBids(
+          auction.id
+        );
         if (bidsError) continue;
 
-        const userAuctionBids = bids?.filter(
-          (bid) => bid.bidder_address.toLowerCase() === userAddress.toLowerCase()
-        ) || [];
+        const userAuctionBids =
+          bids?.filter(
+            (bid) =>
+              bid.bidder_address.toLowerCase() === userAddress.toLowerCase()
+          ) || [];
 
         userAuctionBids.forEach((bid) => {
           userBids.push({ ...bid, auction });
@@ -122,4 +128,3 @@ export function useUserBids(userAddress: string | null) {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
-

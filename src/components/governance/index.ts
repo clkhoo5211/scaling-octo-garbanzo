@@ -1,5 +1,4 @@
-'use client';
+"use client";
 
-export { ProposalCard } from './ProposalCard';
-export { VoteButton } from './VoteButton';
-
+export { ProposalCard } from "./ProposalCard";
+export { VoteButton } from "./VoteButton";

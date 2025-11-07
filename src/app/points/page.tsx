@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/LoadingState';
-import { PointsDisplay } from '@/components/points/PointsDisplay';
-import { useUser } from '@clerk/nextjs';
-import { Coins } from 'lucide-react';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/LoadingState";
+import { PointsDisplay } from "@/components/points/PointsDisplay";
+import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
+import { Coins } from "lucide-react";
 
 export default function PointsPage() {
   const { user, isLoaded } = useUser();

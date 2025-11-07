@@ -1,11 +1,16 @@
-'use client';
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode } from 'react';
-import { AppKitProvider } from '@reown/appkit/react';
-import { ClerkProvider } from '@clerk/nextjs';
-import { appKit } from '@/lib/config/reown';
-import { ToastProvider } from '@/components/ui/Toast';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode } from "react";
+import { AppKitProvider } from "@reown/appkit/react";
+import { appKit } from "@/lib/config/reown";
+import { ToastProvider } from "@/components/ui/Toast";
+
+// Temporarily disable Clerk for static export - will use client-side only
+// const ClerkProvider = dynamic(
+//   () => import("@clerk/nextjs").then((mod) => mod.ClerkProvider),
+//   { ssr: false }
+// );
 
 // Create a client instance
 function makeQueryClient() {
@@ -24,7 +29,7 @@ function makeQueryClient() {
 let browserQueryClient: QueryClient | undefined = undefined;
 
 function getQueryClient() {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     // Server: always make a new query client
     return makeQueryClient();
   } else {
@@ -36,15 +41,12 @@ function getQueryClient() {
 
 export function Providers({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
-  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '';
 
   return (
     <AppKitProvider config={appKit}>
-      <ClerkProvider publishableKey={clerkPublishableKey}>
-        <QueryClientProvider client={queryClient}>
-          <ToastProvider>{children}</ToastProvider>
-        </QueryClientProvider>
-      </ClerkProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>{children}</ToastProvider>
+      </QueryClientProvider>
     </AppKitProvider>
   );
 }

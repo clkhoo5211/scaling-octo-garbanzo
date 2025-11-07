@@ -1,10 +1,11 @@
 # 📋 Project Requirements
+
 ## Blockchain Web3 Content Aggregator
 
 **Project ID:** project-20251107-003428-web3news-aggregator  
 **Created:** 2025-11-07 00:34:28  
 **Status:** ✅ Requirements Gathered  
-**Next Agent:** Product Agent  
+**Next Agent:** Product Agent
 
 ---
 
@@ -21,6 +22,7 @@
 ### 1.2 Core Concept
 
 A decentralized, community-driven news and content aggregation platform that:
+
 - Pulls real-time content from 30+ global sources (tech, crypto, finance, entertainment)
 - Enables users to earn cryptocurrency rewards for contributions
 - Features transparent blockchain-based advertisement auctions
@@ -51,16 +53,19 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 2.1 Development Stack
 
 **Language & Framework:**
+
 - **Primary:** TypeScript (strict mode) + Next.js 14 (App Router)
 - **Future:** Dart + Flutter SDK (native mobile apps)
 
 **Build Configuration:**
+
 - Static Site Generation (`output: 'export'`)
 - GitHub Pages deployment (pure HTML/CSS/JS)
 - No server-side rendering
 - No serverless functions
 
 **Platform Support:**
+
 - Desktop browsers (Chrome, Edge, Firefox, Safari)
 - Mobile browsers (iOS Safari, Chrome Android)
 - PWA installable (iOS, Android, Desktop - no App Store)
@@ -69,6 +74,7 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 2.2 Authentication Architecture (Reown PRIMARY + Clerk SECONDARY)
 
 **Reown AppKit (PRIMARY):**
+
 - Social login (Google, Twitter, Discord, Email, etc.)
 - ERC-4337 smart account creation (automatic)
 - Multi-chain wallet support (15+ chains)
@@ -76,6 +82,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - Gas sponsorship capabilities
 
 **Clerk (SECONDARY):**
+
 - User profile storage (in metadata, NOT database)
 - Subscription management (Pro, Premium tiers)
 - Admin dashboard (pre-built UI)
@@ -84,6 +91,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - Bulk operations (update 1,000 users in one click)
 
 **Login Flow:**
+
 1. User visits site → Reown AppKit modal (FIRST)
 2. User selects social login → Reown authenticates
 3. Reown creates ERC-4337 smart account automatically
@@ -94,6 +102,7 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 2.3 Database & Storage Architecture (OPTIMIZED)
 
 **Supabase PostgreSQL:**
+
 - ❌ NO users table (Clerk metadata stores user data instead)
 - ✅ Content tables ONLY:
   - submissions, bookmarks, advertisements
@@ -104,6 +113,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - **Result:** 70% database reduction, 15x faster user reads
 
 **Client-Side Storage:**
+
 - **PWA:** IndexedDB (via localforage library)
   - 30-min article cache, 2,000 article limit
   - User preferences, bookmarks, read history
@@ -114,6 +124,7 @@ A decentralized, community-driven news and content aggregation platform that:
   - Zero migration effort (identical JSON schema)
 
 **Storage Removed:**
+
 - ❌ Upstash Redis (not needed, IndexedDB sufficient)
 - **Benefits:** Simpler architecture, no exposed tokens, 100% client-side
 
@@ -139,9 +150,11 @@ A decentralized, community-driven news and content aggregation platform that:
    - `executeProposal()` - Execute if passed (51% + 10% quorum)
 
 **Deployment Chains:**
+
 - Ethereum, Polygon, BSC, Arbitrum, Optimism, Base
 
 **USDT Contract Addresses:**
+
 - Ethereum: 0xdac17f958d2ee523a2206206994597c13d831ec7
 - Polygon: 0xc2132d05d31c914a87c6611c10748aeb04b58e8f
 - BSC: 0x55d398326f99059ff775485246999027b3197955
@@ -156,6 +169,7 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 3.1 Content Aggregation (20+ Sources)
 
 **Tier 1 - MVP (15 sources):**
+
 - Hacker News (Firebase API)
 - Product Hunt (GraphQL API)
 - GitHub Trending (REST API)
@@ -165,12 +179,15 @@ A decentralized, community-driven news and content aggregation platform that:
 - CoinGecko, CryptoCompare, CoinCap, Messari (price APIs - all FREE)
 
 **Tier 2 - Beta (10 sources):**
+
 - X/Twitter, Discord, Telegram, HackerNoon, MarketWatch
 
 **Tier 3 - Launch (10+ sources):**
+
 - 抖音, 今日头条, 百度, Meta, TikTok, Slack, YouTube
 
 **Implementation:**
+
 - Client-side fetching (no backend)
 - IndexedDB caching (30-min TTL)
 - CORS proxies for non-CORS APIs
@@ -180,11 +197,13 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 3.2 Advertisement System
 
 **Ad Types:**
+
 1. Banner Ads (images/GIF/video): 970x250, 300x250, 728x90, 320x100
 2. Sponsored Posts (native content with "Sponsored" badge)
 3. Promoted Links (priority placement, top 3 slots)
 
 **Auction Mechanism:**
+
 - **Participation Fee:** 1 USDT (non-refundable)
 - **Bidding:** Minimum 5% increment over previous bid
 - **Tenure:** 1 week, 2 weeks, 1 month, 3 months (10% discount), 6 months (20% discount)
@@ -193,6 +212,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - **Settlement:** On-chain via smart contract (trustless)
 
 **Pricing (Minimum Bids):**
+
 - Homepage Banner: 100 USDT/week
 - Category Pages: 50 USDT/week
 - Article Pages: 20 USDT/week
@@ -203,6 +223,7 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 3.3 User Rewards System
 
 **Points Earning:**
+
 - Submit quality content (10+ upvotes): 1,000 points
 - Receive upvote: 10 points
 - Quality comment (5+ upvotes): 50 points
@@ -213,6 +234,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - Subscribe to ad slot: 10 points (one-time)
 
 **Points-to-USDT Conversion:**
+
 - **Ratio:** 1,000 points = 1 USDT (adjustable via DAO)
 - **Conversion Fee:** 1%
 - **Minimum:** 100,000 points (100 USDT gross → 99 USDT net)
@@ -220,6 +242,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - **Cooldown:** 7-day waiting period between conversions
 
 **USDT Withdrawal:**
+
 - **Withdrawal Fee:** 1% + gas
 - **Minimum:** 10 USDT
 - **Implementation:** Reown AppKit withdrawal features
@@ -228,6 +251,7 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 3.4 Subscription System
 
 **Free Tier ($0/month):**
+
 - Read unlimited articles
 - Bookmark up to 50 articles
 - Basic recommendations
@@ -235,6 +259,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - Vote on governance (1 vote base power)
 
 **Pro Tier (30 USDT/month):**
+
 - All Free features
 - Unlimited bookmarks
 - AI-powered personalized feed
@@ -246,6 +271,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - 1.5x points earning multiplier
 
 **Premium Tier (100 USDT/month):**
+
 - All Pro features
 - Priority content moderation review
 - Custom content sources (unlimited)
@@ -257,6 +283,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - 10x voting power multiplier
 
 **Payment:**
+
 - USDT only (multi-chain)
 - Paid via smart contract (on-chain verification)
 - Built-in Reown on-ramp (buy USDT with credit card)
@@ -265,12 +292,14 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 3.5 Social Features
 
 **Follow System:**
+
 - Follow/unfollow users
 - Follower/following counts on profiles
 - Following feed (see activity from followed users)
 - Follow suggestions based on similar interests
 
 **Like System:**
+
 - Like articles
 - Like counts displayed
 - "Liked Articles" page
@@ -278,6 +307,7 @@ A decentralized, community-driven news and content aggregation platform that:
 - Award 10 points to content submitter per like
 
 **Direct Messages:**
+
 - Real-time messaging (Supabase Realtime)
 - Message notifications (Web Push API)
 - Unread message badges
@@ -288,6 +318,7 @@ A decentralized, community-driven news and content aggregation platform that:
 ### 3.6 DAO Governance
 
 **Voting Categories:**
+
 1. Content Moderation (ban users, approve flagged content)
 2. Economic Policy (conversion rates, platform fees)
 3. Feature Prioritization (next features to build)
@@ -296,6 +327,7 @@ A decentralized, community-driven news and content aggregation platform that:
 6. Partnership Decisions (platform integrations)
 
 **Voting Power (Meritocratic):**
+
 ```
 Base: 1 vote per user
 + 1 vote per 10 approved submissions
@@ -306,6 +338,7 @@ Base: 1 vote per user
 ```
 
 **Proposal Economics:**
+
 - Create proposal: 1,000 points
 - Vote on proposal: 10 points
 - Voted with majority (proposal passes): 50 bonus points
@@ -314,6 +347,7 @@ Base: 1 vote per user
 ### 3.7 Analytics Integration
 
 **Dune Analytics (On-Chain Metrics):**
+
 - Ad revenue by chain, by type, by time period
 - Subscription revenue and growth
 - Treasury balance (real-time, all chains)
@@ -323,18 +357,21 @@ Base: 1 vote per user
 - Reference dashboard: WooFi Analytics (https://dune.com/woofianalytics/woofi-dashboard)
 
 **Supabase Analytics (Off-Chain Metrics):**
+
 - Content metrics (articles, sources, categories)
 - User engagement (views, upvotes, comments)
 - Social activity (follows, likes, messages)
 - Points economy (issued vs redeemed)
 
 **Clerk Analytics (User Metrics):**
+
 - User growth (signups, DAU, MAU)
 - Subscription conversions
 - Retention rates
 - Churn analysis
 
 **Dashboard Access:**
+
 - Public: Basic stats (total revenue, users, ads)
 - Premium: Full Dune dashboard embed
 - Admin: Combined view (Dune + Supabase + Clerk)
@@ -342,18 +379,21 @@ Base: 1 vote per user
 ### 3.8 AI-Powered Recommendations
 
 **MVP (Phase 1):**
+
 - Collaborative filtering (Supabase SQL)
 - Cost: $0
 - Accuracy: 70%
 - Based on similar users' bookmarks
 
 **Beta (Phase 2):**
+
 - TensorFlow.js (client-side ML)
 - Cost: $0 (10 MB model download)
 - Accuracy: 80%
 - Content-based filtering
 
 **Production (Phase 3):**
+
 - OpenAI Embeddings API
 - Cost: $0.08/month for 1,000 users
 - Accuracy: 95%
@@ -366,6 +406,7 @@ Base: 1 vote per user
 **Feature Set 1: AI Content Enhancement (Beta - Phase 2)**
 
 **AI Translation:**
+
 - **Implementation**: Google Translate API (FREE 500k characters/month)
 - **UI**: One-click translate button on every article
 - **Supported Languages**: 100+ languages (auto-detect source)
@@ -377,6 +418,7 @@ Base: 1 vote per user
 - **Cost**: $0 for MVP (500k chars covers ~5,000 articles/month)
 
 **AI Summaries:**
+
 - **Implementation Options**:
   - **Free (MVP)**: Hugging Face Inference API (facebook/bart-large-cnn - FREE)
   - **Paid (Beta)**: OpenAI GPT-4 Turbo ($0.01 per 1k tokens)
@@ -391,11 +433,13 @@ Base: 1 vote per user
 **Feature Set 2: Curated Lists & Collections (MVP - Phase 1)**
 
 **User-Created Lists:**
+
 - Users create custom lists (e.g., "Best DeFi News", "Top Crypto Analysis")
 - Add articles to lists (like playlists)
 - Public lists: Anyone can subscribe
 - Private lists: Personal organization (Pro feature)
 - **Database Schema**:
+
 ```sql
 CREATE TABLE content_lists (
   id UUID PRIMARY KEY,
@@ -427,6 +471,7 @@ CREATE TABLE list_subscriptions (
 **Feature Set 3: Dynamic Content Support (Beta - Phase 2)**
 
 **Video Content:**
+
 - **YouTube**: YouTube Data API v3 (FREE 10,000 quota/day)
 - **TikTok**: Public API (trending crypto videos)
 - **Embedded Players**: In-app video playback
@@ -435,6 +480,7 @@ CREATE TABLE list_subscriptions (
   - TikTok: Trending crypto content creators
 
 **Audio Content (Podcasts):**
+
 - **Apple Podcasts**: RSS feeds (free)
 - **Spotify**: Podcast RSS (via third-party)
 - **Example Podcasts**:
@@ -446,6 +492,7 @@ CREATE TABLE list_subscriptions (
 **Feature Set 4: Reader View Mode (MVP - Phase 1)**
 
 **Distraction-Free Reading:**
+
 - **Implementation**: @mozilla/readability library (open source)
 - **Features**:
   - Extract clean article content (remove ads, sidebars)
@@ -462,19 +509,22 @@ CREATE TABLE list_subscriptions (
 **Feature Set 5: Content Sharing (MVP - Phase 1)**
 
 **Share to Social Media:**
+
 - **Platforms**: Twitter/X, Facebook, LinkedIn, Telegram, WhatsApp
 - **Implementation**: Web Share API (built into browsers)
+
 ```javascript
 const shareArticle = async (article) => {
   await navigator.share({
     title: article.title,
     text: article.description,
-    url: article.url + '?ref=web3news'
-  })
-  
+    url: article.url + "?ref=web3news",
+  });
+
   // Award 5 points for sharing (tracked via UTM)
-}
+};
 ```
+
 - **Referral Tracking**: UTM parameters (award points when referral clicks)
 - **Cost**: $0 (native browser API)
 
@@ -534,6 +584,7 @@ const shareArticle = async (article) => {
 ### 5.1 MVP (Phase 1 - 8 Weeks)
 
 **Must-Have:**
+
 - ✅ Aggregate 15+ top sources
 - ✅ Reown social login + smart accounts
 - ✅ Ad auction system (banner ads only)
@@ -542,6 +593,7 @@ const shareArticle = async (article) => {
 - ✅ GitHub Pages deployment
 
 **Success Metrics:**
+
 - 100 beta users
 - 10 auction participants (testnet)
 - 5,000+ articles cached
@@ -550,6 +602,7 @@ const shareArticle = async (article) => {
 ### 5.2 Beta (Phase 2 - 12 Weeks)
 
 **Must-Have:**
+
 - ✅ 25+ sources (add Chinese platforms)
 - ✅ All ad formats (banner, sponsored, promoted)
 - ✅ Social features (follow, like, DM)
@@ -558,6 +611,7 @@ const shareArticle = async (article) => {
 - ✅ Multi-language (EN, 中文)
 
 **Success Metrics:**
+
 - 1,000 active users
 - $1,000 ad revenue (testnet simulation)
 - 20,000+ articles
@@ -566,6 +620,7 @@ const shareArticle = async (article) => {
 ### 5.3 Production (Phase 3 - 16 Weeks)
 
 **Must-Have:**
+
 - ✅ Mainnet deployment (all 6 chains)
 - ✅ Smart contract audit complete
 - ✅ 30+ content sources
@@ -573,6 +628,7 @@ const shareArticle = async (article) => {
 - ✅ AI recommendations (OpenAI)
 
 **Success Metrics:**
+
 - 10,000 DAU
 - $10,000/month ad revenue (real USDT)
 - 100,000+ articles
@@ -581,6 +637,7 @@ const shareArticle = async (article) => {
 ### 5.4 Future (Phase 4 - 6-12 Months)
 
 **Nice-to-Have:**
+
 - Flutter native apps (iOS + Android)
 - Platform governance token (W3N)
 - NFT rewards for top contributors
@@ -595,6 +652,7 @@ const shareArticle = async (article) => {
 ### 6.1 Budget Constraints
 
 **Infrastructure:** $0/month for MVP
+
 - GitHub Pages: Free (unlimited bandwidth)
 - Clerk: Free (up to 10,000 MAU)
 - Reown: Free (unlimited)
@@ -602,6 +660,7 @@ const shareArticle = async (article) => {
 - IndexedDB: Free (browser-provided)
 
 **One-Time Costs:**
+
 - Smart contract deployment (testnets): $0
 - Smart contract deployment (mainnets): $500-2,000 (gas fees)
 - Smart contract audit: $10,000-15,000 (optional, Phase 3)
@@ -630,30 +689,35 @@ const shareArticle = async (article) => {
 ### 7.1 Primary User Personas
 
 **Persona 1: Crypto Enthusiast (Sarah)**
+
 - Reads crypto news daily
 - Wants one platform for all sources
 - Willing to pay for ad-free experience
 - Active in community discussions
 
 **Persona 2: Content Creator (Mike)**
+
 - Submits quality crypto analysis
 - Wants to earn rewards for contributions
 - Interested in governance participation
 - Needs analytics on content performance
 
 **Persona 3: Advertiser (BlockchainCo)**
+
 - Wants to reach crypto-native audience
 - Prefers transparent auction system
 - Multi-chain USDT payment capability
 - Needs performance metrics (impressions, clicks)
 
 **Persona 4: Casual Reader (Alex)**
+
 - Browses tech/crypto news occasionally
 - Uses mobile primarily
 - Wants offline reading
 - Free tier sufficient
 
 **Persona 5: DAO Member (Emma)**
+
 - Long-term platform member
 - High voting power (top contributor)
 - Participates in governance
@@ -662,6 +726,7 @@ const shareArticle = async (article) => {
 ### 7.2 Core User Flows
 
 **Flow 1: First-Time User Onboarding**
+
 1. User visits website
 2. Browses articles (no login required)
 3. Clicks "Sign In" → Reown modal appears
@@ -672,6 +737,7 @@ const shareArticle = async (article) => {
 8. User onboarded → Can bookmark, submit, earn points
 
 **Flow 2: Ad Auction Participation**
+
 1. User clicks "Advertise"
 2. Browses available ad slots
 3. Selects slot → Checks current highest bid
@@ -682,6 +748,7 @@ const shareArticle = async (article) => {
 8. Receives analytics (impressions, clicks)
 
 **Flow 3: Points → USDT Conversion**
+
 1. User earns 150,000 points (from submissions, upvotes, etc.)
 2. Goes to /rewards page
 3. Clicks "Convert Points to USDT"
@@ -694,6 +761,7 @@ const shareArticle = async (article) => {
 10. Can send to external wallet via Reown
 
 **Flow 4: Subscription Purchase (with On-Ramp)**
+
 1. User clicks "Upgrade to Pro"
 2. Check USDT balance → 0 USDT
 3. Click "Buy USDT" → Reown on-ramp opens
@@ -706,6 +774,7 @@ const shareArticle = async (article) => {
 10. AI feed tab unlocked, ads hidden
 
 **Flow 5: DAO Governance Participation**
+
 1. User navigates to /governance
 2. Reviews active proposals
 3. Clicks proposal → Reads description
@@ -720,6 +789,7 @@ const shareArticle = async (article) => {
 ## 8. SUCCESS CRITERIA
 
 ### 8.1 MVP Launch (Week 8)
+
 - [ ] 15+ content sources aggregating
 - [ ] 100 beta users signed up
 - [ ] 10 auction participants (testnet)
@@ -728,6 +798,7 @@ const shareArticle = async (article) => {
 - [ ] PWA installable on iOS/Android
 
 ### 8.2 Beta Launch (Week 12)
+
 - [ ] 25+ content sources
 - [ ] 1,000 active users
 - [ ] $1,000 ad revenue simulated (testnet)
@@ -736,6 +807,7 @@ const shareArticle = async (article) => {
 - [ ] Points economy balanced (2:1 issue:redeem ratio)
 
 ### 8.3 Production Launch (Week 16)
+
 - [ ] 10,000 DAU
 - [ ] $10,000/month ad revenue (real USDT)
 - [ ] 100,000+ articles
@@ -744,6 +816,7 @@ const shareArticle = async (article) => {
 - [ ] 85%+ user satisfaction (NPS > 40)
 
 ### 8.4 Long-Term (6-12 Months)
+
 - [ ] 50,000 DAU
 - [ ] $50,000+/month ad revenue
 - [ ] 500,000+ articles
@@ -798,6 +871,7 @@ const shareArticle = async (article) => {
 ### 10.1 External Services
 
 **Required (Free Tier):**
+
 - Clerk (10,000 MAU free)
 - Reown (unlimited free)
 - Supabase (500 MB free)
@@ -806,6 +880,7 @@ const shareArticle = async (article) => {
 - CryptoCompare API (100,000 calls/month free)
 
 **Optional (Paid - Phase 2+):**
+
 - OpenAI API ($0.08/month for AI recommendations)
 - Professional smart contract audit ($10k-15k)
 - Custom domain ($12/year)
@@ -813,6 +888,7 @@ const shareArticle = async (article) => {
 ### 10.2 Third-Party SDKs
 
 **Frontend:**
+
 - @reown/appkit, @reown/appkit-adapter-wagmi
 - @clerk/nextjs
 - @supabase/supabase-js
@@ -822,11 +898,13 @@ const shareArticle = async (article) => {
 - tailwindcss, @shadcn/ui
 
 **Smart Contracts:**
+
 - @openzeppelin/contracts
 - hardhat, @nomicfoundation/hardhat-toolbox
 - @nomiclabs/hardhat-etherscan
 
 **Flutter (Future):**
+
 - supabase_flutter
 - reown_appkit_flutter (when available)
 - web3dart
@@ -859,6 +937,7 @@ const shareArticle = async (article) => {
 ### 12.1 MVP Deliverables (Week 8)
 
 **Code:**
+
 - Next.js 14 application (TypeScript)
 - 3 Solidity smart contracts (AdPayment, Subscription, Governance)
 - Hardhat deployment scripts
@@ -866,6 +945,7 @@ const shareArticle = async (article) => {
 - Contract tests (Hardhat)
 
 **Documentation:**
+
 - README.md (setup guide)
 - Architecture diagrams
 - API documentation
@@ -873,6 +953,7 @@ const shareArticle = async (article) => {
 - User guides
 
 **Deployment:**
+
 - GitHub Pages live site
 - GitHub Actions CI/CD pipeline
 - Smart contracts on testnets (6 chains)
@@ -881,12 +962,14 @@ const shareArticle = async (article) => {
 ### 12.2 Production Deliverables (Week 16)
 
 **Code:**
+
 - Production-ready Next.js app
 - Audited smart contracts
 - Comprehensive test suite (E2E, unit, integration)
 - Performance optimizations
 
 **Documentation:**
+
 - Complete technical documentation
 - User onboarding guides
 - Admin manuals
@@ -894,6 +977,7 @@ const shareArticle = async (article) => {
 - Compliance certifications
 
 **Deployment:**
+
 - Smart contracts on mainnets (6 chains × 3 contracts)
 - Custom domain with SSL
 - Monitoring and alerts
@@ -904,6 +988,7 @@ const shareArticle = async (article) => {
 ## 13. NEXT STEPS
 
 **Immediate (Init Agent):**
+
 - ✅ Project directory created
 - ✅ CLAUDE.md initialized
 - ✅ Directory structure created
@@ -913,6 +998,7 @@ const shareArticle = async (article) => {
 - ⏳ Update registries
 
 **Next Agent:** Product Agent
+
 - Conduct market research (competitors: NewsNow, Artifact, Flipboard)
 - Competitive analysis
 - Product positioning
@@ -926,6 +1012,7 @@ Init → Product → Plan → UX → Design → Data → Develop → DevOps → 
 ---
 
 **REFERENCE DOCUMENTS:**
+
 - Complete Specification: `docs/PROJECT_INIT_PROMPT_WEB3_AGGREGATOR.md` (3,693 lines)
 - Updates Summary: `docs/PROMPT_UPDATES_SUMMARY.md`
 - Clerk Guide: `docs/CLERK_DASHBOARD_GUIDE.md`
@@ -935,4 +1022,3 @@ Init → Product → Plan → UX → Design → Data → Develop → DevOps → 
 ---
 
 **PROJECT STATUS:** ✅ Requirements Complete, Ready for Product Agent
-

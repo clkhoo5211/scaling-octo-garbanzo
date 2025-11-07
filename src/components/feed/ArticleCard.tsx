@@ -1,16 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { memo } from 'react';
-import type { Article } from '@/lib/services/indexedDBCache';
-import { formatRelativeTime, truncate } from '@/lib/utils';
-import { useAppStore } from '@/lib/stores/appStore';
-import { useLikeArticle, useUnlikeArticle, useArticleLikes } from '@/lib/hooks/useArticles';
-import { Skeleton } from '@/components/ui/Skeleton';
+import Link from "next/link";
+import { memo } from "react";
+import type { Article } from "@/lib/services/indexedDBCache";
+import { formatRelativeTime, truncate } from "@/lib/utils";
+import { useAppStore } from "@/lib/stores/appStore";
+import {
+  useLikeArticle,
+  useUnlikeArticle,
+  useArticleLikes,
+} from "@/lib/hooks/useArticles";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export interface ArticleCardProps {
   article: Article;
-  variant?: 'compact' | 'expanded' | 'featured';
+  variant?: "compact" | "expanded" | "featured";
   onUpvote?: (articleId: string) => void;
   onBookmark?: (articleId: string) => void;
   onShare?: (articleId: string) => void;
@@ -19,7 +23,7 @@ export interface ArticleCardProps {
 
 export const ArticleCard = memo(function ArticleCard({
   article,
-  variant = 'compact',
+  variant = "compact",
   onUpvote,
   onBookmark,
   onShare,
@@ -64,8 +68,8 @@ export const ArticleCard = memo(function ArticleCard({
 
   return (
     <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      <Link 
-        href={`/article/${encodeURIComponent(article.url)}`}
+      <Link
+        href={`/article?url=${encodeURIComponent(article.url)}`}
         onClick={(e) => {
           if (onSelect) {
             e.preventDefault();
@@ -76,7 +80,7 @@ export const ArticleCard = memo(function ArticleCard({
         <div className="p-4">
           {/* Header */}
           <div className="flex items-start gap-3 mb-2">
-            {article.thumbnail && variant !== 'compact' && (
+            {article.thumbnail && variant !== "compact" && (
               <img
                 src={article.thumbnail}
                 alt={article.title}
@@ -102,7 +106,7 @@ export const ArticleCard = memo(function ArticleCard({
           </div>
 
           {/* Excerpt */}
-          {article.excerpt && variant !== 'compact' && (
+          {article.excerpt && variant !== "compact" && (
             <p className="text-sm text-gray-600 mb-3 line-clamp-2">
               {truncate(article.excerpt, 150)}
             </p>
@@ -116,7 +120,7 @@ export const ArticleCard = memo(function ArticleCard({
                   e.preventDefault();
                   handleLike();
                 }}
-                className={liked ? 'text-red-500' : 'text-gray-400'}
+                className={liked ? "text-red-500" : "text-gray-400"}
                 aria-label="Like article"
               >
                 <span className="text-sm font-medium">👍 {likesCount}</span>
@@ -126,7 +130,7 @@ export const ArticleCard = memo(function ArticleCard({
                   e.preventDefault();
                   handleBookmark();
                 }}
-                className={bookmarked ? 'text-yellow-500' : 'text-gray-400'}
+                className={bookmarked ? "text-yellow-500" : "text-gray-400"}
                 aria-label="Bookmark article"
               >
                 🔖
@@ -163,4 +167,3 @@ export function ArticleCardSkeleton() {
     </div>
   );
 }
-

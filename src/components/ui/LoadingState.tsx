@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ReactNode } from 'react';
-import { Loader2 } from 'lucide-react';
+import { ReactNode } from "react";
+import { Loader2 } from "lucide-react";
 
 interface LoadingStateProps {
   children?: ReactNode;
@@ -15,7 +15,7 @@ interface LoadingStateProps {
  */
 export function LoadingState({
   children,
-  message = 'Loading...',
+  message = "Loading...",
   fullScreen = false,
 }: LoadingStateProps) {
   const content = (
@@ -51,7 +51,7 @@ interface EmptyStateProps {
  * Displays empty state message
  */
 export function EmptyState({
-  title = 'No data available',
+  title = "No data available",
   message,
   icon,
   action,
@@ -71,4 +71,3 @@ export function EmptyState({
     </div>
   );
 }
-
