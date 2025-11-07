@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
 import { useAppKit } from "@reown/appkit/react";
 import { Modal } from "@/components/ui/Modal";
@@ -30,6 +30,12 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
   const [adminKey, setAdminKey] = useState("");
   const [showAdminKey, setShowAdminKey] = useState(false);
   const [adminKeyError, setAdminKeyError] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  // CRITICAL: Only render icons after mount to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleClick = () => {
     if (!isLoaded) {
@@ -101,7 +107,11 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
         <div className="space-y-4">
           <div className="flex items-center justify-center mb-4">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
-              <LogIn className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              {mounted ? (
+                <LogIn className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              ) : (
+                <div className="w-8 h-8 bg-blue-600 dark:bg-blue-400 rounded" />
+              )}
             </div>
           </div>
           <p className="text-center text-gray-600 dark:text-gray-400">
@@ -116,7 +126,11 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
                 onClick={() => setShowAdminKey(!showAdminKey)}
                 className="w-full flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-3"
               >
-                <Key className="w-4 h-4" />
+                {mounted ? (
+                  <Key className="w-4 h-4" />
+                ) : (
+                  <span className="w-4 h-4 bg-gray-400 rounded" />
+                )}
                 {showAdminKey ? "Hide" : "Show"} Admin Key (Dev Only)
               </button>
 

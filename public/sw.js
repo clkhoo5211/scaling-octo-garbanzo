@@ -7,9 +7,11 @@ const STATIC_CACHE_NAME = 'web3news-static-v1';
 const ARTICLES_CACHE_NAME = 'web3news-articles-v1';
 const MAX_ARTICLES_CACHED = 100;
 
+// CRITICAL: Use relative paths - Service Worker scope determines basePath
+// Don't hardcode paths that might not exist
 const STATIC_ASSETS = [
   '/',
-  '/manifest.json',
+  '/manifest.webmanifest',
   '/favicon.ico',
   '/apple-icon.png',
   '/icon-192x192.png',
@@ -20,7 +22,19 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+      // Try to cache assets, but don't fail if some are missing
+      return Promise.allSettled(
+        STATIC_ASSETS.map((url) => 
+          fetch(url).then((response) => {
+            if (response.ok) {
+              return cache.put(url, response);
+            }
+          }).catch(() => {
+            // Silently fail for missing assets
+            console.warn(`Failed to cache ${url}`);
+          })
+        )
+      );
     })
   );
   self.skipWaiting();

@@ -3,6 +3,7 @@
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { WalletConnect } from "@/components/web3/WalletConnect";
+import { useEffect, useState } from "react";
 
 /**
  * AuthStatus Component
@@ -14,12 +15,22 @@ import { WalletConnect } from "@/components/web3/WalletConnect";
  * - If wallet is connected: Show wallet address only (WalletConnect component)
  * - If wallet NOT connected but Clerk user exists: Show Clerk user info + connect button
  * - If neither: Show connect button only
+ * 
+ * CRITICAL: Client-only to prevent hydration mismatches with useAppKitAccount
  */
 export function AuthStatus() {
   const { user, isLoaded: clerkLoaded } = useUser();
   const { isConnected } = useAppKitAccount();
+  const [mounted, setMounted] = useState(false);
 
-  if (!clerkLoaded) {
+  // CRITICAL: Only render after mount to prevent hydration mismatch
+  // useAppKitAccount() may return different values during SSR vs client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Show loading state during SSR/hydration
+  if (!mounted || !clerkLoaded) {
     return (
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
