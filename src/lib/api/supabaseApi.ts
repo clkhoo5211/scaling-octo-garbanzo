@@ -914,8 +914,8 @@ export async function addArticleToList({
   addedBy: string;
 }): Promise<{ data: ListArticle | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await (supabase
-      .from("list_articles") as any)
+    const { data, error } = await supabase
+      .from("list_articles")
       .insert({
         list_id: listId,
         article_id: articleId,
@@ -971,7 +971,7 @@ export async function subscribeToList({
     if (list) {
       await supabase
         .from("lists")
-        .update({ subscriber_count: (list.subscriber_count || 0) + 1 })
+        .update({ subscriber_count: ((list as { subscriber_count: number }).subscriber_count || 0) + 1 })
         .eq("id", listId);
     }
 
@@ -1007,10 +1007,10 @@ export async function unsubscribeFromList({
       .eq("id", listId)
       .single();
 
-    if (list && list.subscriber_count > 0) {
+    if (list && ((list as { subscriber_count: number }).subscriber_count || 0) > 0) {
       await supabase
         .from("lists")
-        .update({ subscriber_count: list.subscriber_count - 1 })
+        .update({ subscriber_count: ((list as { subscriber_count: number }).subscriber_count || 0) - 1 })
         .eq("id", listId);
     }
 

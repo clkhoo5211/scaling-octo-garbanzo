@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { AuthStatus } from "@/components/auth/AuthStatus";
-import { WalletConnect } from "@/components/web3/WalletConnect";
 
 export function Header() {
   return (
@@ -35,9 +34,6 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <div className="hidden sm:block">
-              <WalletConnect />
-            </div>
             <AuthStatus />
           </div>
         </div>
