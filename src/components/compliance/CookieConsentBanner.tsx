@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { CookieSettings } from "./CookieSettings";
+import { getBasePath } from "@/lib/utils/basePath";
 
 export interface CookiePreferences {
   necessary: boolean; // Always true, cannot be disabled
@@ -23,6 +24,7 @@ export function CookieConsentBanner() {
     marketing: false,
     functional: false,
   });
+  const basePath = getBasePath();
 
   useEffect(() => {
     // Check if user has already made a choice
@@ -164,7 +166,7 @@ export function CookieConsentBanner() {
                   <p className="text-xs text-gray-500">
                     Learn more in our{" "}
                     <a
-                      href="/cookie-policy"
+                      href={`${basePath}/cookie-policy`}
                       className="text-indigo-600 hover:text-indigo-700 underline"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -173,7 +175,7 @@ export function CookieConsentBanner() {
                     </a>{" "}
                     and{" "}
                     <a
-                      href="/privacy-policy"
+                      href={`${basePath}/privacy-policy`}
                       className="text-indigo-600 hover:text-indigo-700 underline"
                       target="_blank"
                       rel="noopener noreferrer"

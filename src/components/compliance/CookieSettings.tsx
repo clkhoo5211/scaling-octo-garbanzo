@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import type { CookiePreferences } from "./CookieConsentBanner";
+import { getBasePath } from "@/lib/utils/basePath";
 
 interface CookieSettingsProps {
   isOpen: boolean;
@@ -58,6 +59,7 @@ export function CookieSettings({
 }: CookieSettingsProps) {
   const [localPreferences, setLocalPreferences] =
     useState<CookiePreferences>(preferences);
+  const basePath = getBasePath();
 
   useEffect(() => {
     setLocalPreferences(preferences);
@@ -120,7 +122,7 @@ export function CookieSettings({
           <p className="text-xs text-gray-500">
             Learn more in our{" "}
             <a
-              href="/cookie-policy"
+              href={`${basePath}/cookie-policy`}
               className="text-indigo-600 hover:text-indigo-700 underline"
               target="_blank"
               rel="noopener noreferrer"
