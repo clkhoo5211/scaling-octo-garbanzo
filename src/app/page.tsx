@@ -4,18 +4,21 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { ArticleFeed } from "@/components/feed/ArticleFeed";
 import { CategoryTabs } from "@/components/feed/CategoryTabs";
+import { ShowMoreButton } from "@/components/feed/ShowMoreButton";
 import { Autocomplete } from "@/components/search/Autocomplete";
 import { FilterChips, type FilterChip } from "@/components/search/FilterChips";
 import { useState } from "react";
 import { useArticles } from "@/lib/hooks/useArticles";
 import type { Article } from "@/lib/services/indexedDBCache";
+import type { NewsCategory } from "@/lib/sources/types";
+
+const ARTICLES_PER_PAGE = 10; // Top 10 for guests
 
 export default function HomePage() {
-  const [selectedCategory, setSelectedCategory] = useState<
-    "tech" | "crypto" | "social" | "general" | undefined
-  >(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<NewsCategory | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
+  const [showAllArticles, setShowAllArticles] = useState(false);
 
   const { data: articles, isLoading } = useArticles(selectedCategory, {
     usePagination: true,
@@ -32,7 +35,14 @@ export default function HomePage() {
       );
     }
     return true;
-  });
+  }) || [];
+
+  // Limit to top 10 for guests, show all for logged-in users who clicked "Show More"
+  const displayedArticles = showAllArticles 
+    ? filteredArticles 
+    : filteredArticles.slice(0, ARTICLES_PER_PAGE);
+
+  const hasMoreArticles = filteredArticles.length > ARTICLES_PER_PAGE;
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -68,6 +78,16 @@ export default function HomePage() {
     setFilters([]);
   };
 
+  const handleShowMore = () => {
+    setShowAllArticles(true);
+  };
+
+  // Reset showAllArticles when category changes
+  const handleCategoryChange = (category: NewsCategory | undefined) => {
+    setSelectedCategory(category);
+    setShowAllArticles(false);
+  };
+
   return (
     <ErrorBoundary>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -95,17 +115,32 @@ export default function HomePage() {
         {/* Category Tabs */}
         <CategoryTabs
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          onSelectCategory={handleCategoryChange}
         />
 
         {/* Article Feed */}
         {isLoading ? (
           <LoadingState message="Loading articles..." />
         ) : (
-          <ArticleFeed
-            articles={filteredArticles || []}
-            onSelectArticle={handleSelectArticle}
-          />
+          <>
+            <ArticleFeed
+              articles={displayedArticles}
+              onSelectArticle={handleSelectArticle}
+            />
+            
+            {/* Show More Button - only show if there are more articles and not already showing all */}
+            {hasMoreArticles && !showAllArticles && (
+              <ShowMoreButton onClick={handleShowMore} />
+            )}
+            
+            {/* Show count info */}
+            {displayedArticles.length > 0 && (
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+                Showing {displayedArticles.length} of {filteredArticles.length} articles
+                {!showAllArticles && hasMoreArticles && " (Top 10 for guests)"}
+              </p>
+            )}
+          </>
         )}
       </div>
     </ErrorBoundary>

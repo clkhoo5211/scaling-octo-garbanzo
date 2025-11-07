@@ -6,6 +6,7 @@
 
 import type { Article } from "../services/indexedDBCache";
 import { getAllRSSSources, getRSSSourcesByCategory } from "./rssRegistry";
+import type { NewsCategory } from "./types";
 
 export class ModularRSSAggregator {
   /**
@@ -46,9 +47,7 @@ export class ModularRSSAggregator {
   /**
    * Fetch articles from sources in a specific category
    */
-  async fetchByCategory(
-    category: "tech" | "crypto" | "social" | "general"
-  ): Promise<Article[]> {
+  async fetchByCategory(category: NewsCategory): Promise<Article[]> {
     const sources = getRSSSourcesByCategory(category);
     console.log(`Fetching ${category} articles from ${sources.length} sources...`);
 
@@ -98,4 +97,3 @@ export class ModularRSSAggregator {
 
 // Export singleton instance
 export const modularRSSAggregator = new ModularRSSAggregator();
-

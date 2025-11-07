@@ -9,14 +9,13 @@ import { ArticleFeed } from "@/components/feed/ArticleFeed";
 import { useState } from "react";
 import { useArticles } from "@/lib/hooks/useArticles";
 import type { Article } from "@/lib/services/indexedDBCache";
+import type { NewsCategory } from "@/lib/sources/types";
 import { Search } from "lucide-react";
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
-  const [selectedCategory] = useState<
-    "tech" | "crypto" | "social" | "general" | undefined
-  >(undefined);
+  const [selectedCategory] = useState<NewsCategory | undefined>(undefined);
 
   const { data: articles, isLoading } = useArticles(selectedCategory, {
     usePagination: true,

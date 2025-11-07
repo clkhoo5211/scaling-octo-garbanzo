@@ -4,10 +4,16 @@
  */
 
 import type { RSSSourceHandler } from "../types";
+import type { NewsCategory } from "../types";
 import * as techSources from "./rss/tech";
 import * as cryptoSources from "./rss/crypto";
 import * as socialSources from "./rss/social";
 import * as generalSources from "./rss/general";
+import * as businessSources from "./rss/business";
+import * as scienceSources from "./rss/science";
+import * as sportsSources from "./rss/sports";
+import * as entertainmentSources from "./rss/entertainment";
+import * as healthSources from "./rss/health";
 
 /**
  * Get all RSS sources
@@ -45,6 +51,41 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     generalSources.cnnSource,
     generalSources.associatedPressSource,
     generalSources.newYorkTimesSource,
+    
+    // Business sources
+    businessSources.bloombergSource,
+    businessSources.financialTimesSource,
+    businessSources.wallStreetJournalSource,
+    businessSources.forbesSource,
+    businessSources.businessInsiderSource,
+    
+    // Science sources
+    scienceSources.scienceMagSource,
+    scienceSources.natureSource,
+    scienceSources.scientificAmericanSource,
+    scienceSources.nationalGeographicSource,
+    scienceSources.spaceNewsSource,
+    
+    // Sports sources
+    sportsSources.espnSource,
+    sportsSources.bbcSportSource,
+    sportsSources.theAthleticSource,
+    sportsSources.skySportsSource,
+    sportsSources.nbaSource,
+    
+    // Entertainment sources
+    entertainmentSources.entertainmentWeeklySource,
+    entertainmentSources.varietySource,
+    entertainmentSources.hollywoodReporterSource,
+    entertainmentSources.rollingStoneSource,
+    entertainmentSources.pitchforkSource,
+    
+    // Health sources
+    healthSources.webMDSource,
+    healthSources.healthlineSource,
+    healthSources.medicalNewsTodaySource,
+    healthSources.mayoClinicSource,
+    healthSources.nihSource,
   ].filter(source => source.config.enabled);
 }
 
@@ -52,7 +93,7 @@ export function getAllRSSSources(): RSSSourceHandler[] {
  * Get RSS sources by category
  */
 export function getRSSSourcesByCategory(
-  category: "tech" | "crypto" | "social" | "general"
+  category: NewsCategory
 ): RSSSourceHandler[] {
   return getAllRSSSources().filter(
     source => source.config.category === category
@@ -75,4 +116,3 @@ export function addRSSSource(source: RSSSourceHandler): void {
   // For now, sources are statically defined in their respective files
   console.warn("addRSSSource: Sources should be added to their respective category files");
 }
-

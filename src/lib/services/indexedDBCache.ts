@@ -1,11 +1,12 @@
 import localforage from "localforage";
+import type { NewsCategory } from "../sources/types";
 
 export interface Article {
   id: string;
   title: string;
   url: string;
   source: string;
-  category: "tech" | "crypto" | "social" | "general";
+  category: NewsCategory;
   author?: string;
   publishedAt: number;
   thumbnail?: string;

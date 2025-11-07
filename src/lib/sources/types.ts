@@ -5,6 +5,17 @@
 
 import type { Article } from "../services/indexedDBCache";
 
+export type NewsCategory = 
+  | "tech" 
+  | "crypto" 
+  | "social" 
+  | "general"
+  | "business"
+  | "science"
+  | "sports"
+  | "entertainment"
+  | "health";
+
 export interface RSSSourceConfig {
   /** Unique identifier for the source */
   id: string;
@@ -13,7 +24,7 @@ export interface RSSSourceConfig {
   /** RSS feed URL */
   url: string;
   /** Category classification */
-  category: "tech" | "crypto" | "social" | "general";
+  category: NewsCategory;
   /** Whether this source is enabled */
   enabled: boolean;
   /** Expected update frequency in milliseconds (for adaptive rate limiting) */
@@ -43,4 +54,3 @@ export interface RSSSourceHandler {
   /** Get the adaptive interval for this source */
   getAdaptiveInterval(): number;
 }
-
