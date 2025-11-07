@@ -449,8 +449,8 @@ const extractCleanContent = (articleHTML) => {
     
     <div 
       className="prose prose-lg dark:prose-invert"
-      {% raw %}style={{ fontSize: `${fontSize}px` }}{% endraw %}
-      {% raw %}dangerouslySetInnerHTML={{ __html: cleanContent }}{% endraw %}
+      style={% raw %}{{ fontSize: `${fontSize}px` }}{% endraw %}
+      dangerouslySetInnerHTML={% raw %}{{ __html: cleanContent }}{% endraw %}
     />
     
     {/* Bottom actions */}
