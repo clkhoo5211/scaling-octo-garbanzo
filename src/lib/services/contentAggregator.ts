@@ -143,6 +143,64 @@ class ContentAggregator {
         category: "crypto",
         enabled: true,
       },
+      // Social Category Sources
+      {
+        name: "Reddit Social",
+        type: "rest",
+        endpoint: "https://www.reddit.com",
+        category: "social",
+        enabled: true,
+      },
+      {
+        name: "Mastodon",
+        type: "rss",
+        endpoint: "https://mastodon.social/api/v1/timelines/public",
+        category: "social",
+        enabled: false, // Disabled by default - requires API key
+      },
+      // General Category Sources
+      {
+        name: "BBC News",
+        type: "rss",
+        endpoint: "https://feeds.bbci.co.uk/news/rss.xml",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "Reuters",
+        type: "rss",
+        endpoint: "https://www.reuters.com/tools/rss",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "The Guardian",
+        type: "rss",
+        endpoint: "https://www.theguardian.com/world/rss",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "TechCrunch",
+        type: "rss",
+        endpoint: "https://techcrunch.com/feed/",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "The Verge",
+        type: "rss",
+        endpoint: "https://www.theverge.com/rss/index.xml",
+        category: "general",
+        enabled: true,
+      },
+      {
+        name: "Ars Technica",
+        type: "rss",
+        endpoint: "https://feeds.arstechnica.com/arstechnica/index",
+        category: "general",
+        enabled: true,
+      },
     ];
   }
 
@@ -386,7 +444,8 @@ class ContentAggregator {
   private async fetchReddit(
     subreddit: string,
     limit = 25,
-    after?: string
+    after?: string,
+    category: "tech" | "crypto" | "social" | "general" = "tech"
   ): Promise<{ articles: Article[]; nextAfter?: string }> {
     await this.rateLimiter.wait("reddit");
 
@@ -417,7 +476,7 @@ class ContentAggregator {
           title: post.title,
           url: post.url,
           source: `Reddit r/${subreddit}`,
-          category: "tech" as const,
+          category: category,
           upvotes: post.ups || 0,
           comments: post.num_comments || 0,
           publishedAt: post.created_utc * 1000,
@@ -453,7 +512,8 @@ class ContentAggregator {
    */
   private async fetchRedditAllPages(
     subreddit: string,
-    maxPages = 3
+    maxPages = 3,
+    category: "tech" | "crypto" | "social" | "general" = "tech"
   ): Promise<Article[]> {
     const allArticles: Article[] = [];
     let after: string | undefined;
@@ -463,7 +523,8 @@ class ContentAggregator {
       const { articles, nextAfter } = await this.fetchReddit(
         subreddit,
         100,
-        after
+        after,
+        category
       );
       allArticles.push(...articles);
 
@@ -485,7 +546,8 @@ class ContentAggregator {
    */
   private async fetchRSSFeed(
     url: string,
-    sourceName: string
+    sourceName: string,
+    category: "tech" | "crypto" | "social" | "general" = "general"
   ): Promise<Article[]> {
     await this.rateLimiter.wait("rss");
 
@@ -501,7 +563,7 @@ class ContentAggregator {
         title: item.title,
         url: item.link,
         source: sourceName,
-        category: "crypto" as const,
+        category: category,
         publishedAt: new Date(item.pubDate).getTime(),
         author: item.author,
         excerpt: item.description?.substring(0, 200),
@@ -548,20 +610,40 @@ class ContentAggregator {
         case "Reddit":
           // Use pagination for Reddit if enabled
           return usePagination
-            ? await this.fetchRedditAllPages("technology")
-            : (await this.fetchReddit("technology")).articles;
+            ? await this.fetchRedditAllPages("technology", 3, source.category)
+            : (await this.fetchReddit("technology", 25, undefined, source.category)).articles;
+        case "Reddit Social":
+          // Fetch from social subreddits
+          const socialSubreddits = ["social", "funny", "gaming", "movies", "music"];
+          const socialArticles = await Promise.allSettled(
+            socialSubreddits.map((sub) =>
+              usePagination
+                ? this.fetchRedditAllPages(sub, 3, source.category)
+                : this.fetchReddit(sub, 25, undefined, source.category).then((r) => r.articles)
+            )
+          );
+          return socialArticles
+            .filter((r) => r.status === "fulfilled")
+            .flatMap((r) => (r as PromiseFulfilledResult<Article[]>).value);
         case "Medium":
-          return await this.fetchRSSFeed(source.endpoint, "Medium");
+          return await this.fetchRSSFeed(source.endpoint, "Medium", source.category);
         case "CoinDesk":
-          return await this.fetchRSSFeed(source.endpoint, "CoinDesk");
+          return await this.fetchRSSFeed(source.endpoint, "CoinDesk", source.category);
         case "CoinTelegraph":
-          return await this.fetchRSSFeed(source.endpoint, "CoinTelegraph");
+          return await this.fetchRSSFeed(source.endpoint, "CoinTelegraph", source.category);
         case "Decrypt":
-          return await this.fetchRSSFeed(source.endpoint, "Decrypt");
+          return await this.fetchRSSFeed(source.endpoint, "Decrypt", source.category);
         case "Bitcoin Magazine":
-          return await this.fetchRSSFeed(source.endpoint, "Bitcoin Magazine");
+          return await this.fetchRSSFeed(source.endpoint, "Bitcoin Magazine", source.category);
         case "The Block":
-          return await this.fetchRSSFeed(source.endpoint, "The Block");
+          return await this.fetchRSSFeed(source.endpoint, "The Block", source.category);
+        case "BBC News":
+        case "Reuters":
+        case "The Guardian":
+        case "TechCrunch":
+        case "The Verge":
+        case "Ars Technica":
+          return await this.fetchRSSFeed(source.endpoint, source.name, source.category);
         default:
           return [];
       }
