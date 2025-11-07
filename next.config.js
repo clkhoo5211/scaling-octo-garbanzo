@@ -1,8 +1,16 @@
 /* eslint-disable */
 // @ts-nocheck
 /** @type {import('next').NextConfig} */
+
+// CRITICAL: Only enable static export for production builds (GitHub Pages)
+// During development (npm run dev), we need dynamic server mode
+const isProductionBuild = process.env.NODE_ENV === 'production' && process.env.GITHUB_REPOSITORY_NAME;
+
 const nextConfig = {
-  output: "export",
+  // Only enable static export for GitHub Pages builds
+  ...(isProductionBuild && {
+    output: "export",
+  }),
   // GitHub Pages basePath: repository name (e.g., /scaling-octo-garbanzo)
   // Set via environment variable GITHUB_REPOSITORY_NAME or default to empty for root domain
   basePath: process.env.GITHUB_REPOSITORY_NAME
