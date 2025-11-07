@@ -25,10 +25,8 @@ const nextConfig = {
   },
   // Suppress webpack warnings about React Native dependencies
   // These are harmless warnings from MetaMask SDK (not Clerk)
-  webpack: (config, { isServer, dev }) => {
-    // ... existing webpack config ...
-    // Note: React Native warnings are harmless and don't break the build
-    // Clerk works perfectly with static export (client-side only)
+  // Note: React Native warnings are harmless and don't break the build
+  // Clerk works perfectly with static export (client-side only)
   // Disable webpack cache to avoid hanging issues
   webpack: (config, { isServer, dev }) => {
     // Disable webpack cache
