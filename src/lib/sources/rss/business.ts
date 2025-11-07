@@ -47,7 +47,7 @@ export const forbesSource = new BaseRSSSource({
 export const businessInsiderSource = new BaseRSSSource({
   id: "business-insider",
   name: "Business Insider",
-  url: "https://feeds.businessinsider.com/custom/all",
+  url: "https://www.businessinsider.com/rss",
   category: "business",
   enabled: true,
   updateFrequency: 900000, // 15 minutes
@@ -163,6 +163,38 @@ export const bursaMalaysiaSource = new BaseRSSSource({
   category: "business",
   enabled: true,
   updateFrequency: 1800000, // 30 minutes
+  maxArticles: 20,
+});
+
+// Additional Financial News Sources (Added 2025-11-07 from R&D Report)
+
+export const marketBeatSource = new BaseRSSSource({
+  id: "marketbeat",
+  name: "MarketBeat",
+  url: "https://www.marketbeat.com/rss/",
+  category: "business",
+  enabled: true,
+  updateFrequency: 900000, // 15 minutes
+  maxArticles: 20,
+});
+
+export const marketScreenerSource = new BaseRSSSource({
+  id: "market-screener",
+  name: "Market Screener",
+  url: "https://www.marketscreener.com/rss/",
+  category: "business",
+  enabled: true,
+  updateFrequency: 900000, // 15 minutes
+  maxArticles: 20,
+});
+
+export const briefingComSource = new BaseRSSSource({
+  id: "briefing-com",
+  name: "Briefing.com",
+  url: "https://www.briefing.com/rss/",
+  category: "business",
+  enabled: true,
+  updateFrequency: 900000, // 15 minutes
   maxArticles: 20,
 });
 

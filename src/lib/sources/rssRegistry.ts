@@ -71,6 +71,9 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     businessSources.yahooFinanceSource,
     businessSources.theStarSource,
     businessSources.bursaMalaysiaSource,
+    businessSources.marketBeatSource,
+    businessSources.marketScreenerSource,
+    businessSources.briefingComSource,
     
     // Science sources
     scienceSources.scienceMagSource,
@@ -123,8 +126,9 @@ export function getRSSSourceById(id: string): RSSSourceHandler | undefined {
 /**
  * Add a new RSS source (for dynamic addition)
  * Usage: addRSSSource(new BaseRSSSource({ id: "new-source", ... }))
+ * @deprecated Sources should be added to their respective category files
  */
-export function addRSSSource(source: RSSSourceHandler): void {
+export function addRSSSource(): void {
   // In a real implementation, you might want to store this in a registry
   // For now, sources are statically defined in their respective files
   console.warn("addRSSSource: Sources should be added to their respective category files");

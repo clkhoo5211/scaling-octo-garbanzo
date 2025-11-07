@@ -17,7 +17,7 @@ export const bbcNewsSource = new BaseRSSSource({
 export const reutersSource = new BaseRSSSource({
   id: "reuters",
   name: "Reuters",
-  url: "https://www.reuters.com/tools/rss",
+  url: "https://www.reuters.com/business/finance/rss",
   category: "general",
   enabled: true,
   updateFrequency: 900000, // 15 minutes
@@ -69,7 +69,7 @@ export const newYorkTimesSource = new BaseRSSSource({
 export const msnSource = new BaseRSSSource({
   id: "msn",
   name: "MSN",
-  url: "https://www.msn.com/en-us/money/feed",
+  url: "https://www.msn.com/en-us/news/rss",
   category: "general",
   enabled: true,
   updateFrequency: 900000, // 15 minutes
