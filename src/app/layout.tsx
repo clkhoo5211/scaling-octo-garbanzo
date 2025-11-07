@@ -22,9 +22,8 @@ const basePath = process.env.GITHUB_REPOSITORY_NAME
 export const metadata: Metadata = {
   title: "Web3News - Decentralized News Aggregation",
   description: "Decentralized news aggregation with crypto-powered rewards",
-  // Next.js will generate manifest.webmanifest from manifest.ts
-  // The path will be automatically adjusted based on basePath
-  manifest: `${basePath}/manifest.webmanifest`,
+  // CRITICAL: Don't set manifest in metadata - it doesn't handle basePath correctly for static export
+  // ManifestLink component will inject it client-side with correct basePath
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
