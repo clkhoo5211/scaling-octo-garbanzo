@@ -136,8 +136,10 @@ export default function HomePage() {
             {/* Show count info */}
             {displayedArticles.length > 0 && (
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
-                Showing {displayedArticles.length} of {filteredArticles.length} articles
-                {!showAllArticles && hasMoreArticles && " (Top 10 for guests)"}
+                {showAllArticles 
+                  ? `Showing all ${filteredArticles.length} articles`
+                  : `Showing top ${displayedArticles.length} of ${filteredArticles.length} articles${hasMoreArticles ? " (Click 'Show More' to see all)" : ""}`
+                }
               </p>
             )}
           </>
