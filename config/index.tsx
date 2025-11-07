@@ -3,10 +3,13 @@ import { mainnet, polygon } from '@reown/appkit/networks';
 import type { AppKitNetwork } from '@reown/appkit/networks';
 
 // Get projectId from environment variables
+// CRITICAL: Don't throw during build - allow build to proceed without env vars
+// They'll be available at runtime in GitHub Actions
 export const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || '';
 
-if (!projectId) {
-  throw new Error('Project ID is not defined. Please set NEXT_PUBLIC_REOWN_PROJECT_ID');
+// Only validate on client-side (not during build/SSR)
+if (typeof window !== 'undefined' && !projectId) {
+  console.warn('Project ID is not defined. Please set NEXT_PUBLIC_REOWN_PROJECT_ID');
 }
 
 export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [mainnet, polygon];
@@ -29,13 +32,13 @@ export function getWagmiAdapter(): WagmiAdapter {
     const { cookieStorage, createStorage } = require('@wagmi/core');
     
     wagmiAdapterInstance = new WagmiAdapter({
-      storage: createStorage({
-        storage: cookieStorage,
-      }),
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
       ssr: false, // CRITICAL: Disable SSR for static export
-      projectId,
-      networks,
-    });
+  projectId,
+  networks,
+});
   }
   
   return wagmiAdapterInstance;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { useUser, useAuth } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import { ReactNode } from "react";
 
 /**

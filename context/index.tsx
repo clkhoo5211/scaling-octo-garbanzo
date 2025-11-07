@@ -60,18 +60,18 @@ function getAppKit() {
     
     appKitInstance = createAppKit({
       adapters: [adapter],
-      projectId,
-      networks: [mainnet, polygon],
-      defaultNetwork: mainnet,
-      metadata: metadata,
-      features: {
+  projectId,
+  networks: [mainnet, polygon],
+  defaultNetwork: mainnet,
+  metadata: metadata,
+  features: {
         analytics: true,
         email: true,
         socials: ['google', 'x', 'github', 'discord', 'apple'],
         onramp: true,
         swaps: true,
-      },
-    });
+  },
+});
   }
   
   return appKitInstance;

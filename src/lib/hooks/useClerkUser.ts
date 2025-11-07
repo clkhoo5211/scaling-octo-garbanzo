@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
-import { useUser, useAuth } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/clerk-react";
 
 /**
  * Enhanced useClerkUser Hook

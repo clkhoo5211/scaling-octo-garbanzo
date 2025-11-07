@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/clerk-react";
 
 /**
  * Hook to handle Reown → Clerk integration

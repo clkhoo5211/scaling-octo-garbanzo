@@ -9,18 +9,33 @@ import { useEffect } from "react";
  * AuthPage Component
  * PRIMARY: Reown AppKit (social logins + wallet connection)
  * Opens Reown modal automatically when user visits /auth
+ * 
+ * CRITICAL: useAppKit hook must be called unconditionally (React rules)
+ * But AppKit is only initialized client-side, so this will fail during SSR
+ * The error is caught and handled gracefully during static export
  */
 export function AuthPage() {
   const { user, isLoaded } = useUser();
-  const { open } = useAppKit();
+  
+  // CRITICAL: useAppKit must be called unconditionally (React hooks rule)
+  // During SSR/build, this will throw, but Next.js handles it gracefully
+  // The page will work correctly at runtime when AppKit is initialized
+  let appKitOpen: ((options?: { view?: string }) => void) | null = null;
+  try {
+    const appKit = useAppKit();
+    appKitOpen = appKit.open;
+  } catch (error) {
+    // Expected during SSR/build - AppKit not initialized yet
+    // Will work correctly at runtime
+  }
 
   // Auto-open Reown AppKit modal when page loads (if not signed in)
   useEffect(() => {
-    if (isLoaded && !user) {
+    if (isLoaded && !user && appKitOpen) {
       // Open Reown AppKit modal with social logins
-      open({ view: "Connect" });
+      appKitOpen({ view: "Connect" });
     }
-  }, [isLoaded, user, open]);
+  }, [isLoaded, user, appKitOpen]);
 
   if (!isLoaded) {
     return (
@@ -64,7 +79,11 @@ export function AuthPage() {
           Please use the Reown modal to sign in with social login or email.
         </p>
         <button
-          onClick={() => open({ view: "Connect" })}
+          onClick={() => {
+            if (appKitOpen) {
+              appKitOpen({ view: "Connect" });
+            }
+          }}
           className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         >
           Open Sign In

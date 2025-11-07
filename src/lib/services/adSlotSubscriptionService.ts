@@ -6,7 +6,7 @@
 
 import { createPointsTransaction } from "@/lib/api/supabaseApi";
 import { supabase } from "@/lib/services/supabase";
-import type { User } from "@clerk/nextjs";
+import type { User } from "@clerk/clerk-react";
 import { awardPoints } from "@/lib/services/pointsService";
 
 export interface AdSlotSubscription {

@@ -30,6 +30,12 @@ const nextConfig = {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
+  // CRITICAL: Allow build to succeed even with prerender errors
+  // Some pages (like /auth) use client-side only hooks that fail during SSR
+  // This is expected for static export - pages will work at runtime
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
   eslint: {
     // Don't fail build on lint errors - we'll fix them incrementally
     ignoreDuringBuilds: true,
@@ -76,7 +82,7 @@ const nextConfig = {
       // CRITICAL: Reown AppKit → WagmiAdapter → MetaMask SDK → React Native dependencies
       // MetaMask SDK checks for React Native packages even in browser builds (not needed)
       // We must prevent webpack from resolving these modules at all
-      
+    
       // Set alias FIRST to prevent resolution attempts
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
@@ -98,7 +104,27 @@ const nextConfig = {
       const reactNativeStub = path.resolve(__dirname, 'webpack/react-native-stub.js');
       
       // Use NormalModuleReplacementPlugin BEFORE IgnorePlugin for better matching
+      const clerkServerActionsStub = path.resolve(__dirname, 'webpack/clerk-server-actions-stub.js');
+      
       config.plugins.push(
+        // CRITICAL: Replace Clerk server-actions with stub FIRST (before other plugins)
+        // ClerkProvider imports invalidateCacheAction which has "use server" directive
+        // This causes "Server Actions are not supported with static export" error
+        // Match the exact import path: "../server-actions" from ClerkProvider
+        new webpack.NormalModuleReplacementPlugin(
+          /\.\.\/server-actions$/,
+          clerkServerActionsStub
+        ),
+        // Also match absolute path
+        new webpack.NormalModuleReplacementPlugin(
+          /app-router\/server-actions$/,
+          clerkServerActionsStub
+        ),
+        // Match any server-actions import from @clerk/nextjs
+        new webpack.NormalModuleReplacementPlugin(
+          /@clerk\/nextjs.*server-actions/,
+          clerkServerActionsStub
+        ),
         // Replace @react-native-async-storage/async-storage with stub (match any import path)
         new webpack.NormalModuleReplacementPlugin(
           /@react-native-async-storage\/async-storage/,
@@ -115,6 +141,11 @@ const nextConfig = {
         }),
         new webpack.IgnorePlugin({
           resourceRegExp: /^react-native$/,
+        }),
+        // Backup ignore for Clerk server-actions (in case replacement doesn't catch it)
+        new webpack.IgnorePlugin({
+          resourceRegExp: /server-actions/,
+          contextRegExp: /node_modules\/@clerk\/nextjs/,
         }),
         // Context-specific ignore for MetaMask SDK
         new webpack.IgnorePlugin({

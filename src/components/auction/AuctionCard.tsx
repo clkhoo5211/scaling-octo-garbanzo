@@ -236,20 +236,20 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
           )}
         </button>
 
-        {/* Bid Button */}
-        {auction.status === "active" && !isEnded && (
-          <button
-            onClick={() => {
-              if (onBid) {
-                onBid(auction.id);
-              }
-            }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <DollarSign className="w-4 h-4" />
-            <span>Place Bid</span>
-          </button>
-        )}
+      {/* Bid Button */}
+      {auction.status === "active" && !isEnded && (
+        <button
+          onClick={() => {
+            if (onBid) {
+              onBid(auction.id);
+            }
+          }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          <DollarSign className="w-4 h-4" />
+          <span>Place Bid</span>
+        </button>
+      )}
       </div>
     </div>
   );

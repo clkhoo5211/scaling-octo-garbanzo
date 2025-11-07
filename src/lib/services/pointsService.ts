@@ -5,7 +5,7 @@
  */
 
 import { createPointsTransaction } from "@/lib/api/supabaseApi";
-import type { User } from "@clerk/nextjs";
+import type { User } from "@clerk/clerk-react";
 
 export interface AwardPointsParams {
   userId: string;
