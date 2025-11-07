@@ -12,7 +12,7 @@ interface LoadingStateProps {
 /**
  * LoadingState Component
  * Displays loading indicator
- * CRITICAL: Client-only to prevent hydration mismatches with lucide-react icons
+ * CRITICAL: Always render same structure on server and client to prevent hydration mismatch
  */
 export function LoadingState({
   children,
@@ -28,8 +28,8 @@ export function LoadingState({
 
   const content = (
     <div className="flex flex-col items-center justify-center gap-4 p-8">
-      {/* CRITICAL: Always render same structure, just change content inside */}
-      <div className="w-8 h-8" suppressHydrationWarning>
+      {/* CRITICAL: Always render same div structure, only change className/content */}
+      <div className="w-8 h-8 flex items-center justify-center">
         {mounted ? (
           <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
         ) : (

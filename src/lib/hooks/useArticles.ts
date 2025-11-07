@@ -58,18 +58,14 @@ export function useArticles(
 
       return uniqueArticles;
     },
-    staleTime: 10 * 60 * 1000, // 10 minutes - cache for better performance
-    gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache longer
-    retry: 1, // Reduced retries for faster failure
-    refetchOnMount: false, // Use cache if available
-    refetchOnWindowFocus: false, // Don't refetch on focus to reduce load
-    refetchOnReconnect: false, // Don't refetch on reconnect to reduce load
-    // CRITICAL: Show cached data immediately while fetching fresh data
-    placeholderData: (previousData) => previousData,
-    // CRITICAL: Reduce initial loading time by using stale data
-    initialData: undefined, // Let React Query handle initial state
-    // CRITICAL: Network mode - prefer cache over network for faster loading
-    networkMode: 'online', // Only fetch when online
+    staleTime: 0, // No stale time - always fetch fresh data
+    gcTime: 5 * 60 * 1000, // 5 minutes - keep in cache
+    retry: 0, // No retries - fail fast
+    refetchOnMount: true, // Always refetch on mount
+    refetchOnWindowFocus: false, // Don't refetch on focus
+    refetchOnReconnect: false, // Don't refetch on reconnect
+    // CRITICAL: Don't use placeholderData - it causes hydration issues
+    // Show loading state immediately while fetching
   });
 }
 
