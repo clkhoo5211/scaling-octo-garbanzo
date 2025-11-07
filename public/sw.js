@@ -1,5 +1,6 @@
 // Service Worker for PWA
 // This file will be served from /sw.js
+// CRITICAL: Must be plain JavaScript (no TypeScript syntax)
 
 const CACHE_NAME = 'web3news-v1';
 const STATIC_CACHE_NAME = 'web3news-static-v1';
@@ -16,7 +17,7 @@ const STATIC_ASSETS = [
 ];
 
 // Install event
-self.addEventListener('install', (event: any) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
@@ -26,7 +27,7 @@ self.addEventListener('install', (event: any) => {
 });
 
 // Activate event
-self.addEventListener('activate', (event: any) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -40,7 +41,7 @@ self.addEventListener('activate', (event: any) => {
 });
 
 // Fetch event
-self.addEventListener('fetch', (event: any) => {
+self.addEventListener('fetch', (event) => {
   const { request } = event;
   
   if (request.method !== 'GET') {
@@ -117,14 +118,14 @@ self.addEventListener('fetch', (event: any) => {
 });
 
 // Background sync for offline actions
-self.addEventListener('sync', (event: any) => {
+self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-offline-queue') {
     event.waitUntil(syncOfflineQueue());
   }
 });
 
 // Push notifications
-self.addEventListener('push', (event: any) => {
+self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'Web3News';
   const options = {
@@ -141,7 +142,7 @@ self.addEventListener('push', (event: any) => {
 });
 
 // Notification click handler
-self.addEventListener('notificationclick', (event: any) => {
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
     clients.openWindow(event.notification.data?.url || '/')
@@ -175,7 +176,7 @@ async function openIndexedDB() {
     const request = indexedDB.open('web3news', 1);
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
-    request.onupgradeneeded = (event: any) => {
+    request.onupgradeneeded = (event) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains('offlineQueue')) {
         db.createObjectStore('offlineQueue', { keyPath: 'id', autoIncrement: true });
@@ -184,7 +185,7 @@ async function openIndexedDB() {
   });
 }
 
-async function getOfflineQueue(db: any) {
+async function getOfflineQueue(db) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(['offlineQueue'], 'readonly');
     const store = transaction.objectStore('offlineQueue');
@@ -194,7 +195,7 @@ async function getOfflineQueue(db: any) {
   });
 }
 
-async function processQueuedAction(item: any) {
+async function processQueuedAction(item) {
   // Process different action types
   switch (item.type) {
     case 'like':
@@ -220,7 +221,7 @@ async function processQueuedAction(item: any) {
   }
 }
 
-async function removeFromQueue(db: any, id: number) {
+async function removeFromQueue(db, id) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(['offlineQueue'], 'readwrite');
     const store = transaction.objectStore('offlineQueue');

@@ -61,6 +61,7 @@ interface EmptyStateProps {
 /**
  * EmptyState Component
  * Displays empty state message
+ * CRITICAL: Client-only to prevent hydration mismatches with lucide-react icons
  */
 export function EmptyState({
   title = "No data available",
@@ -68,9 +69,19 @@ export function EmptyState({
   icon,
   action,
 }: EmptyStateProps) {
+  const [mounted, setMounted] = useState(false);
+
+  // CRITICAL: Only render icons after mount to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
-      {icon && <div className="mb-4">{icon}</div>}
+      {icon && mounted && <div className="mb-4">{icon}</div>}
+      {icon && !mounted && (
+        <div className="mb-4 w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+      )}
       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
         {title}
       </h3>
