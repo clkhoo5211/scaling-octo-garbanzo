@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { modularRSSAggregator } from "@/lib/sources/modularRSSAggregator";
 import { contentAggregator } from "@/lib/services/contentAggregator";
 import type { NewsCategory } from "@/lib/sources/types";
@@ -17,6 +18,22 @@ import {
   getPointsTransactions,
 } from "@/lib/api/supabaseApi";
 import { useAppStore } from "@/lib/stores/appStore";
+import type { Article } from "@/lib/services/indexedDBCache";
+
+/**
+ * Deduplicate articles by URL
+ */
+function deduplicateArticles(articles: Article[]): Article[] {
+  const seen = new Set<string>();
+  return articles.filter((article) => {
+    const normalizedUrl = article.url.toLowerCase().replace(/\/$/, "");
+    if (seen.has(normalizedUrl)) {
+      return false;
+    }
+    seen.add(normalizedUrl);
+    return true;
+  });
+}
 
 /**
  * Hook to fetch articles - Real-time only, no caching
@@ -28,9 +45,17 @@ export function useArticles(
   category: NewsCategory,
   options?: { usePagination?: boolean; extractLinks?: boolean }
 ) {
+  // CRITICAL: Track client-side mount to prevent hydration mismatch
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return useQuery({
     queryKey: ["articles", category, "realtime"], // Always real-time
-    enabled: typeof window !== 'undefined', // CRITICAL: Only enable on client-side (skip during build)
+    // CRITICAL: Only enable query on client-side to prevent hydration mismatch
+    enabled: isClient,
     queryFn: async () => {
       console.log(`Fetching real-time articles for ${category}...`);
       
@@ -64,8 +89,8 @@ export function useArticles(
     refetchOnMount: true, // Always refetch on mount
     refetchOnWindowFocus: false, // Don't refetch on focus
     refetchOnReconnect: false, // Don't refetch on reconnect
-    // CRITICAL: Don't use placeholderData - it causes hydration issues
-    // Show loading state immediately while fetching
+    // CRITICAL: Provide consistent initial state to prevent hydration mismatch
+    placeholderData: [], // Empty array ensures server and client both start with same state
   });
 }
 

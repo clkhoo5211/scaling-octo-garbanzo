@@ -150,7 +150,16 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
 
 /**
  * Generate referral code (per requirements)
+ * CRITICAL: Use stable generation to prevent hydration mismatches
+ * Only generate when actually needed (not during render)
  */
 function generateReferralCode(): string {
-  return `USER${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+  // Use crypto.randomUUID if available (browser), otherwise fallback to timestamp-based
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+    return `USER${window.crypto.randomUUID().slice(0, 6).toUpperCase()}`;
+  }
+  // Fallback: use timestamp + counter to ensure uniqueness without Math.random()
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const counter = (generateReferralCode.counter = (generateReferralCode.counter || 0) + 1);
+  return `USER${timestamp.slice(-4)}${counter.toString(36).toUpperCase().slice(-2)}`;
 }

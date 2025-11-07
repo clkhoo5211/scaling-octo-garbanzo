@@ -22,7 +22,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (toast: Omit<Toast, "id">) => {
-    const id = `${Date.now()}-${Math.random()}`;
+    // CRITICAL: Use stable ID generation to prevent hydration mismatches
+    // Use crypto.randomUUID if available, otherwise timestamp + counter
+    let id: string;
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+      id = window.crypto.randomUUID();
+    } else {
+      const timestamp = Date.now();
+      const counter = (addToast.counter = (addToast.counter || 0) + 1);
+      id = `${timestamp}-${counter}`;
+    }
     const newToast = { ...toast, id };
     setToasts((prev) => [...prev, newToast]);
 
