@@ -39,13 +39,14 @@ const nextConfig = {
         net: false,
         tls: false,
       };
-    }
-    
-    // Exclude Clerk server-side code for static export
-    if (!isServer) {
+      
+      // Exclude React Native dependencies for browser builds
+      // MetaMask SDK has React Native peer dependencies that aren't needed for Next.js static export
       config.resolve.alias = {
         ...config.resolve.alias,
         '@clerk/nextjs/server': false,
+        '@react-native-async-storage/async-storage': false,
+        'react-native': false,
       };
     }
     

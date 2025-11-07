@@ -22,6 +22,79 @@
 
 ## Recent Progress
 
+### 2025-11-07 - Build Fix: MetaMask SDK React Native Dependency ✅
+
+**Action:** Fixed build warning about missing React Native dependency in MetaMask SDK:
+
+- **Issue:** Build warning: `Can't resolve '@react-native-async-storage/async-storage'`
+- **Root Cause:** MetaMask SDK has React Native peer dependencies not needed for Next.js browser builds
+- **Solution:** Added webpack alias to exclude React Native dependencies for browser builds
+- **Fix Applied:** Updated `next.config.js` to alias React Native packages to `false` for client-side builds
+
+**Files Modified:**
+
+- `next.config.js` - Added webpack alias for `@react-native-async-storage/async-storage` and `react-native`
+
+**Files Created:**
+
+- `BUILD_FIX_METAMASK_SDK.md` - Detailed fix documentation
+
+**Key Improvements:**
+
+- Build should complete without React Native dependency warnings
+- Static export compatible with MetaMask SDK
+- No impact on wallet functionality (React Native code not used in browser)
+
+**Next Steps:**
+
+1. Test build locally: `npm run build`
+2. Verify GitHub Actions build succeeds
+3. Test MetaMask wallet connection functionality
+
+---
+
+### 2025-11-07 - R&D: News Sources Integration Analysis ✅
+
+**Action:** Completed comprehensive R&D analysis of 28 financial/news sources for free integration:
+
+- **Sources Analyzed:** 28 sources (CNBC, Yahoo Finance, MarketWatch, Investing.com, Reuters, CNN, Bloomberg, Nasdaq, etc.)
+- **Free RSS Feeds Found:** 15 sources ready for integration
+- **Limited Access:** 8 sources require evaluation/subscription/licensing
+- **Not Available:** 5 sources (discontinued or require further research)
+
+**Files Created:**
+
+- `rnd-news-sources-integration-20251107.md` - Comprehensive R&D report with:
+  - Detailed analysis for each source
+  - RSS feed URLs for free sources
+  - Terms of service notes
+  - Integration priority matrix
+  - Implementation code examples
+  - Legal considerations
+  - Cost analysis
+
+**Key Findings:**
+
+- **Phase 1 (MVP):** 15 sources with free RSS feeds ready for integration
+  - CNBC, Reuters, CNN, BBC, MarketWatch, Nasdaq, MarketBeat, Android Authority, Business Insider, MSN.com, Investing.com, Market Screener, Fox Business, The Star (Malaysia), Briefing.com
+- **Phase 2 (Beta):** 8 sources require evaluation (Yahoo Finance, Bloomberg, FT, WSJ, etc.)
+- **Phase 3 (Future):** 5 sources not available or need further research
+
+**Integration Status:**
+
+- ✅ R&D Complete - Ready for implementation review
+- ⏸️ Implementation paused - Waiting for build fix completion
+- 📋 Next: Review R&D report and plan RSS feed integration
+
+**Next Steps:**
+
+1. Review R&D report with project manager
+2. Plan RSS feed integration implementation
+3. Update content aggregator with new sources
+4. Test RSS feed parsing and caching
+
+---
+
 ### 2025-11-07 - GitHub Pages Deployment Configuration Verified ✅
 
 **Action:** Verified and enhanced GitHub Pages deployment workflow:
