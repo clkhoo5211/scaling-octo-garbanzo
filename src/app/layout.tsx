@@ -11,7 +11,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Web3News - Decentralized News Aggregation",
   description: "Decentralized news aggregation with crypto-powered rewards",
-  manifest: "/manifest.json",
+  // Next.js will generate manifest.webmanifest from manifest.ts
+  // The path will be automatically adjusted based on basePath
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

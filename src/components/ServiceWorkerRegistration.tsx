@@ -9,7 +9,18 @@ export function ServiceWorkerRegistration() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+      // Get basePath dynamically from window.location
+      // Extract basePath from current pathname (e.g., /scaling-octo-garbanzo/...)
+      const pathname = window.location.pathname;
+      let basePath = "";
+      
+      // Check if we're on GitHub Pages (pathname starts with /scaling-octo-garbanzo)
+      if (pathname.startsWith('/scaling-octo-garbanzo')) {
+        basePath = '/scaling-octo-garbanzo';
+      } else if (process.env.NEXT_PUBLIC_BASE_PATH) {
+        basePath = process.env.NEXT_PUBLIC_BASE_PATH;
+      }
+      
       const swPath = `${basePath}/sw.js`;
       
       navigator.serviceWorker
@@ -38,7 +49,13 @@ export function ServiceWorkerRegistration() {
           reg.update();
         })
         .catch((error) => {
-          console.error("Service Worker registration failed:", error);
+          // Silently fail in development or if service worker file doesn't exist
+          // This is expected on GitHub Pages if sw.js isn't deployed yet
+          if (process.env.NODE_ENV === 'development') {
+            console.warn("Service Worker registration skipped in development:", error.message);
+          } else {
+            console.error("Service Worker registration failed:", error);
+          }
         });
 
       // Listen for controller change (new service worker activated)
