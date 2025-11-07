@@ -20,12 +20,17 @@ export default function HomePage() {
   const [filters, setFilters] = useState<FilterChip[]>([]);
   const [showAllArticles, setShowAllArticles] = useState(false);
 
-  const { data: articles, isLoading } = useArticles(selectedCategory, {
+  const { data: articles, isLoading, isError, error } = useArticles(selectedCategory, {
     usePagination: true,
     extractLinks: true,
   });
 
-  const filteredArticles = articles?.filter((article) => {
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log(`[HomePage] Category: ${selectedCategory}, Articles: ${articles?.length || 0}, Loading: ${isLoading}, Error: ${isError}`);
+  }
+
+  const filteredArticles = (articles || []).filter((article) => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
@@ -123,6 +128,10 @@ export default function HomePage() {
           <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-8">
             <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Loading articles...</p>
+          </div>
+        ) : isError ? (
+          <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-8">
+            <p className="text-sm text-red-600 dark:text-red-400">Error loading articles: {error?.message || 'Unknown error'}</p>
           </div>
         ) : (
           <>

@@ -79,7 +79,7 @@ export function useArticles(
       const allArticles = [...rssArticles, ...nonRSSArticles];
       const uniqueArticles = deduplicateArticles(allArticles);
 
-      console.log(`Fetched ${uniqueArticles.length} real-time articles for ${category}`);
+      console.log(`✅ Fetched ${uniqueArticles.length} real-time articles for ${category} (RSS: ${rssArticles.length}, Non-RSS: ${nonRSSArticles.length})`);
 
       return uniqueArticles;
     },
@@ -89,8 +89,8 @@ export function useArticles(
     refetchOnMount: true, // Always refetch on mount
     refetchOnWindowFocus: false, // Don't refetch on focus
     refetchOnReconnect: false, // Don't refetch on reconnect
-    // CRITICAL: Provide consistent initial state to prevent hydration mismatch
-    placeholderData: [], // Empty array ensures server and client both start with same state
+    // CRITICAL: Don't use placeholderData or initialData - let React Query handle loading state naturally
+    // This ensures data updates properly when query completes
   });
 }
 
