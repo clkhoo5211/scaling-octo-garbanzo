@@ -95,25 +95,116 @@ export class BaseRSSSource implements RSSSourceHandler {
     }
 
     try {
-      // Fetch RSS feed directly (no proxy, no caching)
-      const response = await fetch(this.config.url, {
-        headers: {
-          'User-Agent': 'Web3News/1.0',
-        },
-        cache: 'no-store', // No caching - always fetch fresh
-      });
+      // CRITICAL: Use CORS proxy to avoid browser CORS errors
+      // RSS feeds don't allow direct browser requests due to CORS policy
+      // Use allorigins.win as a free CORS proxy (supports RSS feeds)
+      let xmlText: string | null = null;
+      
+      // Try CORS proxy first (for browser environments)
+      if (typeof window !== 'undefined') {
+        try {
+          const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(this.config.url)}`;
+          const proxyResponse = await fetch(proxyUrl, {
+            headers: {
+              'User-Agent': 'Web3News/1.0',
+            },
+            cache: 'no-store',
+          });
 
-      if (!response.ok) {
+          if (proxyResponse.ok) {
+            const proxyData = await proxyResponse.json();
+            xmlText = proxyData.contents || null;
+          }
+        } catch (proxyError) {
+          console.warn(`⚠ ${this.config.name}: CORS proxy failed, trying RSS2JSON...`, proxyError);
+          
+          // Fallback to RSS2JSON proxy
+          try {
+            const rss2jsonUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(this.config.url)}`;
+            const rss2jsonResponse = await fetch(rss2jsonUrl, {
+              headers: {
+                'User-Agent': 'Web3News/1.0',
+              },
+              cache: 'no-store',
+            });
+
+            if (rss2jsonResponse.ok) {
+              const rss2jsonData = await rss2jsonResponse.json();
+              if (rss2jsonData.status === 'ok' && rss2jsonData.items) {
+                // Convert RSS2JSON format to our Article format directly
+                const maxArticles = this.config.maxArticles || 50;
+                const limitedItems = rss2jsonData.items.slice(0, maxArticles);
+                
+                const articles: Article[] = limitedItems.map((item: any, index: number) => {
+                  const publishedAt = item.pubDate 
+                    ? new Date(item.pubDate).getTime()
+                    : Date.now() - (index * 60000);
+
+                  return {
+                    id: `rss-${this.config.id}-${publishedAt}-${index}`,
+                    title: item.title || "Untitled",
+                    url: item.link || this.config.url,
+                    source: this.config.name,
+                    category: this.config.category,
+                    publishedAt,
+                    author: item.author,
+                    excerpt: item.description?.replace(/<[^>]*>/g, "").substring(0, 200),
+                    thumbnail: item.enclosure?.link || item.thumbnail,
+                    urlHash: "",
+                    cachedAt: 0,
+                  };
+                });
+
+                const latestUpdateTime = articles.length > 0 
+                  ? Math.max(...articles.map(a => a.publishedAt))
+                  : Date.now();
+                
+                adaptiveRateLimiter.recordFetch(this.config.id, fetchStartTime, latestUpdateTime);
+
+                return {
+                  articles,
+                  lastFetchTime: fetchStartTime,
+                  nextFetchTime: fetchStartTime + this.getAdaptiveInterval(),
+                };
+              }
+            }
+          } catch (rss2jsonError) {
+            console.warn(`⚠ ${this.config.name}: RSS2JSON proxy also failed`, rss2jsonError);
+          }
+        }
+      } else {
+        // Server-side: Direct fetch (no CORS restrictions)
+        const response = await fetch(this.config.url, {
+          headers: {
+            'User-Agent': 'Web3News/1.0',
+          },
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          adaptiveRateLimiter.recordError(this.config.id);
+          return {
+            articles: [],
+            lastFetchTime: fetchStartTime,
+            nextFetchTime: fetchStartTime + this.getAdaptiveInterval(),
+            error: `HTTP ${response.status}: ${response.statusText}`,
+          };
+        }
+
+        xmlText = await response.text();
+      }
+
+      // If we have XML text, parse it
+      if (!xmlText) {
         adaptiveRateLimiter.recordError(this.config.id);
         return {
           articles: [],
           lastFetchTime: fetchStartTime,
           nextFetchTime: fetchStartTime + this.getAdaptiveInterval(),
-          error: `HTTP ${response.status}: ${response.statusText}`,
+          error: `Failed to fetch RSS feed: No data received`,
         };
       }
 
-      const xmlText = await response.text();
       const items = this.parseRSSXML(xmlText);
 
       // Limit articles if specified
