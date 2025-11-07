@@ -15,12 +15,12 @@
 
 /* Force dark theme as PRIMARY (design system requirement) */
 html {
-  background-color: #0F172A;
+  background-color: #1a1a1a; /* Lighter dark gray instead of blinding dark blue */
   color: #F1F5F9;
 }
 
 body {
-  background-color: #0F172A;
+  background-color: #1a1a1a; /* Lighter dark gray */
   color: #F1F5F9;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -39,7 +39,7 @@ p, span, div {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #F1F5F9; /* Bright white for headings */
+  color: #FFFFFF; /* Pure white for headings */
 }
 
 /* Smooth scrolling */

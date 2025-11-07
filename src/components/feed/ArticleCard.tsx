@@ -124,7 +124,7 @@ export const ArticleCard = memo(function ArticleCard({
 
   return (
     <>
-      <article className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:shadow-elevated hover:border-primary/50 transition-all duration-200 group">
+      <article className="bg-gray-700 rounded-lg border border-gray-600 overflow-hidden hover:shadow-elevated hover:border-primary/50 transition-all duration-200 group">
         <div
           onClick={handleCardClick}
           className="cursor-pointer"
@@ -165,7 +165,7 @@ export const ArticleCard = memo(function ArticleCard({
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-600">
               <div className="flex items-center gap-4">
                 <button
                   onClick={(e) => {
@@ -253,7 +253,7 @@ export const ArticleCard = memo(function ArticleCard({
 
 export function ArticleCardSkeleton() {
   return (
-    <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 animate-pulse">
+    <div className="bg-gray-700 rounded-lg border border-gray-600 p-4 animate-pulse">
       <Skeleton height={20} className="mb-2" />
       <Skeleton height={16} width="60%" className="mb-4" />
       <Skeleton height={16} width="40%" />
