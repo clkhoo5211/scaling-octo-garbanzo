@@ -184,12 +184,12 @@ export const useAppStore = create<AppState>()(
       storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          // Restore Sets and Maps from arrays
-          state.bookmarks = new Set(state.bookmarks as string[]);
-          state.likedArticles = new Set(state.likedArticles as string[]);
-          state.following = new Set(state.following as string[]);
+          // Restore Sets and Maps from arrays (from localStorage)
+          state.bookmarks = new Set((state.bookmarks as unknown as string[]) || []);
+          state.likedArticles = new Set((state.likedArticles as unknown as string[]) || []);
+          state.following = new Set((state.following as unknown as string[]) || []);
           state.readingProgress = new Map(
-            state.readingProgress as [string, number][]
+            (state.readingProgress as unknown as [string, number][]) || []
           );
         }
       },
