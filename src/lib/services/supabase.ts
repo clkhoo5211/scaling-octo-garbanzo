@@ -28,7 +28,7 @@ export async function getSubmissions(filters?: {
   category?: string;
   limit?: number;
 }) {
-  let query = supabase.from("submissions").select("*");
+  let query = (supabase.from("submissions") as any).select("*");
 
   if (filters?.userId) {
     query = query.eq("user_id", filters.userId);
@@ -54,7 +54,7 @@ export async function createSubmission(data: {
   source: string;
   category: "tech" | "crypto" | "social" | "general";
 }) {
-  return supabase.from("submissions").insert({
+  return (supabase.from("submissions") as any).insert({
     user_id: data.userId,
     title: data.title,
     url: data.url,
@@ -65,8 +65,8 @@ export async function createSubmission(data: {
 
 // Bookmarks
 export async function getBookmarks(userId: string) {
-  return supabase
-    .from("bookmarks")
+  return (supabase
+    .from("bookmarks") as any)
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -78,7 +78,7 @@ export async function createBookmark(data: {
   articleTitle: string;
   articleSource: string;
 }) {
-  return supabase.from("bookmarks").insert({
+  return (supabase.from("bookmarks") as any).insert({
     user_id: data.userId,
     article_id: data.articleId,
     article_title: data.articleTitle,
@@ -87,8 +87,8 @@ export async function createBookmark(data: {
 }
 
 export async function removeBookmark(userId: string, articleId: string) {
-  return supabase
-    .from("bookmarks")
+  return (supabase
+    .from("bookmarks") as any)
     .delete()
     .eq("user_id", userId)
     .eq("article_id", articleId);
@@ -96,59 +96,59 @@ export async function removeBookmark(userId: string, articleId: string) {
 
 // Article Likes
 export async function likeArticle(userId: string, articleId: string) {
-  return supabase.from("article_likes").insert({
+  return (supabase.from("article_likes") as any).insert({
     user_id: userId,
     article_id: articleId,
   });
 }
 
 export async function unlikeArticle(userId: string, articleId: string) {
-  return supabase
-    .from("article_likes")
+  return (supabase
+    .from("article_likes") as any)
     .delete()
     .eq("user_id", userId)
     .eq("article_id", articleId);
 }
 
 export async function getArticleLikes(articleId: string) {
-  return supabase.from("article_likes").select("*").eq("article_id", articleId);
+  return (supabase.from("article_likes") as any).select("*").eq("article_id", articleId);
 }
 
 // User Follows
 export async function followUser(followerId: string, followingId: string) {
-  return supabase.from("user_follows").insert({
+  return (supabase.from("user_follows") as any).insert({
     follower_id: followerId,
     following_id: followingId,
   });
 }
 
 export async function unfollowUser(followerId: string, followingId: string) {
-  return supabase
-    .from("user_follows")
+  return (supabase
+    .from("user_follows") as any)
     .delete()
     .eq("follower_id", followerId)
     .eq("following_id", followingId);
 }
 
 export async function getFollowing(userId: string) {
-  return supabase.from("user_follows").select("*").eq("follower_id", userId);
+  return (supabase.from("user_follows") as any).select("*").eq("follower_id", userId);
 }
 
 export async function getFollowers(userId: string) {
-  return supabase.from("user_follows").select("*").eq("following_id", userId);
+  return (supabase.from("user_follows") as any).select("*").eq("following_id", userId);
 }
 
 // Messages
 export async function getConversations(userId: string) {
-  return supabase
-    .from("conversations")
+  return (supabase
+    .from("conversations") as any)
     .select("*")
     .or(`participant_1_id.eq.${userId},participant_2_id.eq.${userId}`)
     .order("last_message_at", { ascending: false });
 }
 
 export async function createConversation(userId1: string, userId2: string) {
-  return supabase.from("conversations").insert({
+  return (supabase.from("conversations") as any).insert({
     participant_1_id: userId1,
     participant_2_id: userId2,
   });
@@ -159,7 +159,7 @@ export async function sendMessage(data: {
   senderId: string;
   content: string;
 }) {
-  return supabase.from("messages").insert({
+  return (supabase.from("messages") as any).insert({
     conversation_id: data.conversationId,
     sender_id: data.senderId,
     content: data.content,
@@ -167,8 +167,8 @@ export async function sendMessage(data: {
 }
 
 export async function getMessages(conversationId: string) {
-  return supabase
-    .from("messages")
+  return (supabase
+    .from("messages") as any)
     .select("*")
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: true });
@@ -180,7 +180,7 @@ export async function getProposals(filters?: {
   category?: string;
   limit?: number;
 }) {
-  let query = supabase.from("proposals").select("*");
+  let query = (supabase.from("proposals") as any).select("*");
 
   if (filters?.status) {
     query = query.eq("status", filters.status);
@@ -206,7 +206,7 @@ export async function createProposal(data: {
   description: string;
   category: string;
 }) {
-  return supabase.from("proposals").insert({
+  return (supabase.from("proposals") as any).insert({
     proposal_id: data.proposalId,
     creator_id: data.creatorId,
     title: data.title,
@@ -224,7 +224,7 @@ export async function vote(data: {
   votingPower: number;
   transactionHash: string;
 }) {
-  return supabase.from("votes").insert({
+  return (supabase.from("votes") as any).insert({
     proposal_id: data.proposalId,
     voter_id: data.voterId,
     vote_option: data.voteOption,
@@ -234,13 +234,13 @@ export async function vote(data: {
 }
 
 export async function getVotes(proposalId: string) {
-  return supabase.from("votes").select("*").eq("proposal_id", proposalId);
+  return (supabase.from("votes") as any).select("*").eq("proposal_id", proposalId);
 }
 
 // Notifications
 export async function getNotifications(userId: string) {
-  return supabase
-    .from("notifications")
+  return (supabase
+    .from("notifications") as any)
     .select("*")
     .eq("user_id", userId)
     .eq("is_read", false)
@@ -248,16 +248,16 @@ export async function getNotifications(userId: string) {
 }
 
 export async function markNotificationRead(notificationId: string) {
-  return supabase
-    .from("notifications")
+  return (supabase
+    .from("notifications") as any)
     .update({ is_read: true })
     .eq("id", notificationId);
 }
 
 // Points Transactions
 export async function getPointsTransactions(userId: string) {
-  return supabase
-    .from("points_transactions")
+  return (supabase
+    .from("points_transactions") as any)
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -265,8 +265,8 @@ export async function getPointsTransactions(userId: string) {
 
 // Auction Bids
 export async function getAuctionBids(auctionId: string) {
-  return supabase
-    .from("auction_bids")
+  return (supabase
+    .from("auction_bids") as any)
     .select("*")
     .eq("auction_id", auctionId)
     .order("bid_amount", { ascending: false });

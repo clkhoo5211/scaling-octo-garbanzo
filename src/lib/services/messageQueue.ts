@@ -17,7 +17,7 @@ export interface QueuedMessage {
 }
 
 class MessageQueue {
-  private queue: LocalForage<QueuedMessage[]>;
+  private queue: ReturnType<typeof localforage.createInstance>;
   private maxRetries = 3;
   private processing = false;
 
@@ -73,7 +73,7 @@ class MessageQueue {
     try {
       const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
       const pending = queue.filter(
-        (msg) => msg.status === "pending" || msg.status === "failed"
+        (msg: QueuedMessage) => msg.status === "pending" || msg.status === "failed"
       );
 
       for (const message of pending) {
@@ -82,7 +82,7 @@ class MessageQueue {
           await this.updateQueue(queue);
 
           // Send to Supabase
-          const { error } = await supabase.from("messages").insert({
+          const { error } = await (supabase.from("messages") as any).insert({
             conversation_id: message.conversationId,
             sender_id: message.senderId,
             content: message.content,
@@ -96,7 +96,7 @@ class MessageQueue {
           await this.updateQueue(queue);
 
           // Remove from queue after successful send
-          const updatedQueue = queue.filter((msg) => msg.id !== message.id);
+          const updatedQueue = queue.filter((msg: QueuedMessage) => msg.id !== message.id);
           await this.queue.setItem("queue", updatedQueue);
         } catch (error: any) {
           message.retries++;
@@ -129,7 +129,7 @@ class MessageQueue {
   async getQueuedMessages(conversationId: string): Promise<QueuedMessage[]> {
     const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
     return queue.filter(
-      (msg) =>
+      (msg: QueuedMessage) =>
         msg.conversationId === conversationId &&
         (msg.status === "pending" || msg.status === "sending")
     );
@@ -147,7 +147,7 @@ class MessageQueue {
    */
   async removeMessage(messageId: string): Promise<void> {
     const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
-    const updatedQueue = queue.filter((msg) => msg.id !== messageId);
+    const updatedQueue = queue.filter((msg: QueuedMessage) => msg.id !== messageId);
     await this.queue.setItem("queue", updatedQueue);
   }
 
@@ -163,7 +163,7 @@ class MessageQueue {
    */
   async retryFailedMessages(): Promise<void> {
     const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
-    const failed = queue.filter((msg) => msg.status === "failed");
+    const failed = queue.filter((msg: QueuedMessage) => msg.status === "failed");
 
     for (const message of failed) {
       message.status = "pending";
@@ -188,10 +188,10 @@ class MessageQueue {
     const queue = (await this.queue.getItem<QueuedMessage[]>("queue")) || [];
     return {
       total: queue.length,
-      pending: queue.filter((m) => m.status === "pending").length,
-      sending: queue.filter((m) => m.status === "sending").length,
-      sent: queue.filter((m) => m.status === "sent").length,
-      failed: queue.filter((m) => m.status === "failed").length,
+      pending: queue.filter((m: QueuedMessage) => m.status === "pending").length,
+      sending: queue.filter((m: QueuedMessage) => m.status === "sending").length,
+      sent: queue.filter((m: QueuedMessage) => m.status === "sent").length,
+      failed: queue.filter((m: QueuedMessage) => m.status === "failed").length,
     };
   }
 }

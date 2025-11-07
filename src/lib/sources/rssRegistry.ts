@@ -3,8 +3,8 @@
  * Central registry for all RSS sources - easy to add/remove sources
  */
 
-import type { RSSSourceHandler } from "../types";
-import type { NewsCategory } from "../types";
+import type { RSSSourceHandler } from "./types";
+import type { NewsCategory } from "./types";
 import * as techSources from "./rss/tech";
 import * as cryptoSources from "./rss/crypto";
 import * as socialSources from "./rss/social";
