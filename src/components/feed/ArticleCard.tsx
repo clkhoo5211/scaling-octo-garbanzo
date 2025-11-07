@@ -11,6 +11,7 @@ import {
   useArticleLikes,
 } from "@/lib/hooks/useArticles";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
+import { useAppKit } from "@reown/appkit/react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ArticlePreviewModal } from "@/components/article/ArticlePreviewModal";
 import { Modal } from "@/components/ui/Modal";
@@ -36,6 +37,7 @@ export const ArticleCard = memo(function ArticleCard({
 }: ArticleCardProps) {
   const router = useRouter();
   const { user, isLoaded: authLoaded, isSignedIn } = useClerkUser();
+  const { open } = useAppKit();
   const { isLiked, isBookmarked, addBookmark, removeBookmark } = useAppStore();
   const likeMutation = useLikeArticle();
   const unlikeMutation = useUnlikeArticle();
@@ -113,7 +115,8 @@ export const ArticleCard = memo(function ArticleCard({
 
   const handleLogin = () => {
     setShowLoginPrompt(false);
-    router.push("/auth");
+    // Open Reown AppKit modal with social logins (PRIMARY authentication)
+    open({ view: "Connect" });
   };
 
   return (

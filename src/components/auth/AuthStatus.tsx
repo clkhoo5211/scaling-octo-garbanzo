@@ -1,17 +1,19 @@
 "use client";
 
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
 import { Wallet, User } from "lucide-react";
 import { WalletConnect } from "@/components/web3/WalletConnect";
 
 /**
  * AuthStatus Component
- * Shows current authentication status (Clerk + Reown)
+ * Shows current authentication status
+ * PRIMARY: Reown AppKit (social logins + wallet)
  */
 export function AuthStatus() {
   const { user, isLoaded: clerkLoaded } = useUser();
   const { isConnected: walletConnected } = useAppKitAccount();
+  const { open } = useAppKit();
 
   if (!clerkLoaded) {
     return (
@@ -21,9 +23,14 @@ export function AuthStatus() {
     );
   }
 
+  const handleSignIn = () => {
+    // Open Reown AppKit modal with social logins
+    open({ view: "Connect" });
+  };
+
   return (
     <div className="flex items-center gap-3">
-      {/* Clerk User Info */}
+      {/* User Info */}
       {user ? (
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -35,13 +42,13 @@ export function AuthStatus() {
           </span>
         </div>
       ) : (
-        <a
-          href="/auth"
+        <button
+          onClick={handleSignIn}
           className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
         >
           <User className="w-4 h-4" />
           <span>Sign In</span>
-        </a>
+        </button>
       )}
 
       {/* Wallet Status */}

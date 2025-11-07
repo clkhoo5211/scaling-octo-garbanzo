@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
+import { useAppKit } from "@reown/appkit/react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -21,10 +21,11 @@ const ADMIN_KEY = "123456";
  * Show More Button Component
  * Shows login prompt for guests, executes action for logged-in users
  * Includes admin key for development
+ * PRIMARY: Reown AppKit for authentication
  */
 export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
-  const router = useRouter();
   const { isSignedIn, isLoaded, setMockUser } = useClerkUser();
+  const { open } = useAppKit();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [adminKey, setAdminKey] = useState("");
   const [showAdminKey, setShowAdminKey] = useState(false);
@@ -47,7 +48,8 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
 
   const handleLogin = () => {
     setShowLoginPrompt(false);
-    router.push("/auth");
+    // Open Reown AppKit modal with social logins (PRIMARY authentication)
+    open({ view: "Connect" });
   };
 
   const handleAdminKeySubmit = (e: React.FormEvent) => {
