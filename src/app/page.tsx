@@ -20,9 +20,11 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
   const [showAllArticles, setShowAllArticles] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Set default category on client-side only to prevent hydration mismatch
   useEffect(() => {
+    setMounted(true);
     if (selectedCategory === null) {
       setSelectedCategory("tech");
     }
@@ -126,7 +128,7 @@ export default function HomePage() {
         {/* Category Tabs - Only render after mount to prevent hydration mismatch */}
         {mounted && (
           <CategoryTabs
-            selectedCategory={selectedCategory}
+            selectedCategory={selectedCategory || "tech"}
             onSelectCategory={(category) => {
               setSelectedCategory(category);
               setShowAllArticles(false);
