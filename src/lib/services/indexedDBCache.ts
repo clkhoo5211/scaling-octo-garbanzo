@@ -81,7 +81,7 @@ class IndexedDBCache {
   /**
    * Get articles from cache, filtered by category if provided
    */
-  async getArticles(category?: string): Promise<Article[]> {
+  async getArticles(category?: NewsCategory): Promise<Article[]> {
     try {
       const keys = await this.store.keys();
       const articles: Article[] = [];
@@ -109,7 +109,7 @@ class IndexedDBCache {
   /**
    * Store articles in cache
    */
-  async setArticles(articles: Article[], category?: string): Promise<void> {
+  async setArticles(articles: Article[], category?: NewsCategory): Promise<void> {
     try {
       const now = Date.now();
 
@@ -123,7 +123,7 @@ class IndexedDBCache {
         const cachedArticle: Article = {
           ...article,
           cachedAt: now,
-          category: category || article.category,
+          category: (category || article.category) as NewsCategory,
         };
 
         // Store by URL hash for deduplication
