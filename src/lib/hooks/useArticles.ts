@@ -36,6 +36,98 @@ function deduplicateArticles(articles: Article[]): Article[] {
 }
 
 /**
+ * Fetch Reddit articles as fallback for categories without contentAggregator support
+ * This ensures categories have articles even when RSS feeds fail
+ */
+async function fetchRedditFallback(category: NewsCategory): Promise<Article[]> {
+  const subredditMap: Record<string, string[]> = {
+    business: ["business", "economics", "investing", "stocks"],
+    science: ["science", "space", "technology", "futurology"],
+    health: ["health", "medicine", "fitness", "nutrition"],
+    sports: ["sports", "nba", "soccer", "nfl"],
+    entertainment: ["entertainment", "movies", "music", "television"],
+  };
+
+  const subreddits = subredditMap[category] || [];
+  if (subreddits.length === 0) return [];
+
+  try {
+    const results = await Promise.allSettled(
+      subreddits.map(async (subreddit) => {
+        try {
+          // Add small delay between requests to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
+          
+          const response = await fetch(
+            `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
+            {
+              headers: {
+                "User-Agent": "Web3News/1.0 (https://web3news.app)",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            // Log but don't throw - continue with other subreddits
+            console.warn(`Reddit r/${subreddit} returned ${response.status}`);
+            return [];
+          }
+
+          const data = await response.json();
+          const posts = data.data?.children || [];
+
+          return posts
+            .map((child: any) => {
+              const post = child.data;
+              // Skip Reddit internal links and self-posts without external URLs
+              if (!post.url || 
+                  post.url.startsWith("https://www.reddit.com/") ||
+                  post.url.startsWith("https://reddit.com/") ||
+                  post.url.startsWith("/r/")) {
+                return null;
+              }
+
+              return {
+                id: `reddit-${post.id}`,
+                title: post.title,
+                url: post.url,
+                source: `Reddit r/${subreddit}`,
+                category: category,
+                upvotes: post.ups || 0,
+                comments: post.num_comments || 0,
+                publishedAt: post.created_utc * 1000,
+                author: post.author,
+                excerpt: post.selftext?.substring(0, 200) || "",
+                thumbnail: post.thumbnail?.startsWith("http") ? post.thumbnail : undefined,
+                urlHash: "",
+                cachedAt: 0,
+              } as Article;
+            })
+            .filter((article: Article | null) => article !== null);
+        } catch (error) {
+          console.warn(`Error fetching Reddit r/${subreddit}:`, error);
+          return [];
+        }
+      })
+    );
+
+    const allArticles = results
+      .filter((r) => r.status === "fulfilled")
+      .flatMap((r) => (r as PromiseFulfilledResult<Article[]>).value);
+
+    const successfulSubreddits = results.filter((r) => 
+      r.status === "fulfilled" && (r as PromiseFulfilledResult<Article[]>).value.length > 0
+    ).length;
+
+    console.log(`✓ Reddit fallback for ${category}: ${allArticles.length} articles from ${successfulSubreddits}/${subreddits.length} subreddits`);
+    return allArticles;
+  } catch (error) {
+    console.error(`Error fetching Reddit fallback for ${category}:`, error);
+    return [];
+  }
+}
+
+/**
  * Hook to fetch articles - Real-time only, no caching
  * Uses modular RSS sources with adaptive rate limiting
  * Also includes non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
@@ -68,12 +160,19 @@ export function useArticles(
       const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
         ? category as "tech" | "crypto" | "social" | "general"
         : undefined;
-      const nonRSSArticles = supportedCategory 
-        ? await contentAggregator.aggregateSources(supportedCategory, {
-            usePagination: options?.usePagination ?? false,
-            extractLinks: options?.extractLinks ?? true,
-          })
-        : [];
+      let nonRSSArticles: Article[] = [];
+      
+      if (supportedCategory) {
+        // Use contentAggregator for supported categories
+        nonRSSArticles = await contentAggregator.aggregateSources(supportedCategory, {
+          usePagination: options?.usePagination ?? false,
+          extractLinks: options?.extractLinks ?? true,
+        });
+      } else {
+        // For categories without contentAggregator support, add Reddit fallback
+        // This provides articles even when RSS feeds fail
+        nonRSSArticles = await fetchRedditFallback(category);
+      }
 
       // Combine and deduplicate
       const allArticles = [...rssArticles, ...nonRSSArticles];
