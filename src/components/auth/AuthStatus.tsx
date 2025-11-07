@@ -30,11 +30,11 @@ export function AuthStatus() {
     setMounted(true);
   }, []);
 
-  // Show loading state during SSR/hydration
+  // Show loading state during SSR/hydration - but ALWAYS show WalletConnect
   if (!mounted || !clerkLoaded) {
     return (
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+        <WalletConnect />
       </div>
     );
   }
