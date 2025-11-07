@@ -10,18 +10,29 @@ import { useState, useEffect } from "react";
  * CRITICAL: Only render on client-side to prevent hydration mismatches
  */
 export function WalletConnect() {
+  // CRITICAL: Hooks must be called unconditionally (Rules of Hooks)
+  // But these hooks may throw during SSR, so we wrap in try-catch
+  let address: string | undefined;
+  let isConnected = false;
+  let open: ((args?: any) => void) | null = null;
+  
+  try {
+    const account = useAppKitAccount();
+    const kit = useAppKit();
+    address = account.address;
+    isConnected = account.isConnected;
+    open = kit.open;
+  } catch (e) {
+    // SSR or not mounted - use defaults
+    address = undefined;
+    isConnected = false;
+    open = null;
+  }
+  
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
-  
-  // Only call hooks after mount to prevent SSR errors
-  const appKitAccount = mounted ? useAppKitAccount() : { address: null, isConnected: false };
-  const appKit = mounted ? useAppKit() : { open: null };
-  
-  const { address, isConnected } = appKitAccount;
-  const { open } = appKit;
 
   // CRITICAL: Only render after mount to prevent hydration mismatch
-  // useAppKitAccount() may return different values during SSR vs client
   useEffect(() => {
     setMounted(true);
   }, []);
