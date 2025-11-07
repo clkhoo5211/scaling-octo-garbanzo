@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { memo, useState } from "react";
 import type { Article } from "@/lib/services/indexedDBCache";
 import { formatRelativeTime, truncate } from "@/lib/utils";
@@ -81,22 +80,25 @@ export const ArticleCard = memo(function ArticleCard({
       return;
     }
 
-    // If previewMode is "fullpage" or not set, use onSelect or default navigation
-    if (onSelect) {
-      e.preventDefault();
-      e.stopPropagation();
-      onSelect(article);
+    // If previewMode is "fullpage", navigate to full page
+    if (previewMode === "fullpage") {
+      if (onSelect) {
+        e.preventDefault();
+        e.stopPropagation();
+        onSelect(article);
+      } else {
+        window.location.href = `/article?url=${encodeURIComponent(article.url)}`;
+      }
       return;
     }
-    // If no onSelect and not modal, let Link handle navigation
   };
 
   return (
     <>
       <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-        <Link
-          href={`/article?url=${encodeURIComponent(article.url)}`}
+        <div
           onClick={handleCardClick}
+          className="cursor-pointer"
         >
           <div className="p-4">
             {/* Header */}
@@ -171,10 +173,9 @@ export const ArticleCard = memo(function ArticleCard({
                 <span className="text-sm text-gray-500">
                   {article.comments} comments
                 </span>
-              )}
-            </div>
+            )}
           </div>
-        </Link>
+        </div>
       </article>
 
       {/* Article Preview Modal */}
