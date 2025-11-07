@@ -41,7 +41,8 @@ export const ArticleCard = memo(function ArticleCard({
   const { isLiked, isBookmarked, addBookmark, removeBookmark } = useAppStore();
   const likeMutation = useLikeArticle();
   const unlikeMutation = useUnlikeArticle();
-  const { data: likesCount = 0 } = useArticleLikes(article.id);
+  const { data: likes } = useArticleLikes(article.id);
+  const likesCount = likes?.length || 0;
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 

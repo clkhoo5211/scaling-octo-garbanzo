@@ -34,7 +34,12 @@ export function BidForm({ minBid, onBid }: BidFormProps) {
     if (address) {
       fetchBalance().then((result) => {
         if (result.isSuccess && result.data) {
-          setBalance({ formatted: result.data.formatted || "0" });
+          // Handle different balance result types
+          const formatted = (result.data as any)?.formatted || 
+                           (result.data as any)?.value ? 
+                           `${(Number((result.data as any).value) / 1e18).toFixed(2)}` : 
+                           "0";
+          setBalance({ formatted });
         }
       });
     }

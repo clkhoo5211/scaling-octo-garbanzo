@@ -37,10 +37,16 @@ export function useArticles(
       const rssArticles = await modularRSSAggregator.fetchByCategory(category);
 
       // Fetch non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
-      const nonRSSArticles = await contentAggregator.aggregateSources(category, {
-        usePagination: options?.usePagination ?? false,
-        extractLinks: options?.extractLinks ?? true,
-      });
+      // Only pass supported categories to contentAggregator
+      const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
+        ? category as "tech" | "crypto" | "social" | "general"
+        : undefined;
+      const nonRSSArticles = supportedCategory 
+        ? await contentAggregator.aggregateSources(supportedCategory, {
+            usePagination: options?.usePagination ?? false,
+            extractLinks: options?.extractLinks ?? true,
+          })
+        : [];
 
       // Combine and deduplicate
       const allArticles = [...rssArticles, ...nonRSSArticles];

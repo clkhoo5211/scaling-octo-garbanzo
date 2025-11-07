@@ -18,7 +18,7 @@ function ProposalCardWithVote({
   canVote,
   isLoadingVote,
 }: {
-  proposal: Proposal;
+  proposal: Proposal & { status: "pending" | "active" | "passed" | "rejected" };
   userId: string | null;
   onVote: (proposalId: string, voteOption: "yes" | "no" | "abstain") => void;
   canVote: boolean;
@@ -27,9 +27,12 @@ function ProposalCardWithVote({
   const { data: userVote } = useUserVote(proposal.proposal_id, userId);
   return (
     <ProposalCard
-      proposal={proposal}
+      proposal={{
+        ...proposal,
+        status: proposal.status as "pending" | "active" | "passed" | "rejected",
+      }}
       onVote={onVote}
-      userVote={userVote?.option || null}
+      userVote={(userVote?.option as "yes" | "no" | "abstain" | null) || null}
       canVote={canVote}
       isLoadingVote={isLoadingVote}
     />

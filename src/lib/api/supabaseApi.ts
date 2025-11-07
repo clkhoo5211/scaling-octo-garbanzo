@@ -566,8 +566,8 @@ export async function createVote({
   transactionHash?: string;
 }): Promise<{ data: Vote | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("votes")
+    const { data, error } = await (supabase
+      .from("votes") as any)
       .insert({
         proposal_id: proposalId,
         voter_id: voterId,
@@ -633,8 +633,8 @@ export async function updateAuction(
   updates: Partial<Auction>
 ): Promise<{ data: Auction | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("auctions")
+    const { data, error } = await (supabase
+      .from("auctions") as any)
       .update(updates)
       .eq("id", auctionId)
       .select()
@@ -695,8 +695,8 @@ export async function createAuctionBid({
   blockNumber?: number | null;
 }): Promise<{ data: AuctionBid | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("auction_bids")
+    const { data, error } = await (supabase
+      .from("auction_bids") as any)
       .insert({
         auction_id: auctionId,
         bidder_address: bidderAddress,

@@ -298,14 +298,19 @@ export default function ListsPage() {
               onChange={(e) => setListName(e.target.value)}
               required
             />
-            <textarea
-              label="Description (optional)"
-              placeholder="Describe what this list is about"
-              value={listDescription}
-              onChange={(e) => setListDescription(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            />
+            <div>
+              <label htmlFor="list-description" className="block text-sm font-medium mb-2">
+                Description (optional)
+              </label>
+              <textarea
+                id="list-description"
+                placeholder="Describe what this list is about"
+                value={listDescription}
+                onChange={(e) => setListDescription(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              />
+            </div>
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -351,14 +356,19 @@ export default function ListsPage() {
                 onChange={(e) => setListName(e.target.value)}
                 required
               />
+              <div>
+                <label htmlFor="list-description-edit" className="block text-sm font-medium mb-2">
+                  Description (optional)
+                </label>
                 <textarea
-                  label="Description (optional)"
+                  id="list-description-edit"
                   placeholder="Describe what this list is about"
                   value={listDescription}
                   onChange={(e) => setListDescription(e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
+              </div>
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"

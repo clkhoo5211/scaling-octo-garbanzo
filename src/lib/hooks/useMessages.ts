@@ -202,8 +202,8 @@ export function useMarkMessageRead() {
       conversationId: string;
       messageId: string;
     }) => {
-      const { error } = await supabase
-        .from("messages")
+      const { error } = await (supabase
+        .from("messages") as any)
         .update({ is_read: true })
         .eq("id", messageId);
 
@@ -271,8 +271,8 @@ export function useCreateConversation() {
       }
 
       // Create new conversation
-      const { data, error } = await supabase
-        .from("conversations")
+      const { data, error } = await (supabase
+        .from("conversations") as any)
         .insert({
           participant_1_id: userId1 < userId2 ? userId1 : userId2,
           participant_2_id: userId1 < userId2 ? userId2 : userId1,
