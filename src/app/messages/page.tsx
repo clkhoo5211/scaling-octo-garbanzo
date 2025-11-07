@@ -3,7 +3,7 @@
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
-import { MessagesView } from "@/components/messages/MessagesView";
+import { ConversationList } from "@/components/messages/ConversationList";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { MessageCircle } from "lucide-react";
 
@@ -39,7 +39,12 @@ export default function MessagesPage() {
             Connect with other users and discuss articles
           </p>
         </div>
-        <MessagesView userId={user.id} />
+        <ConversationList
+          onSelectConversation={(conversationId, otherUserId) => {
+            // TODO: Implement conversation view with MessagesView
+            console.log("Selected conversation:", conversationId, otherUserId);
+          }}
+        />
       </div>
     </ErrorBoundary>
   );

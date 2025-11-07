@@ -51,19 +51,21 @@ export default function ProfilePage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center gap-6">
             <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold">
-              {user.primaryEmailAddress?.emailAddress?.[0].toUpperCase() || "U"}
+              {user.emailAddresses?.[0]?.emailAddress?.[0].toUpperCase() || "U"}
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-                {user.primaryEmailAddress?.emailAddress ||
+                {user.emailAddresses?.[0]?.emailAddress ||
                   user.username ||
                   "User"}
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Member since{" "}
-                {formatDistanceToNow(new Date(user.createdAt!), {
-                  addSuffix: true,
-                })}
+                {user.createdAt
+                  ? formatDistanceToNow(new Date(user.createdAt), {
+                      addSuffix: true,
+                    })
+                  : "recently"}
               </p>
               {isConnected && address && (
                 <div className="mt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">

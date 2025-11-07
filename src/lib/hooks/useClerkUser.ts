@@ -10,6 +10,9 @@ export function useClerkUser() {
   const [user, setUser] = useState<{
     id: string;
     emailAddresses?: Array<{ emailAddress: string }>;
+    primaryEmailAddress?: { emailAddress: string };
+    username?: string;
+    createdAt?: number | string;
   } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -34,6 +37,9 @@ export function useClerkUser() {
   const setMockUser = useCallback((mockUser: {
     id: string;
     emailAddresses?: Array<{ emailAddress: string }>;
+    primaryEmailAddress?: { emailAddress: string };
+    username?: string;
+    createdAt?: number | string;
   }) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("clerk_user", JSON.stringify(mockUser));

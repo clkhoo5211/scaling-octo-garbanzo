@@ -36,7 +36,7 @@ export function PointsDisplay({
 
       if (error) throw error;
       return (
-        data?.reduce((total, tx) => {
+        (data as Array<{ transaction_type: string; points_amount: number }>)?.reduce((total, tx) => {
           return tx.transaction_type === "earn"
             ? total + tx.points_amount
             : total - tx.points_amount;

@@ -25,6 +25,7 @@ export function ConversationList({
     id: string;
     participant_1_id: string;
     participant_2_id: string;
+    last_message_at?: string | null;
   }) => {
     const otherUserId =
       conversation.participant_1_id === userId
@@ -57,7 +58,12 @@ export function ConversationList({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      {conversations.map((conversation) => {
+      {conversations.map((conversation: {
+        id: string;
+        participant_1_id: string;
+        participant_2_id: string;
+        last_message_at?: string | null;
+      }) => {
         const otherUserId =
           conversation.participant_1_id === userId
             ? conversation.participant_2_id

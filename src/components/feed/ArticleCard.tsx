@@ -172,7 +172,7 @@ export const ArticleCard = memo(function ArticleCard({
                   className={liked ? "text-red-500" : "text-gray-400"}
                   aria-label="Like article"
                 >
-                  <span className="text-sm font-medium">👍 {likesCount}</span>
+                  <span className="text-sm font-medium">👍 {likesCount || 0}</span>
                 </button>
                 <button
                   onClick={(e) => {

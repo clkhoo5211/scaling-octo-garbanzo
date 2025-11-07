@@ -51,8 +51,8 @@ export async function createBookmark({
   articleSource?: string;
 }): Promise<{ data: Bookmark | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("bookmarks")
+    const { data, error } = await (supabase
+      .from("bookmarks") as any)
       .insert({
         user_id: userId,
         article_id: articleId,
@@ -104,7 +104,7 @@ export async function likeArticle(
   articleId: string
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
-    const { error } = await supabase.from("article_likes").insert({
+    const { error } = await (supabase.from("article_likes") as any).insert({
       user_id: userId,
       article_id: articleId,
     });
@@ -168,7 +168,7 @@ export async function followUser(
   followingId: string
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
-    const { error } = await supabase.from("user_follows").insert({
+    const { error } = await (supabase.from("user_follows") as any).insert({
       follower_id: userId,
       following_id: followingId,
     });
@@ -255,8 +255,8 @@ export async function markNotificationRead(
   notificationId: string
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
-    const { error } = await supabase
-      .from("notifications")
+    const { error } = await (supabase
+      .from("notifications") as any)
       .update({ is_read: true })
       .eq("id", notificationId);
 
@@ -318,8 +318,8 @@ export async function createPointsTransaction({
   transactionHash?: string | null;
 }): Promise<{ data: PointsTransaction | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("points_transactions")
+    const { data, error } = await (supabase
+      .from("points_transactions") as any)
       .insert({
         user_id: userId,
         transaction_type: transactionType,
@@ -369,8 +369,8 @@ export async function createSubmission({
   category: "tech" | "crypto" | "social" | "general";
 }): Promise<{ data: Submission | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("submissions")
+    const { data, error } = await (supabase
+      .from("submissions") as any)
       .insert({
         user_id: userId,
         title,
@@ -492,8 +492,8 @@ export async function createProposal({
   endDate: string;
 }): Promise<{ data: Proposal | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("proposals")
+    const { data, error } = await (supabase
+      .from("proposals") as any)
       .insert({
         proposal_id: proposalId,
         creator_id: creatorId,
@@ -811,8 +811,8 @@ export async function createList({
   isPublic?: boolean;
 }): Promise<{ data: List | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("lists")
+    const { data, error } = await (supabase
+      .from("lists") as any)
       .insert({
         user_id: userId,
         name,
@@ -851,8 +851,8 @@ export async function updateList({
     if (description !== undefined) updates.description = description;
     if (isPublic !== undefined) updates.is_public = isPublic;
 
-    const { data, error } = await supabase
-      .from("lists")
+    const { data, error } = await (supabase
+      .from("lists") as any)
       .update(updates)
       .eq("id", listId)
       .select()
@@ -914,8 +914,8 @@ export async function addArticleToList({
   addedBy: string;
 }): Promise<{ data: ListArticle | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("list_articles")
+    const { data, error } = await (supabase
+      .from("list_articles") as any)
       .insert({
         list_id: listId,
         article_id: articleId,
@@ -969,14 +969,14 @@ export async function subscribeToList({
       .single();
 
     if (list) {
-      await supabase
-        .from("lists")
+      await (supabase
+        .from("lists") as any)
         .update({ subscriber_count: ((list as { subscriber_count: number }).subscriber_count || 0) + 1 })
         .eq("id", listId);
     }
 
-    const { data, error } = await supabase
-      .from("list_subscriptions")
+    const { data, error } = await (supabase
+      .from("list_subscriptions") as any)
       .insert({
         list_id: listId,
         user_id: userId,
@@ -1008,8 +1008,8 @@ export async function unsubscribeFromList({
       .single();
 
     if (list && ((list as { subscriber_count: number }).subscriber_count || 0) > 0) {
-      await supabase
-        .from("lists")
+      await (supabase
+        .from("lists") as any)
         .update({ subscriber_count: ((list as { subscriber_count: number }).subscriber_count || 0) - 1 })
         .eq("id", listId);
     }

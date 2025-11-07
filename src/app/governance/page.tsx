@@ -110,7 +110,10 @@ export default function GovernancePage() {
             {proposals?.map((proposal) => (
               <ProposalCardWithVote
                 key={proposal.proposal_id}
-                proposal={proposal}
+                proposal={{
+                  ...proposal,
+                  status: proposal.status as "pending" | "active" | "passed" | "rejected",
+                }}
                 userId={user?.id || null}
                 onVote={handleVote}
                 canVote={!!user && isConnected && proposal.status === "active"}
