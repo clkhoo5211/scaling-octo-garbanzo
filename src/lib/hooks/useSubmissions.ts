@@ -16,7 +16,7 @@ import { useAppStore } from "@/lib/stores/appStore";
  */
 export function useSubmissions(filters?: {
   userId?: string;
-  category?: string;
+  category?: "tech" | "crypto" | "social" | "general";
   status?: "pending" | "approved" | "rejected";
   limit?: number;
 }) {
