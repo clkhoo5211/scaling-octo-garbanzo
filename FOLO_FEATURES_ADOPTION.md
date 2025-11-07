@@ -1,3 +1,7 @@
+---
+layout: none
+---
+
 # 🧡 FOLO FEATURES ADOPTION GUIDE
 ## Web3News - Inspired by Folo (35.7k ⭐ GitHub Stars)
 
@@ -445,8 +449,8 @@ const extractCleanContent = (articleHTML) => {
     
     <div 
       className="prose prose-lg dark:prose-invert"
-      style={{ fontSize: `${fontSize}px` }}
-      dangerouslySetInnerHTML={{ __html: cleanContent }}
+      {% raw %}style={{ fontSize: `${fontSize}px` }}{% endraw %}
+      {% raw %}dangerouslySetInnerHTML={{ __html: cleanContent }}{% endraw %}
     />
     
     {/* Bottom actions */}
