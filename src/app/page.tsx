@@ -8,6 +8,7 @@ import { Autocomplete } from "@/components/search/Autocomplete";
 import { FilterChips, type FilterChip } from "@/components/search/FilterChips";
 import { useState, useEffect } from "react";
 import { useArticles } from "@/lib/hooks/useArticles";
+import { useGeolocation } from "@/lib/hooks/useGeolocation";
 import type { Article } from "@/lib/services/indexedDBCache";
 import type { NewsCategory } from "@/lib/sources/types";
 
@@ -33,10 +34,15 @@ export default function HomePage() {
   // Use "tech" as fallback during SSR
   const activeCategory = selectedCategory || "tech";
 
+  // Get user's country for country-specific news
+  const { geolocation } = useGeolocation();
+  const countryCode = geolocation?.countryCode;
+
   const { data: articles, isLoading, isError, error } = useArticles(activeCategory, {
     usePagination: true,
     extractLinks: true,
     enableRealtime: true, // Enable real-time updates with animation
+    countryCode: countryCode || undefined, // Pass country code for local/general categories
   });
 
   // Debug logging

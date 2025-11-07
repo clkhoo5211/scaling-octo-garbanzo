@@ -192,7 +192,7 @@ async function fetchWithRetry<T>(
 
 export function useArticles(
   category: NewsCategory,
-  options?: { usePagination?: boolean; extractLinks?: boolean; enableRealtime?: boolean }
+  options?: { usePagination?: boolean; extractLinks?: boolean; enableRealtime?: boolean; countryCode?: string }
 ) {
   // CRITICAL: Track client-side mount to prevent hydration mismatch
   const [isClient, setIsClient] = useState(false);
@@ -202,7 +202,7 @@ export function useArticles(
   }, []);
 
   return useQuery({
-    queryKey: ["articles", category, "realtime"],
+    queryKey: ["articles", category, "realtime", options?.countryCode || "default"],
     enabled: isClient,
     queryFn: async () => {
       console.log(`[useArticles] Fetching articles for ${category}...`);
@@ -212,8 +212,9 @@ export function useArticles(
       let rssArticlesResult: PromiseSettledResult<Article[]>;
       
       try {
-        // Try server-side RSS fetching first
-        const serverResponse = await fetch(`/api/rss?category=${category}`, {
+        // Build URL with category and optional country code
+        const countryParam = options?.countryCode ? `&country=${options.countryCode}` : '';
+        const serverResponse = await fetch(`/api/rss?category=${category}${countryParam}`, {
           cache: 'no-store',
           signal: AbortSignal.timeout(20000), // 20 second timeout
         });

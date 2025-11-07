@@ -1,6 +1,7 @@
 "use client";
 
 import type { NewsCategory } from "@/lib/sources/types";
+import { useGeolocation } from "@/lib/hooks/useGeolocation";
 
 interface CategoryTabsProps {
   selectedCategory: NewsCategory;
@@ -11,6 +12,8 @@ export function CategoryTabs({
   selectedCategory,
   onSelectCategory,
 }: CategoryTabsProps) {
+  const { geolocation } = useGeolocation();
+  
   const categories: Array<{
     id: NewsCategory;
     label: string;
@@ -28,6 +31,12 @@ export function CategoryTabs({
     { id: "entertainment", label: "Entertainment" },
     { id: "social", label: "Social" },
     { id: "general", label: "General" },
+    { 
+      id: "local", 
+      label: geolocation?.countryName 
+        ? `Local (${geolocation.countryName})` 
+        : "Local" 
+    },
   ];
 
   return (

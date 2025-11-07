@@ -9,25 +9,25 @@ import { getRSSSourcesByCategory } from '@/lib/sources/rssRegistry';
 import { getCountryNewsSources } from '@/lib/sources/rss/country';
 import type { NewsCategory } from '@/lib/sources/types';
 
-export const dynamic = 'force-dynamic'; // Ensure this API route is always dynamic
+// Note: For static export, API routes don't work, but this file won't be included in the build
+// The client-side code will fallback to direct RSS fetching
+export const dynamic = process.env.NODE_ENV === 'production' && process.env.GITHUB_REPOSITORY_NAME 
+  ? undefined // Don't use force-dynamic for static export
+  : 'force-dynamic'; // Use force-dynamic for development/server mode
 
 /**
- * Detect country from request headers
+ * Detect country from query parameter
+ * Client-side geolocation passes country code via query param
+ * Falls back to US if not provided
  */
 async function detectCountry(request: NextRequest): Promise<string> {
-  // Try to get country from query parameter first (for testing)
+  // Get country from query parameter (passed by client-side useGeolocation hook)
   const countryParam = request.nextUrl.searchParams.get('country');
   if (countryParam) {
     return countryParam.toUpperCase();
   }
 
-  // Get client IP
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIp = request.headers.get('x-real-ip');
-  const ip = forwarded?.split(',')[0] || realIp || request.ip || '';
-
-  // Quick country detection (simplified - use geolocation API route for full detection)
-  // For now, default to US - full detection happens client-side
+  // Default to US if no country parameter provided
   return 'US';
 }
 
@@ -150,8 +150,14 @@ export async function GET(request: NextRequest) {
     // Get RSS sources for this category
     let sources = getRSSSourcesByCategory(category);
 
-    // If category is "general", add country-specific sources
-    if (category === 'general') {
+    // If category is "local", fetch country-specific sources only
+    if (category === 'local') {
+      const countryCode = await detectCountry(request);
+      const countrySources = getCountryNewsSources(countryCode);
+      sources = countrySources; // Only country sources for local category
+    }
+    // If category is "general", add country-specific sources (mixed with general)
+    else if (category === 'general') {
       const countryCode = await detectCountry(request);
       const countrySources = getCountryNewsSources(countryCode);
       // Merge country sources with general sources

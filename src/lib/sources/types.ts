@@ -18,7 +18,8 @@ export type NewsCategory =
   | "health"
   | "politics"
   | "environment"
-  | "education";
+  | "education"
+  | "local";
 
 export interface RSSSourceConfig {
   /** Unique identifier for the source */
