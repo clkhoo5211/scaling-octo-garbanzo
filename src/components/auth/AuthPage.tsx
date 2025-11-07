@@ -29,13 +29,8 @@ export function AuthPage() {
     // Will work correctly at runtime
   }
 
-  // Auto-open Reown AppKit modal when page loads (if not signed in)
-  useEffect(() => {
-    if (isLoaded && !user && appKitOpen) {
-      // Open Reown AppKit modal with social logins
-      appKitOpen({ view: "Connect" });
-    }
-  }, [isLoaded, user, appKitOpen]);
+  // REMOVED: Auto-open behavior - users should click button to login
+  // Guests can browse freely without being prompted
 
   if (!isLoaded) {
     return (

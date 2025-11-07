@@ -50,6 +50,13 @@ export const ArticleCard = memo(function ArticleCard({
   const bookmarked = isBookmarked(article.id);
 
   const handleLike = () => {
+    // Require login for liking
+    if (!authLoaded) return;
+    if (!isSignedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    
     if (liked) {
       unlikeMutation.mutate(article.id);
     } else {
@@ -59,6 +66,13 @@ export const ArticleCard = memo(function ArticleCard({
   };
 
   const handleBookmark = () => {
+    // Require login for bookmarking
+    if (!authLoaded) return;
+    if (!isSignedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    
     if (bookmarked) {
       removeBookmark(article.id);
     } else {
@@ -82,19 +96,7 @@ export const ArticleCard = memo(function ArticleCard({
     e.preventDefault();
     e.stopPropagation();
 
-    // Check if user is logged in
-    if (!authLoaded) {
-      // Still loading auth state, wait
-      return;
-    }
-
-    if (!isSignedIn) {
-      // User not logged in - show login prompt
-      setShowLoginPrompt(true);
-      return;
-    }
-
-    // User is logged in - proceed with preview
+    // Allow guests to browse articles freely - no login required for viewing
     // Handle preview mode first - modal takes precedence
     if (previewMode === "modal" || previewMode === "both") {
       setShowPreviewModal(true);
