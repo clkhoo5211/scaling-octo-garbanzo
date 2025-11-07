@@ -15,7 +15,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@clerk/nextjs": "^5.0.0",
+    "@clerk/nextjs": "^6.34.5",
     "@mozilla/readability": "^0.4.4",
     "@reown/appkit": "^1.0.0",
     "@reown/appkit-adapter-wagmi": "^1.8.13",
