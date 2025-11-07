@@ -914,8 +914,8 @@ export async function addArticleToList({
   addedBy: string;
 }): Promise<{ data: ListArticle | null; error: Error | null }> {
   return safeAsync(async () => {
-    const { data, error } = await supabase
-      .from("list_articles")
+    const { data, error } = await (supabase
+      .from("list_articles") as any)
       .insert({
         list_id: listId,
         article_id: articleId,
