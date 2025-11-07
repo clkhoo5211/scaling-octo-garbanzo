@@ -33,10 +33,21 @@ export const appKit = createAppKit({
     icons: ["/icon-192x192.png", "/icon-512x512.png"],
   },
   features: {
+    // Analytics & Tracking
     analytics: true,
+    // Authentication Options
     email: true,
-    socials: ["google", "twitter", "discord", "github"],
+    socials: ["google", "twitter", "discord", "github", "apple"],
     emailShowWallets: true,
+    // Payment Features
+    onramp: true,
+    swaps: true,
+    // Activity & History
+    activity: true,
+    // Event Tracking
+    events: true,
+    // Reown Authentic (verification)
+    authentic: true,
   },
   networks: networks as Array<{
     id: number;

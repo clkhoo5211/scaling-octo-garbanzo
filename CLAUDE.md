@@ -1116,7 +1116,7 @@ Based on comprehensive online research from industry sources (Ubiminds, LinkedIn
 
 #### Step 1: User Provides Basic Information
 
-**User**:
+**User**: 
 
 ```
 Project Title: [Your Project Name]

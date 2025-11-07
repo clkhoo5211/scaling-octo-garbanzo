@@ -708,24 +708,42 @@ class ContentAggregator {
       // Use CORS proxy for RSS feeds
       const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
       const response = await fetch(proxyUrl);
+      
+      if (!response.ok) {
+        console.warn(`RSS feed ${sourceName} returned status ${response.status}`);
+        return [];
+      }
+
       const data = await response.json();
+      
+      // Check if RSS2JSON returned an error
+      if (data.status === "error") {
+        console.warn(`RSS feed ${sourceName} error:`, data.message);
+        return [];
+      }
+
       const items = data.items || [];
+      
+      if (items.length === 0) {
+        console.warn(`RSS feed ${sourceName} returned no items`);
+        return [];
+      }
 
       return items.map((item: any) => ({
-        id: `rss-${item.guid || item.link}`,
-        title: item.title,
-        url: item.link,
+        id: `rss-${item.guid || item.link || `${sourceName}-${Date.now()}-${Math.random()}`}`,
+        title: item.title || "Untitled",
+        url: item.link || url,
         source: sourceName,
         category: category,
-        publishedAt: new Date(item.pubDate).getTime(),
+        publishedAt: item.pubDate ? new Date(item.pubDate).getTime() : Date.now(),
         author: item.author,
-        excerpt: item.description?.substring(0, 200),
-        thumbnail: item.enclosure?.link,
+        excerpt: item.description?.replace(/<[^>]*>/g, "").substring(0, 200),
+        thumbnail: item.enclosure?.link || item.thumbnail,
         urlHash: "",
         cachedAt: 0,
       }));
     } catch (error) {
-      console.error(`Error fetching RSS feed ${url}:`, error);
+      console.error(`Error fetching RSS feed ${sourceName} (${url}):`, error);
       return [];
     }
   }
@@ -870,13 +888,32 @@ class ContentAggregator {
     const usePagination = options?.usePagination ?? false;
     const extractLinks = options?.extractLinks ?? true;
 
+    console.log(`Aggregating from ${sources.length} sources for category: ${category || "all"}`);
+    console.log(`Sources:`, sources.map(s => s.name).join(", "));
+
     // Fetch from all sources in parallel
     const results = await Promise.allSettled(
-      sources.map((source) => this.fetchSource(source, usePagination))
+      sources.map(async (source) => {
+        try {
+          const articles = await this.fetchSource(source, usePagination);
+          console.log(`✓ ${source.name}: ${articles.length} articles`);
+          return articles;
+        } catch (error) {
+          console.error(`✗ ${source.name}:`, error);
+          return [];
+        }
+      })
     );
+
+    // Log results
+    const successful = results.filter(r => r.status === "fulfilled").length;
+    const failed = results.filter(r => r.status === "rejected").length;
+    console.log(`Fetch results: ${successful} successful, ${failed} failed`);
 
     // Transform and deduplicate (with link extraction if enabled)
     let articles = this.transformAndDeduplicate(results);
+
+    console.log(`After deduplication: ${articles.length} articles`);
 
     // Additional link extraction pass if enabled
     if (extractLinks) {

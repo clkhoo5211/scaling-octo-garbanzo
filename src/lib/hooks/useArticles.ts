@@ -23,30 +23,40 @@ import { useAppStore } from "@/lib/stores/appStore";
  */
 export function useArticles(
   category?: "tech" | "crypto" | "social" | "general",
-  options?: { usePagination?: boolean; extractLinks?: boolean }
+  options?: { usePagination?: boolean; extractLinks?: boolean; forceRefresh?: boolean }
 ) {
   return useQuery({
     queryKey: ["articles", category, options],
     queryFn: async () => {
-      // Check cache first
-      const cached = await indexedDBCache.getArticles(category);
-      if (cached.length > 0) {
-        return cached;
+      // Check cache first (unless force refresh)
+      if (!options?.forceRefresh) {
+        const cached = await indexedDBCache.getArticles(category);
+        if (cached.length > 0) {
+          console.log(`Using cached articles for ${category || "all"}: ${cached.length} articles`);
+          return cached;
+        }
       }
 
+      console.log(`Fetching fresh articles for ${category || "all"}...`);
+      
       // Fetch from sources with enhanced options
       const articles = await contentAggregator.aggregateSources(category, {
         usePagination: options?.usePagination ?? false,
         extractLinks: options?.extractLinks ?? true,
       });
 
+      console.log(`Fetched ${articles.length} articles for ${category || "all"}`);
+
       // Cache articles
-      await indexedDBCache.setArticles(articles, category);
+      if (articles.length > 0) {
+        await indexedDBCache.setArticles(articles, category);
+      }
 
       return articles;
     },
     staleTime: 30 * 60 * 1000, // 30 minutes
     gcTime: 60 * 60 * 1000, // 1 hour
+    retry: 2, // Retry failed requests
   });
 }
 
