@@ -49,7 +49,7 @@ const ADMIN_KEY_ENABLED = false; // Disabled
 
 - **Location**: `src/components/feed/ShowMoreButton.tsx`
 - **Hook**: `src/lib/hooks/useClerkUser.ts` (provides `setMockUser` function)
-- **Storage**: localStorage key `clerk_user`
+- **Storage**: localStorage key `admin_dev_user`
 - **Admin Key**: `123456` (hardcoded, change if needed)
 
 ## Changing the Admin Key
@@ -66,13 +66,13 @@ To clear the mock login session:
 
 1. Open browser DevTools (F12)
 2. Go to Application/Storage → Local Storage
-3. Delete the `clerk_user` key
+3. Delete the `admin_dev_user` key
 4. Refresh the page
 
 Or programmatically:
 
 ```javascript
-localStorage.removeItem("clerk_user");
+localStorage.removeItem("admin_dev_user");
 location.reload();
 ```
 

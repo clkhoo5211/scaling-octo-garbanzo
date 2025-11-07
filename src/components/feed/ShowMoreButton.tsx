@@ -67,6 +67,11 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
       return;
     }
 
+    if (!setMockUser) {
+      setAdminKeyError("Authentication error - please refresh the page");
+      return;
+    }
+
     if (adminKey === ADMIN_KEY) {
       // Mock login with admin key
       setMockUser({
@@ -75,6 +80,7 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
       });
       setShowLoginPrompt(false);
       setAdminKey("");
+      setShowAdminKey(false);
       // Execute the action after mock login
       onClick();
     } else {
@@ -135,7 +141,11 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
               </button>
 
               {showAdminKey && (
-                <form onSubmit={handleAdminKeySubmit} className="space-y-3">
+                <form 
+                  onSubmit={handleAdminKeySubmit} 
+                  className="space-y-3"
+                  noValidate
+                >
                   <div>
                     <Input
                       type="password"
@@ -144,6 +154,12 @@ export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
                       onChange={(e) => {
                         setAdminKey(e.target.value);
                         setAdminKeyError("");
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAdminKeySubmit(e as any);
+                        }
                       }}
                       className={adminKeyError ? "border-red-500" : ""}
                     />
