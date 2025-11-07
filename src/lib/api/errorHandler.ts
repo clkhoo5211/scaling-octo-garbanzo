@@ -8,7 +8,7 @@ export class AppError extends Error {
     message: string,
     public code: string,
     public statusCode?: number,
-    public details?: any
+    public details?: unknown
   ) {
     super(message);
     this.name = "AppError";
@@ -17,49 +17,49 @@ export class AppError extends Error {
 }
 
 export class NetworkError extends AppError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: unknown) {
     super(message, "NETWORK_ERROR", 0, details);
     this.name = "NetworkError";
   }
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: unknown) {
     super(message, "VALIDATION_ERROR", 400, details);
     this.name = "ValidationError";
   }
 }
 
 export class AuthenticationError extends AppError {
-  constructor(message: string = "Authentication required", details?: any) {
+  constructor(message: string = "Authentication required", details?: unknown) {
     super(message, "AUTH_ERROR", 401, details);
     this.name = "AuthenticationError";
   }
 }
 
 export class AuthorizationError extends AppError {
-  constructor(message: string = "Insufficient permissions", details?: any) {
+  constructor(message: string = "Insufficient permissions", details?: unknown) {
     super(message, "AUTHORIZATION_ERROR", 403, details);
     this.name = "AuthorizationError";
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message: string = "Resource not found", details?: any) {
+  constructor(message: string = "Resource not found", details?: unknown) {
     super(message, "NOT_FOUND", 404, details);
     this.name = "NotFoundError";
   }
 }
 
 export class RateLimitError extends AppError {
-  constructor(message: string = "Rate limit exceeded", details?: any) {
+  constructor(message: string = "Rate limit exceeded", details?: unknown) {
     super(message, "RATE_LIMIT", 429, details);
     this.name = "RateLimitError";
   }
 }
 
 export class ServerError extends AppError {
-  constructor(message: string = "Internal server error", details?: any) {
+  constructor(message: string = "Internal server error", details?: unknown) {
     super(message, "SERVER_ERROR", 500, details);
     this.name = "ServerError";
   }

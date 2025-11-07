@@ -44,7 +44,6 @@ interface ArticleReaderClientProps {
 }
 
 export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProps) {
-  const [readingProgress, setReadingProgress] = useState(0);
   const [article, setArticle] = useState<Article | null>(null);
   const [parsedContent, setParsedContent] = useState<string | null>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
@@ -97,22 +96,6 @@ export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProp
       }
     }
   }, [articles, articleUrl]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const progress = Math.min(
-        100,
-        (scrollTop / (documentHeight - windowHeight)) * 100
-      );
-      setReadingProgress(progress);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const handleLike = () => {
     if (!article || !userId) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CheckCircle, XCircle, Minus, Loader2 } from "lucide-react";
 import { TransactionStatus } from "@/components/web3/TransactionStatus";
 

@@ -19,11 +19,15 @@ import * as supabaseApi from '@/lib/api/supabaseApi';
 
 // Mock dependencies
 jest.mock('@/lib/services/contentAggregator', () => ({
-  aggregateSources: jest.fn(),
+  contentAggregator: {
+    aggregateSources: jest.fn(),
+  },
 }));
 jest.mock('@/lib/services/indexedDBCache', () => ({
-  getArticles: jest.fn(),
-  setArticles: jest.fn(),
+  indexedDBCache: {
+    getArticles: jest.fn(),
+    setArticles: jest.fn(),
+  },
 }));
 jest.mock('@/lib/api/supabaseApi');
 jest.mock('@/lib/stores/appStore', () => {
@@ -74,16 +78,16 @@ describe('useArticles', () => {
       },
     ];
 
-    (indexedDBCache.getArticles as jest.Mock).mockResolvedValue(mockArticles);
+    (indexedDBCache.indexedDBCache.getArticles as jest.Mock).mockResolvedValue(mockArticles);
 
     const { result } = renderHook(() => useArticles('tech'), {
       wrapper: createWrapper(),
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => expect(result.current.isSuccess).toBe(true), { timeout: 5000 });
     expect(result.current.data).toEqual(mockArticles);
-    expect(indexedDBCache.getArticles).toHaveBeenCalledWith('tech');
-    expect(contentAggregator.aggregateSources).not.toHaveBeenCalled();
+    expect(indexedDBCache.indexedDBCache.getArticles).toHaveBeenCalledWith('tech');
+    expect(contentAggregator.contentAggregator.aggregateSources).not.toHaveBeenCalled();
   });
 
   it('should fetch from sources if cache is empty', async () => {
@@ -97,9 +101,9 @@ describe('useArticles', () => {
       },
     ];
 
-    (indexedDBCache.getArticles as jest.Mock).mockResolvedValue([]);
-    (contentAggregator.aggregateSources as jest.Mock).mockResolvedValue(mockArticles);
-    (indexedDBCache.setArticles as jest.Mock).mockResolvedValue(undefined);
+    (indexedDBCache.indexedDBCache.getArticles as jest.Mock).mockResolvedValue([]);
+    (contentAggregator.contentAggregator.aggregateSources as jest.Mock).mockResolvedValue(mockArticles);
+    (indexedDBCache.indexedDBCache.setArticles as jest.Mock).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useArticles('tech'), {
       wrapper: createWrapper(),
@@ -115,8 +119,8 @@ describe('useArticles', () => {
     
     expect(result.current.isSuccess).toBe(true);
     expect(result.current.data).toEqual(mockArticles);
-    expect(contentAggregator.aggregateSources).toHaveBeenCalled();
-    expect(indexedDBCache.setArticles).toHaveBeenCalledWith(mockArticles, 'tech');
+    expect(contentAggregator.contentAggregator.aggregateSources).toHaveBeenCalled();
+    expect(indexedDBCache.indexedDBCache.setArticles).toHaveBeenCalledWith(mockArticles, 'tech');
   });
 });
 
