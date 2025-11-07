@@ -7,6 +7,7 @@ import { CookieConsentBanner } from "@/components/compliance";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import dynamic from "next/dynamic";
+import Script from "next/script";
 
 // Lazy load heavy components for better performance
 const BottomNavLazy = dynamic(() => import("@/components/layout/BottomNav").then(mod => ({ default: mod.BottomNav })), {
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   title: "Web3News - Decentralized News Aggregation",
   description: "Decentralized news aggregation with crypto-powered rewards",
   // CRITICAL: Don't set manifest in metadata - it doesn't handle basePath correctly for static export
-  // ManifestLink component will inject it client-side with correct basePath
+  // Script with beforeInteractive will inject it before browser fetch
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -49,10 +50,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <body className="font-sans antialiased">
         {/* CRITICAL: Inject manifest link immediately before browser fetches it */}
-        {/* This script runs synchronously before React hydration */}
-        <script
+        {/* beforeInteractive strategy runs before React hydration and before browser parses head */}
+        <Script
+          id="manifest-injector"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -82,8 +85,6 @@ export default function RootLayout({
             `,
           }}
         />
-      </head>
-      <body className="font-sans antialiased">
         <ManifestLink />
         <Providers>
           <Header />
