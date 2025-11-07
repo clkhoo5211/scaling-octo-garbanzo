@@ -52,7 +52,9 @@ export default function SearchPage() {
   };
 
   const handleSelectArticle = (article: Article) => {
-    window.location.href = `/article?url=${encodeURIComponent(article.url)}`;
+    // This is called when modal opens (for analytics/tracking)
+    // Actual navigation happens via modal's "Full Page" button
+    // No need to navigate here - modal handles it
   };
 
   const handleRemoveFilter = (id: string) => {
