@@ -388,7 +388,7 @@ class ContentAggregator {
 
       // Extract links from GitHub repos (learn-anything pattern)
       const enrichedArticles = await Promise.all(
-        articles.map(async (article) => {
+        articles.map(async (article: Article) => {
           try {
             const links = await linkExtractor.extractFromGitHubRepo(
               article.url
