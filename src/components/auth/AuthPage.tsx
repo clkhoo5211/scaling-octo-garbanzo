@@ -3,6 +3,7 @@
 import { WalletConnect } from "@/components/web3/WalletConnect";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKit } from "@reown/appkit/react";
+import { useEffect, useState } from "react";
 
 /**
  * AuthPage Component
@@ -10,16 +11,23 @@ import { useAppKit } from "@reown/appkit/react";
  * Users click button to trigger login - no auto-prompt
  * 
  * CRITICAL: useAppKit hook must be called unconditionally (React rules)
- * The hook itself handles cases where AppKit isn't initialized yet
+ * We use a guard to ensure AppKit is initialized before using it
  */
 export function AuthPage() {
   const { user, isLoaded } = useUser();
+  const [isMounted, setIsMounted] = useState(false);
   
   // CRITICAL: Call hook unconditionally - React rules requirement
   // The hook will handle initialization errors internally
-  const { open } = useAppKit();
+  const appKit = useAppKit();
+  const open = appKit?.open;
 
-  if (!isLoaded) {
+  // Ensure component is mounted (client-side only)
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isLoaded || !isMounted) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-pulse text-gray-500">Loading...</div>
@@ -62,10 +70,13 @@ export function AuthPage() {
         </p>
         <button
           onClick={() => {
-            // Safe to call - useAppKit hook handles initialization
-            open({ view: "Connect" });
+            // Safe to call - AppKit should be initialized by now
+            if (open) {
+              open({ view: "Connect" });
+            }
           }}
-          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!open}
         >
           Open Sign In
         </button>
