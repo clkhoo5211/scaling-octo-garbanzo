@@ -41,37 +41,64 @@ function getStubConfig(): Config {
   return null as any;
 }
 
-// CRITICAL FIX: Lazy-load AppKit ONLY on client-side
-// This prevents build hangs from trying to initialize Web3 connections during static generation
+// CRITICAL FIX: Initialize AppKit unconditionally with SSR support
+// During Next.js static export/prerendering, components using useAppKit hooks are rendered on server
+// AppKit must be initialized before hooks are called, even during SSR
 let appKitInstance: ReturnType<typeof createAppKit> | null = null;
 
 function getAppKit() {
-  // Only initialize on client-side (not during build/SSR)
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  
   if (!appKitInstance) {
     const adapter = getWagmiAdapter();
-    // Double-check adapter is valid (not null stub from build)
+    // During SSR/build, adapter might be null - create a minimal stub
     if (!adapter) {
-      return null;
+      // Create a minimal stub adapter for SSR
+      const { createConfig, http } = require('wagmi');
+      const stubConfig = createConfig({
+        chains: [mainnet],
+        transports: {
+          [mainnet.id]: http(),
+        },
+      });
+      
+      // Create stub adapter for SSR
+      const { WagmiAdapter } = require('@reown/appkit-adapter-wagmi');
+      const stubAdapter = new WagmiAdapter({
+        networks: [mainnet],
+        projectId,
+        ssr: true,
+      });
+      
+      appKitInstance = createAppKit({
+        adapters: [stubAdapter],
+        projectId,
+        networks: [mainnet, polygon],
+        defaultNetwork: mainnet,
+        metadata: metadata,
+        features: {
+          analytics: true,
+          email: true,
+          socials: ['google', 'x', 'github', 'discord', 'apple'],
+          onramp: true,
+          swaps: true,
+        },
+      });
+    } else {
+      // Client-side: use real adapter
+      appKitInstance = createAppKit({
+        adapters: [adapter],
+        projectId,
+        networks: [mainnet, polygon],
+        defaultNetwork: mainnet,
+        metadata: metadata,
+        features: {
+          analytics: true,
+          email: true,
+          socials: ['google', 'x', 'github', 'discord', 'apple'],
+          onramp: true,
+          swaps: true,
+        },
+      });
     }
-    
-    appKitInstance = createAppKit({
-      adapters: [adapter],
-  projectId,
-  networks: [mainnet, polygon],
-  defaultNetwork: mainnet,
-  metadata: metadata,
-  features: {
-        analytics: true,
-        email: true,
-        socials: ['google', 'x', 'github', 'discord', 'apple'],
-        onramp: true,
-        swaps: true,
-  },
-});
   }
   
   return appKitInstance;
@@ -80,22 +107,18 @@ function getAppKit() {
 function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
   const [wagmiConfig, setWagmiConfig] = useState<Config | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [appKitReady, setAppKitReady] = useState(false);
   
-  // CRITICAL: Initialize Wagmi and AppKit on client-side only
+  // CRITICAL: Initialize AppKit BEFORE rendering to prevent "createAppKit before useAppKit" error
+  // This must happen synchronously during module load, not in useEffect
+  // During SSR, AppKit will use stub adapter; on client, it will use real adapter
+  const appKit = getAppKit();
+  
+  // CRITICAL: Initialize Wagmi config
   useEffect(() => {
     setIsClient(true);
-    if (typeof window !== 'undefined') {
-      const adapter = getWagmiAdapter();
-      if (adapter) {
-        setWagmiConfig(adapter.wagmiConfig as Config);
-        // Initialize AppKit synchronously after adapter is ready
-        // This ensures useAppKit hooks work immediately
-        const appKit = getAppKit();
-        if (appKit) {
-          setAppKitReady(true);
-        }
-      }
+    const adapter = getWagmiAdapter();
+    if (adapter) {
+      setWagmiConfig(adapter.wagmiConfig as Config);
     }
   }, []);
   
