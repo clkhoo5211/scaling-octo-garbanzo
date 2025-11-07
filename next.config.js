@@ -42,12 +42,39 @@ const nextConfig = {
       
       // Exclude React Native dependencies for browser builds
       // MetaMask SDK has React Native peer dependencies that aren't needed for Next.js static export
+      // Initialize plugins array if it doesn't exist
+      if (!config.plugins) {
+        config.plugins = [];
+      }
+      
+      // Use IgnorePlugin to completely ignore these modules
+      const webpack = require('webpack');
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^@react-native-async-storage\/async-storage$/,
+          contextRegExp: /node_modules\/@metamask\/sdk/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^react-native$/,
+          contextRegExp: /node_modules\/@metamask\/sdk/,
+        })
+      );
+      
+      // Also set alias as fallback - must be set before module resolution
       config.resolve.alias = {
-        ...config.resolve.alias,
+        ...(config.resolve.alias || {}),
         '@clerk/nextjs/server': false,
         '@react-native-async-storage/async-storage': false,
         'react-native': false,
       };
+      
+      // Add to externals to prevent bundling
+      if (!config.externals) {
+        config.externals = [];
+      }
+      if (Array.isArray(config.externals)) {
+        config.externals.push('@react-native-async-storage/async-storage', 'react-native');
+      }
     }
     
     return config;
