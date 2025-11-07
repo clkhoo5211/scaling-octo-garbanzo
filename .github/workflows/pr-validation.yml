@@ -41,6 +41,10 @@ jobs:
             points
             auctions
             messaging
+            deps
+            deps-dev
+            build
+            ci
           requireScope: false
           subjectPattern: ^(?![A-Z]).+$
           subjectPatternError: |
