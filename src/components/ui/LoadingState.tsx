@@ -12,7 +12,7 @@ interface LoadingStateProps {
 /**
  * LoadingState Component
  * Displays loading indicator
- * CRITICAL: Always render same structure on server and client to prevent hydration mismatch
+ * CRITICAL: Client-only rendering to prevent hydration mismatches
  */
 export function LoadingState({
   children,
@@ -21,21 +21,28 @@ export function LoadingState({
 }: LoadingStateProps) {
   const [mounted, setMounted] = useState(false);
 
-  // CRITICAL: Only render icons after mount to prevent hydration mismatch
+  // CRITICAL: Only render after mount to prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // CRITICAL: Render nothing on server, only render after client mount
+  // This prevents any hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-8">
+        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
+        {message && (
+          <p className="text-sm text-gray-600 dark:text-gray-400">{message}</p>
+        )}
+        {children}
+      </div>
+    );
+  }
+
   const content = (
     <div className="flex flex-col items-center justify-center gap-4 p-8">
-      {/* CRITICAL: Always render same div structure, only change className/content */}
-      <div className="w-8 h-8 flex items-center justify-center">
-        {mounted ? (
-          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-        ) : (
-          <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
-        )}
-      </div>
+      <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
       {message && (
         <p className="text-sm text-gray-600 dark:text-gray-400">{message}</p>
       )}
