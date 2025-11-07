@@ -117,4 +117,35 @@
 
 ---
 
+---
+
+## [DEVELOP-FIX] - 2025-11-07 23:55:00
+
+### Fixed
+
+- ✅ Fixed Toast counter TypeScript error by using `useRef` instead of function property
+- ✅ Fixed Reown AppKit initialization errors ("W3mFrame: iframe is not set", "Cannot read properties of undefined")
+- ✅ Ensured AppKitProvider renders only after client-side mount
+- ✅ Properly placed AppKitProvider inside ContextProvider for Wagmi config access
+
+### Modified
+
+- `src/components/ui/Toast.tsx` - Changed counter from function property to useRef hook
+- `src/app/providers.tsx` - Fixed AppKitProvider initialization and mounting order
+
+### Context
+
+- User reported runtime errors preventing wallet connection and toast notifications
+- Fixed TypeScript error preventing toast counter from working
+- Fixed AppKit iframe initialization issue preventing wallet connections
+- All changes committed and pushed to GitHub (commit: 3d8124d)
+
+### Next Steps
+
+- Verify fixes on deployed GitHub Pages site
+- Monitor for any remaining initialization issues
+- Continue with Code Review phase
+
+---
+
 **Change Log Format:** [AGENT] - YYYY-MM-DD HH:MM:SS

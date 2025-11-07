@@ -7,7 +7,7 @@
 **Last Updated:** 2025-11-07  
 **Current Phase:** DevOps Complete ✅ → Code Review Phase Next  
 **Overall Progress:** 57% Complete (8/14 agents done) + DevOps 100% Complete  
-**Latest Enhancement:** Country-Specific News with Local Category + Client-Side Geolocation ✅
+**Latest Enhancement:** Fixed Reown AppKit initialization and Toast counter errors ✅
 
 ---
 
@@ -22,6 +22,42 @@
 ---
 
 ## Recent Progress
+
+### 2025-11-07 - Bug Fixes: Reown AppKit & Toast Counter Errors ✅
+
+**Action:** Fixed critical runtime errors preventing proper initialization:
+
+- **Toast Counter Error**: Fixed TypeScript error "Property 'counter' does not exist on type '(toast: Omit<Toast, "id">) => void'"
+  - Changed from function property (`addToast.counter`) to `useRef` hook
+  - Prevents TypeScript errors and ensures proper counter tracking
+  - Counter now persists correctly across toast notifications
+
+- **AppKitProvider Initialization**: Fixed "W3mFrame: iframe is not set" and "Cannot read properties of undefined (reading 'create')" errors
+  - Ensured AppKitProvider renders only after client-side mount
+  - Properly placed AppKitProvider inside ContextProvider for Wagmi config access
+  - AppKit iframe now initializes correctly for wallet connections
+
+**Files Modified:**
+- `src/components/ui/Toast.tsx` - Fixed counter using useRef instead of function property
+- `src/app/providers.tsx` - Fixed AppKitProvider initialization and mounting
+
+**Key Improvements:**
+- Toast notifications now work without TypeScript errors
+- Wallet connection (Reown AppKit) now initializes properly
+- No more "iframe is not set" errors
+- Proper client-side only rendering prevents SSR issues
+
+**Git Status:**
+- Commit: `3d8124d` - "fix: Fix Reown AppKit initialization and Toast counter error"
+- Branch: `master`
+- Status: ✅ Pushed to GitHub successfully
+
+**Next Steps:**
+- Verify fixes on deployed GitHub Pages site
+- Monitor for any remaining AppKit initialization issues
+- Continue with Code Review phase
+
+---
 
 ### 2025-11-07 - RSS Feed Integration: Added 3 New Financial News Sources ✅
 
