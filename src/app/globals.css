@@ -15,7 +15,6 @@
 
 /* Force dark theme as PRIMARY (design system requirement) */
 html {
-  @apply dark;
   background-color: #0F172A;
   color: #F1F5F9;
 }
