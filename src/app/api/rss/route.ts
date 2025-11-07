@@ -6,7 +6,30 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getRSSSourcesByCategory } from '@/lib/sources/rssRegistry';
+import { getCountryNewsSources } from '@/lib/sources/rss/country';
 import type { NewsCategory } from '@/lib/sources/types';
+
+export const dynamic = 'force-dynamic'; // Ensure this API route is always dynamic
+
+/**
+ * Detect country from request headers
+ */
+async function detectCountry(request: NextRequest): Promise<string> {
+  // Try to get country from query parameter first (for testing)
+  const countryParam = request.nextUrl.searchParams.get('country');
+  if (countryParam) {
+    return countryParam.toUpperCase();
+  }
+
+  // Get client IP
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  const ip = forwarded?.split(',')[0] || realIp || request.ip || '';
+
+  // Quick country detection (simplified - use geolocation API route for full detection)
+  // For now, default to US - full detection happens client-side
+  return 'US';
+}
 
 /**
  * Parse RSS XML to extract articles
@@ -125,7 +148,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Get RSS sources for this category
-    const sources = getRSSSourcesByCategory(category);
+    let sources = getRSSSourcesByCategory(category);
+
+    // If category is "general", add country-specific sources
+    if (category === 'general') {
+      const countryCode = await detectCountry(request);
+      const countrySources = getCountryNewsSources(countryCode);
+      // Merge country sources with general sources
+      sources = [...sources, ...countrySources];
+    }
 
     if (sources.length === 0) {
       return NextResponse.json({

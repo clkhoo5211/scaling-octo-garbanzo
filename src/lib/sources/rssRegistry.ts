@@ -10,10 +10,14 @@ import * as cryptoSources from "./rss/crypto";
 import * as socialSources from "./rss/social";
 import * as generalSources from "./rss/general";
 import * as businessSources from "./rss/business";
+import * as economySources from "./rss/economy";
 import * as scienceSources from "./rss/science";
 import * as sportsSources from "./rss/sports";
 import * as entertainmentSources from "./rss/entertainment";
 import * as healthSources from "./rss/health";
+import * as politicsSources from "./rss/politics";
+import * as environmentSources from "./rss/environment";
+import * as educationSources from "./rss/education";
 
 /**
  * Get all RSS sources
@@ -53,6 +57,9 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     generalSources.associatedPressSource,
     generalSources.newYorkTimesSource,
     generalSources.msnSource,
+    generalSources.alJazeeraSource,
+    generalSources.dwNewsSource,
+    generalSources.unNewsSource,
     
     // Business sources
     businessSources.bloombergSource,
@@ -81,6 +88,10 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     scienceSources.scientificAmericanSource,
     scienceSources.nationalGeographicSource,
     scienceSources.spaceNewsSource,
+    scienceSources.liveScienceSource,
+    scienceSources.popularScienceSource,
+    scienceSources.scienceDailySource,
+    scienceSources.physOrgSource,
     
     // Sports sources
     sportsSources.espnSource,
@@ -102,6 +113,58 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     healthSources.medicalNewsTodaySource,
     healthSources.mayoClinicSource,
     healthSources.nihSource,
+    healthSources.cdcSource,
+    healthSources.medicalXpressSource,
+    healthSources.newsMedicalSource,
+    healthSources.scienceDailyHealthSource,
+    healthSources.medlinePlusSource,
+    healthSources.fdaSource,
+    
+    // Economy & Stock Market sources
+    economySources.yahooFinanceSource,
+    economySources.marketWatchSource,
+    economySources.investingComSource,
+    economySources.nasdaqSource,
+    economySources.cnbcMarketsSource,
+    economySources.reutersMarketsSource,
+    economySources.bloombergMarketsSource,
+    economySources.financialTimesMarketsSource,
+    economySources.wallStreetJournalMarketsSource,
+    economySources.morningstarSource,
+    
+    // Politics sources
+    politicsSources.apNewsPoliticsSource,
+    politicsSources.reutersPoliticsSource,
+    politicsSources.bbcPoliticsSource,
+    politicsSources.nprPoliticsSource,
+    politicsSources.politicoSource,
+    politicsSources.theGuardianPoliticsSource,
+    politicsSources.realClearPoliticsSource,
+    politicsSources.theHillSource,
+    politicsSources.cnnPoliticsSource,
+    politicsSources.newYorkTimesPoliticsSource,
+    
+    // Environment & Climate sources
+    environmentSources.noaaClimateSource,
+    environmentSources.unClimateChangeSource,
+    environmentSources.bbcEnvironmentSource,
+    environmentSources.reutersEnvironmentSource,
+    environmentSources.apNewsEnvironmentSource,
+    environmentSources.theGuardianEnvironmentSource,
+    environmentSources.climateChangeNewsSource,
+    environmentSources.insideClimateNewsSource,
+    environmentSources.cnnClimateSource,
+    environmentSources.nationalGeographicEnvironmentSource,
+    
+    // Education sources
+    educationSources.bbcEducationSource,
+    educationSources.reutersEducationSource,
+    educationSources.apNewsEducationSource,
+    educationSources.theGuardianEducationSource,
+    educationSources.edWeekSource,
+    educationSources.chronicleOfHigherEdSource,
+    educationSources.insideHigherEdSource,
+    educationSources.cnnEducationSource,
   ].filter(source => source.config.enabled);
 }
 

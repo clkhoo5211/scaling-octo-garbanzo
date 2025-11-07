@@ -145,5 +145,8 @@ function ContextProvider({ children, cookies }: { children: ReactNode; cookies: 
   );
 }
 
+// Export AppKit instance for use in components
+export { appKit };
+
 export default ContextProvider;
 

@@ -11,10 +11,14 @@ export type NewsCategory =
   | "social" 
   | "general"
   | "business"
+  | "economy"
   | "science"
   | "sports"
   | "entertainment"
-  | "health";
+  | "health"
+  | "politics"
+  | "environment"
+  | "education";
 
 export interface RSSSourceConfig {
   /** Unique identifier for the source */

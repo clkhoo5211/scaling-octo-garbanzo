@@ -6,7 +6,7 @@ import { CategoryTabs } from "@/components/feed/CategoryTabs";
 import { ShowMoreButton } from "@/components/feed/ShowMoreButton";
 import { Autocomplete } from "@/components/search/Autocomplete";
 import { FilterChips, type FilterChip } from "@/components/search/FilterChips";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useArticles } from "@/lib/hooks/useArticles";
 import type { Article } from "@/lib/services/indexedDBCache";
 import type { NewsCategory } from "@/lib/sources/types";
@@ -23,11 +23,12 @@ export default function HomePage() {
   const { data: articles, isLoading, isError, error } = useArticles(selectedCategory, {
     usePagination: true,
     extractLinks: true,
+    enableRealtime: true, // Enable real-time updates with animation
   });
 
   // Debug logging
   if (typeof window !== 'undefined') {
-    console.log(`[HomePage] Category: ${selectedCategory}, Articles: ${articles?.length || 0}, Loading: ${isLoading}, Error: ${isError}`);
+    console.log(`[HomePage] Category: ${activeCategory}, Articles: ${articles?.length || 0}, Loading: ${isLoading}, Error: ${isError}`);
   }
 
   const filteredArticles = (articles || []).filter((article) => {
@@ -87,12 +88,6 @@ export default function HomePage() {
     setShowAllArticles(true);
   };
 
-  // Reset showAllArticles when category changes
-  const handleCategoryChange = (category: NewsCategory) => {
-    setSelectedCategory(category);
-    setShowAllArticles(false);
-  };
-
   return (
     <ErrorBoundary>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -119,8 +114,11 @@ export default function HomePage() {
 
         {/* Category Tabs */}
         <CategoryTabs
-          selectedCategory={selectedCategory}
-          onSelectCategory={handleCategoryChange}
+          selectedCategory={activeCategory}
+          onSelectCategory={(category) => {
+            setSelectedCategory(category);
+            setShowAllArticles(false);
+          }}
         />
 
         {/* Article Feed */}

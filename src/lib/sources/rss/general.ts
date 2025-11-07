@@ -76,3 +76,34 @@ export const msnSource = new BaseRSSSource({
   maxArticles: 30,
 });
 
+// Additional General News Sources
+export const alJazeeraSource = new BaseRSSSource({
+  id: "al-jazeera",
+  name: "Al Jazeera",
+  url: "https://www.aljazeera.com/xml/rss/all.xml",
+  category: "general",
+  enabled: true,
+  updateFrequency: 900000, // 15 minutes
+  maxArticles: 30,
+});
+
+export const dwNewsSource = new BaseRSSSource({
+  id: "dw-news",
+  name: "DW News",
+  url: "https://rss.dw.com/rdf/rss-en-all",
+  category: "general",
+  enabled: true,
+  updateFrequency: 900000, // 15 minutes
+  maxArticles: 30,
+});
+
+export const unNewsSource = new BaseRSSSource({
+  id: "un-news",
+  name: "UN News",
+  url: "https://news.un.org/en/rss/feed/all",
+  category: "general",
+  enabled: true,
+  updateFrequency: 1800000, // 30 minutes
+  maxArticles: 20,
+});
+

@@ -192,7 +192,7 @@ async function fetchWithRetry<T>(
 
 export function useArticles(
   category: NewsCategory,
-  options?: { usePagination?: boolean; extractLinks?: boolean }
+  options?: { usePagination?: boolean; extractLinks?: boolean; enableRealtime?: boolean }
 ) {
   // CRITICAL: Track client-side mount to prevent hydration mismatch
   const [isClient, setIsClient] = useState(false);
@@ -321,6 +321,9 @@ export function useArticles(
     refetchOnMount: false, // Don't refetch if we have cached data
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    // CRITICAL: Enable real-time polling if requested (default: true)
+    // Poll every 2 minutes for new articles - only updates when new articles appear
+    refetchInterval: options?.enableRealtime !== false ? 2 * 60 * 1000 : false,
   });
 }
 
