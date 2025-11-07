@@ -17,6 +17,7 @@ import {
   fetchArticleContent,
   estimateReadingTime,
 } from "@/lib/services/articleContent";
+import { sanitizeArticleHtml } from "@/lib/utils/sanitizeHtml";
 import type { Article } from "@/lib/services/indexedDBCache";
 import { FileText } from "lucide-react";
 import { useAppStore } from "@/lib/stores/appStore";
@@ -43,7 +44,9 @@ interface ArticleReaderClientProps {
   url: string;
 }
 
-export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProps) {
+export function ArticleReaderClient({
+  url: articleUrl,
+}: ArticleReaderClientProps) {
   const [article, setArticle] = useState<Article | null>(null);
   const [parsedContent, setParsedContent] = useState<string | null>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
@@ -82,7 +85,9 @@ export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProp
         fetchArticleContent(found.url)
           .then((parsed) => {
             if (parsed) {
-              setParsedContent(parsed.content);
+              // Sanitize HTML content for security
+              const sanitized = sanitizeArticleHtml(parsed.content);
+              setParsedContent(sanitized);
             }
           })
           .catch((error) => {
@@ -92,7 +97,9 @@ export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProp
             setIsLoadingContent(false);
           });
       } else if (found?.content) {
-        setParsedContent(found.content);
+        // Sanitize cached content
+        const sanitized = sanitizeArticleHtml(found.content);
+        setParsedContent(sanitized);
       }
     }
   }, [articles, articleUrl]);
@@ -248,19 +255,19 @@ export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProp
           </Suspense>
 
           {/* Reader Controls */}
-              <Suspense fallback={null}>
-                <ReaderControls
-                  articleId={article.id}
-                  articleUrl={article.url}
-                  isBookmarked={isBookmarked}
-                  onBookmarkToggle={handleBookmark}
-                  onShare={handleShare}
-                  fontSize={fontSize}
-                  onFontSizeChange={setFontSize}
-                  theme={theme}
-                  onThemeToggle={handleThemeToggle}
-                />
-              </Suspense>
+          <Suspense fallback={null}>
+            <ReaderControls
+              articleId={article.id}
+              articleUrl={article.url}
+              isBookmarked={isBookmarked}
+              onBookmarkToggle={handleBookmark}
+              onShare={handleShare}
+              fontSize={fontSize}
+              onFontSizeChange={setFontSize}
+              theme={theme}
+              onThemeToggle={handleThemeToggle}
+            />
+          </Suspense>
         </div>
 
         {/* External Link Notice */}
@@ -284,4 +291,3 @@ export function ArticleReaderClient({ url: articleUrl }: ArticleReaderClientProp
     </ErrorBoundary>
   );
 }
-

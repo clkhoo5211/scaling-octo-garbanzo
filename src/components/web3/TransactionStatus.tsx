@@ -35,9 +35,11 @@ export function TransactionStatus({
     const checkTransaction = async () => {
       try {
         // Simple polling - in production, use a proper service
-        const response = await fetch(`https://api.etherscan.io/api?module=proxy&action=eth_getTransactionReceipt&txhash=${hash}&apikey=YourApiKeyToken`);
+        const response = await fetch(
+          `https://api.etherscan.io/api?module=proxy&action=eth_getTransactionReceipt&txhash=${hash}&apikey=YourApiKeyToken`
+        );
         const data = await response.json();
-        
+
         if (data.result && data.result.status === "0x1") {
           setStatus("success");
           if (onSuccess) onSuccess();

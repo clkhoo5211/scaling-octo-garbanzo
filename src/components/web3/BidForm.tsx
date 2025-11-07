@@ -18,10 +18,7 @@ interface BidFormProps {
  * BidForm Component
  * Form for placing bids on ad auctions
  */
-export function BidForm({
-  minBid,
-  onBid,
-}: BidFormProps) {
+export function BidForm({ minBid, onBid }: BidFormProps) {
   const [bidAmount, setBidAmount] = useState("");
   const [tenure, setTenure] = useState("1week");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +28,7 @@ export function BidForm({
   const { address } = useAppKitAccount();
   const { fetchBalance } = useAppKitBalance();
   const [balance, setBalance] = useState<{ formatted: string } | null>(null);
-  
+
   // Fetch balance on mount
   useEffect(() => {
     if (address) {
@@ -42,7 +39,7 @@ export function BidForm({
       });
     }
   }, [address, fetchBalance]);
-  
+
   // Remove useWriteContract for now - not available in AppKit
   const [isPending] = useState(false);
 
@@ -83,7 +80,8 @@ export function BidForm({
       await onBid(bidAmount, tenure);
       setIsSubmitting(false);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to place bid";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to place bid";
       setError(errorMessage);
       setIsSubmitting(false);
     }

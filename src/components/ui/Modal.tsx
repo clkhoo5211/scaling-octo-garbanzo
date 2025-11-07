@@ -7,7 +7,7 @@ import { Button } from "./Button";
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title?: string;
+  title?: ReactNode;
   children: ReactNode;
   size?: "sm" | "md" | "lg" | "xl" | "full";
   showCloseButton?: boolean;
@@ -61,7 +61,7 @@ export const Modal = memo(function Modal({
     >
       <div
         className={cn(
-          "bg-white rounded-lg shadow-xl w-full",
+          "bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full",
           sizeClasses[size],
           "max-h-[90vh] overflow-y-auto"
         )}
@@ -71,9 +71,20 @@ export const Modal = memo(function Modal({
         aria-labelledby={title ? "modal-title" : undefined}
       >
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             {title && (
-              <h2 id="modal-title" className="text-xl font-semibold text-gray-900">{title}</h2>
+              <div className="flex-1 pr-4">
+                {typeof title === "string" ? (
+                  <h2
+                    id="modal-title"
+                    className="text-xl font-semibold text-gray-900 dark:text-gray-100"
+                  >
+                    {title}
+                  </h2>
+                ) : (
+                  <div id="modal-title">{title}</div>
+                )}
+              </div>
             )}
             {showCloseButton && (
               <Button
@@ -100,7 +111,7 @@ export const Modal = memo(function Modal({
             )}
           </div>
         )}
-        <div className="p-4">{children}</div>
+        <div className="p-4 dark:text-gray-100">{children}</div>
       </div>
     </div>
   );

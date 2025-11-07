@@ -5,13 +5,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKit } from "@reown/appkit/react";
-import {
-  User,
-  Wallet,
-  Bookmark,
-  Heart,
-  MessageCircle,
-} from "lucide-react";
+import { User, Wallet, Bookmark, Heart, MessageCircle } from "lucide-react";
 import { useBookmarks } from "@/lib/hooks/useArticles";
 import { usePointsTransactions } from "@/lib/hooks/useArticles";
 import { formatDistanceToNow } from "date-fns";

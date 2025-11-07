@@ -5,10 +5,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
-import {
-  useFollowing,
-  useArticles,
-} from "@/lib/hooks/useArticles";
+import { useFollowing, useArticles } from "@/lib/hooks/useArticles";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppStore } from "@/lib/stores/appStore";
 import { Users } from "lucide-react";

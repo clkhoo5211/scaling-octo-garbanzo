@@ -188,7 +188,9 @@ export const useAppStore = create<AppState>()(
           state.bookmarks = new Set(state.bookmarks as string[]);
           state.likedArticles = new Set(state.likedArticles as string[]);
           state.following = new Set(state.following as string[]);
-          state.readingProgress = new Map(state.readingProgress as [string, number][]);
+          state.readingProgress = new Map(
+            state.readingProgress as [string, number][]
+          );
         }
       },
     }

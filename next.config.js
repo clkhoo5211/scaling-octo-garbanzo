@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  output: "export",
   // GitHub Pages basePath: repository name (e.g., /scaling-octo-garbanzo)
   // Set via environment variable GITHUB_REPOSITORY_NAME or default to empty for root domain
-  basePath: process.env.GITHUB_REPOSITORY_NAME ? `/${process.env.GITHUB_REPOSITORY_NAME}` : '',
+  basePath: process.env.GITHUB_REPOSITORY_NAME
+    ? `/${process.env.GITHUB_REPOSITORY_NAME}`
+    : "",
   images: {
     unoptimized: true,
   },
@@ -11,7 +13,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
-    optimizePackageImports: ['@reown/appkit'],
+    optimizePackageImports: ["@reown/appkit"],
   },
   eslint: {
     // Don't fail build on lint errors - we'll fix them incrementally
@@ -25,7 +27,7 @@ const nextConfig = {
   webpack: (config, { isServer, dev }) => {
     // Disable webpack cache
     config.cache = false;
-    
+
     if (!isServer) {
       // Client-side only - no server actions
       config.resolve.fallback = {
@@ -40,4 +42,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-

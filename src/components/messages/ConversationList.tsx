@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  useConversations,
-} from "@/lib/hooks/useMessages";
+import { useConversations } from "@/lib/hooks/useMessages";
 import { useAppStore } from "@/lib/stores/appStore";
 import { formatDistanceToNow } from "date-fns";
 import { MessageCircle, User } from "lucide-react";

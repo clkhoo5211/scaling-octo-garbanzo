@@ -2,32 +2,34 @@
  * Tests for useAuctions hooks
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode } from 'react';
-import React from 'react';
+import { renderHook, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode } from "react";
+import React from "react";
 import {
   useAuctions,
   useAuctionBids,
   usePlaceBid,
   useUserBids,
-} from './useAuctions';
-import * as supabaseApi from '@/lib/api/supabaseApi';
-import { useAppKitAccount } from '@reown/appkit/react';
+} from "./useAuctions";
+import * as supabaseApi from "@/lib/api/supabaseApi";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 // Mock dependencies
-jest.mock('@/lib/api/supabaseApi');
-jest.mock('@/lib/stores/appStore', () => {
+jest.mock("@/lib/api/supabaseApi");
+jest.mock("@/lib/stores/appStore", () => {
   const mockStore = {
-    userId: 'test-user-id',
+    userId: "test-user-id",
   };
   const useAppStoreMock = jest.fn(() => mockStore);
-  (useAppStoreMock as unknown as { getState: jest.Mock }).getState = jest.fn(() => mockStore);
+  (useAppStoreMock as unknown as { getState: jest.Mock }).getState = jest.fn(
+    () => mockStore
+  );
   return {
     useAppStore: useAppStoreMock,
   };
 });
-jest.mock('@reown/appkit/react', () => ({
+jest.mock("@reown/appkit/react", () => ({
   useAppKitAccount: jest.fn(() => ({
     address: undefined,
     isConnected: false,
@@ -54,23 +56,27 @@ const createWrapper = () => {
   });
 
   const Wrapper = ({ children }: { children: ReactNode }) => {
-    return React.createElement(QueryClientProvider, { client: queryClient }, children);
+    return React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children
+    );
   };
-  
+
   return Wrapper;
 };
 
-describe('useAuctions', () => {
+describe("useAuctions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should fetch auctions', async () => {
+  it("should fetch auctions", async () => {
     const mockAuctions = [
       {
-        id: '1',
-        slot_id: 'slot-1',
-        status: 'active',
+        id: "1",
+        slot_id: "slot-1",
+        status: "active",
         current_bid: 100,
         end_time: new Date(Date.now() + 3600000).toISOString(),
         created_at: new Date().toISOString(),
@@ -90,12 +96,12 @@ describe('useAuctions', () => {
     expect(result.current.data).toEqual(mockAuctions);
   });
 
-  it('should fetch auctions with filters', async () => {
+  it("should fetch auctions with filters", async () => {
     const mockAuctions = [
       {
-        id: '1',
-        slot_id: 'slot-1',
-        status: 'active',
+        id: "1",
+        slot_id: "slot-1",
+        status: "active",
         current_bid: 100,
         end_time: new Date(Date.now() + 3600000).toISOString(),
         created_at: new Date().toISOString(),
@@ -108,7 +114,7 @@ describe('useAuctions', () => {
     });
 
     const { result } = renderHook(
-      () => useAuctions({ status: 'active', limit: 10 }),
+      () => useAuctions({ status: "active", limit: 10 }),
       {
         wrapper: createWrapper(),
       }
@@ -116,25 +122,25 @@ describe('useAuctions', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(supabaseApi.getAuctions).toHaveBeenCalledWith({
-      status: 'active',
+      status: "active",
       limit: 10,
     });
   });
 });
 
-describe('useAuctionBids', () => {
+describe("useAuctionBids", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should fetch bids for an auction', async () => {
+  it("should fetch bids for an auction", async () => {
     const mockBids = [
       {
-        id: '1',
-        auction_id: 'auction-1',
-        bidder_address: '0x123',
+        id: "1",
+        auction_id: "auction-1",
+        bidder_address: "0x123",
         bid_amount: 100,
-        transaction_hash: '0xabc',
+        transaction_hash: "0xabc",
         created_at: new Date().toISOString(),
       },
     ];
@@ -144,7 +150,7 @@ describe('useAuctionBids', () => {
       error: null,
     });
 
-    const { result } = renderHook(() => useAuctionBids('auction-1'), {
+    const { result } = renderHook(() => useAuctionBids("auction-1"), {
       wrapper: createWrapper(),
     });
 
@@ -153,16 +159,16 @@ describe('useAuctionBids', () => {
   });
 });
 
-describe('usePlaceBid', () => {
+describe("usePlaceBid", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useAppKitAccount as jest.Mock).mockReturnValue({
-      address: '0x123',
+      address: "0x123",
       isConnected: true,
     });
   });
 
-  it('should place a bid', async () => {
+  it("should place a bid", async () => {
     (supabaseApi.createAuctionBid as jest.Mock).mockResolvedValue({
       error: null,
     });
@@ -172,20 +178,20 @@ describe('usePlaceBid', () => {
     });
 
     result.current.mutate({
-      auctionId: 'auction-1',
+      auctionId: "auction-1",
       bidAmount: 100,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(supabaseApi.createAuctionBid).toHaveBeenCalledWith({
-      auctionId: 'auction-1',
-      bidderAddress: '0x123',
+      auctionId: "auction-1",
+      bidderAddress: "0x123",
       bidAmount: 100,
       transactionHash: undefined,
     });
   });
 
-  it('should throw error if wallet not connected', async () => {
+  it("should throw error if wallet not connected", async () => {
     (useAppKitAccount as jest.Mock).mockReturnValue({
       address: null,
       isConnected: false,
@@ -196,26 +202,26 @@ describe('usePlaceBid', () => {
     });
 
     result.current.mutate({
-      auctionId: 'auction-1',
+      auctionId: "auction-1",
       bidAmount: 100,
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.error?.message).toBe('Wallet not connected');
+    expect(result.current.error?.message).toBe("Wallet not connected");
   });
 });
 
-describe('useUserBids', () => {
+describe("useUserBids", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should fetch user bids', async () => {
+  it("should fetch user bids", async () => {
     const mockAuctions = [
       {
-        id: 'auction-1',
-        slot_id: 'slot-1',
-        status: 'active',
+        id: "auction-1",
+        slot_id: "slot-1",
+        status: "active",
         current_bid: 100,
         end_time: new Date(Date.now() + 3600000).toISOString(),
         created_at: new Date().toISOString(),
@@ -224,11 +230,11 @@ describe('useUserBids', () => {
 
     const mockBids = [
       {
-        id: '1',
-        auction_id: 'auction-1',
-        bidder_address: '0x123',
+        id: "1",
+        auction_id: "auction-1",
+        bidder_address: "0x123",
         bid_amount: 100,
-        transaction_hash: '0xabc',
+        transaction_hash: "0xabc",
         created_at: new Date().toISOString(),
       },
     ];
@@ -242,7 +248,7 @@ describe('useUserBids', () => {
       error: null,
     });
 
-    const { result } = renderHook(() => useUserBids('0x123'), {
+    const { result } = renderHook(() => useUserBids("0x123"), {
       wrapper: createWrapper(),
     });
 
@@ -254,7 +260,7 @@ describe('useUserBids', () => {
     });
   });
 
-  it('should return empty array if userAddress is null', async () => {
+  it("should return empty array if userAddress is null", async () => {
     const { result } = renderHook(() => useUserBids(null), {
       wrapper: createWrapper(),
     });
@@ -265,4 +271,3 @@ describe('useUserBids', () => {
     expect(supabaseApi.getAuctions).not.toHaveBeenCalled();
   });
 });
-

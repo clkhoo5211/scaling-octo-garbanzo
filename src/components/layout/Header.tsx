@@ -5,7 +5,6 @@ import { AuthStatus } from "@/components/auth/AuthStatus";
 import { WalletConnect } from "@/components/web3/WalletConnect";
 
 export function Header() {
-
   return (
     <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
       <div className="container mx-auto px-4">

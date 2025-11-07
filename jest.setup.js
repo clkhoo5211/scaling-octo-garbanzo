@@ -1,21 +1,21 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
 // Mock Next.js router
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter() {
     return {
       push: jest.fn(),
       replace: jest.fn(),
       prefetch: jest.fn(),
       back: jest.fn(),
-      pathname: '/',
+      pathname: "/",
       query: {},
-      asPath: '/',
+      asPath: "/",
     };
   },
   usePathname() {
-    return '/';
+    return "/";
   },
   useParams() {
     return {};
@@ -26,7 +26,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock Reown AppKit
-jest.mock('@reown/appkit/react', () => ({
+jest.mock("@reown/appkit/react", () => ({
   useAppKitAccount: () => ({
     address: undefined,
     isConnected: false,
@@ -45,7 +45,7 @@ jest.mock('@reown/appkit/react', () => ({
 }));
 
 // Mock Clerk
-jest.mock('@clerk/nextjs', () => ({
+jest.mock("@clerk/nextjs", () => ({
   useUser: () => ({
     user: null,
     isLoaded: true,
@@ -54,7 +54,7 @@ jest.mock('@clerk/nextjs', () => ({
 }));
 
 // Mock Supabase
-jest.mock('@/lib/services/supabase', () => ({
+jest.mock("@/lib/services/supabase", () => ({
   supabase: {
     from: jest.fn(() => ({
       select: jest.fn().mockReturnThis(),
@@ -94,7 +94,7 @@ const localStorageMock = {
 global.localStorage = localStorageMock;
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
@@ -126,4 +126,3 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 };
-

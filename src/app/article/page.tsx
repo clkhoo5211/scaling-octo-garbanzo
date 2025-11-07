@@ -12,26 +12,26 @@ import { LoadingState } from "@/components/ui/LoadingState";
 function ArticleReaderPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const urlParam = searchParams.get('url');
+  const urlParam = searchParams.get("url");
   const [articleUrl, setArticleUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (urlParam) {
       setArticleUrl(decodeURIComponent(urlParam));
-    } else if (typeof window !== 'undefined') {
+    } else if (typeof window !== "undefined") {
       // Try to get URL from hash or pathname for backward compatibility
       const hash = window.location.hash.slice(1);
       const pathname = window.location.pathname;
-      
+
       if (hash) {
         setArticleUrl(decodeURIComponent(hash));
-      } else if (pathname.includes('/article/')) {
-        const articlePath = pathname.split('/article/')[1];
+      } else if (pathname.includes("/article/")) {
+        const articlePath = pathname.split("/article/")[1];
         if (articlePath) {
           setArticleUrl(decodeURIComponent(articlePath));
         }
       } else {
-        router.push('/');
+        router.push("/");
       }
     }
   }, [urlParam, router]);
@@ -45,9 +45,10 @@ function ArticleReaderPageContent() {
 
 export default function ArticleReaderPage() {
   return (
-    <Suspense fallback={<LoadingState message="Loading article..." fullScreen />}>
+    <Suspense
+      fallback={<LoadingState message="Loading article..." fullScreen />}
+    >
       <ArticleReaderPageContent />
     </Suspense>
   );
 }
-
