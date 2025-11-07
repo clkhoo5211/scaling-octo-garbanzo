@@ -124,7 +124,7 @@ export const ArticleCard = memo(function ArticleCard({
 
   return (
     <>
-      <article className="bg-gray-700 rounded-lg border border-gray-600 overflow-hidden hover:shadow-elevated hover:border-primary/50 transition-all duration-200 group">
+      <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-elevated hover:border-primary/50 transition-all duration-200 group shadow-sm">
         <div
           onClick={handleCardClick}
           className="cursor-pointer"
@@ -140,10 +140,10 @@ export const ArticleCard = memo(function ArticleCard({
                 />
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-white mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-primary transition-colors">
                   {article.title}
                 </h3>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
                   <span>{article.source}</span>
                   <span>•</span>
                   <span>{formatRelativeTime(article.publishedAt)}</span>
@@ -159,20 +159,20 @@ export const ArticleCard = memo(function ArticleCard({
 
             {/* Excerpt */}
             {article.excerpt && variant !== "compact" && (
-              <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
                 {truncate(article.excerpt, 150)}
               </p>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-600">
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
               <div className="flex items-center gap-4">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     handleLike();
                   }}
-                  className={`transition-colors hover:scale-110 ${liked ? "text-red-500" : "text-gray-400 hover:text-red-400"}`}
+                        className={`transition-colors hover:scale-110 ${liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
                   aria-label="Like article"
                 >
                   <span className="text-sm font-medium">👍 {likesCount || 0}</span>
@@ -182,7 +182,7 @@ export const ArticleCard = memo(function ArticleCard({
                     e.preventDefault();
                     handleBookmark();
                   }}
-                  className={`transition-colors hover:scale-110 ${bookmarked ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"}`}
+                        className={`transition-colors hover:scale-110 ${bookmarked ? "text-yellow-500" : "text-gray-600 hover:text-yellow-500"}`}
                   aria-label="Bookmark article"
                 >
                   🔖
@@ -192,14 +192,14 @@ export const ArticleCard = memo(function ArticleCard({
                     e.preventDefault();
                     handleShare();
                   }}
-                  className="text-gray-400 hover:text-primary transition-colors hover:scale-110"
+                        className="text-gray-600 hover:text-primary transition-colors hover:scale-110"
                   aria-label="Share article"
                 >
                   📤
                 </button>
               </div>
               {article.comments !== undefined && (
-                <span className="text-sm text-gray-400">
+                      <span className="text-sm text-gray-600">
                   {article.comments} comments
                 </span>
               )}
@@ -253,7 +253,7 @@ export const ArticleCard = memo(function ArticleCard({
 
 export function ArticleCardSkeleton() {
   return (
-    <div className="bg-gray-700 rounded-lg border border-gray-600 p-4 animate-pulse">
+    <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse shadow-sm">
       <Skeleton height={20} className="mb-2" />
       <Skeleton height={16} width="60%" className="mb-4" />
       <Skeleton height={16} width="40%" />

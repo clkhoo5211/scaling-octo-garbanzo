@@ -47,11 +47,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
         <Providers>
           <Header />
-          <main className="min-h-screen pb-16 md:pb-0 bg-gray-900">{children}</main>
+          <main className="min-h-screen pb-16 md:pb-0 bg-gray-100">{children}</main>
           <BottomNavLazy />
           <ServiceWorkerRegistration />
         </Providers>

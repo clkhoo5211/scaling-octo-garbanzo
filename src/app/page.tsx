@@ -127,7 +127,7 @@ export default function HomePage() {
         {isLoading ? (
           <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-8">
             <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-sm text-gray-400">Loading articles...</p>
+            <p className="text-sm text-gray-600">Loading articles...</p>
           </div>
         ) : isError ? (
           <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-8">
@@ -147,7 +147,7 @@ export default function HomePage() {
             
             {/* Show count info */}
             {displayedArticles.length > 0 && (
-              <p className="text-center text-sm text-gray-400 mt-4">
+              <p className="text-center text-sm text-gray-600 mt-4">
                 {showAllArticles 
                   ? `Showing all ${filteredArticles.length} articles`
                   : `Showing top ${displayedArticles.length} of ${filteredArticles.length} articles${hasMoreArticles ? " (Click 'Show More' to see all)" : ""}`
