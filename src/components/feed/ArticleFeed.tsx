@@ -13,13 +13,13 @@ export function ArticleFeed({ articles, onSelectArticle }: ArticleFeedProps) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center">
         {/* CRITICAL: Use CSS icon instead of lucide-react to prevent hydration mismatch */}
-        <div className="mb-4 w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
+        <div className="mb-4 w-12 h-12 bg-gray-700 rounded flex items-center justify-center">
           <span className="text-gray-400 text-2xl">📄</span>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        <h3 className="text-lg font-semibold text-white mb-2">
           No articles found
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 max-w-md">
+        <p className="text-sm text-gray-400 mb-4 max-w-md">
           Try adjusting your filters or check back later
         </p>
       </div>

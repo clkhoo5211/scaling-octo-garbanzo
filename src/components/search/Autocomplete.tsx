@@ -122,7 +122,7 @@ export function Autocomplete({
           onKeyDown={handleKeyDown}
           onFocus={() => query.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
-          className={`w-full ${mounted ? 'pl-10' : 'pl-4'} pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          className={`w-full ${mounted ? 'pl-10' : 'pl-4'} pr-10 py-2 border border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary`}
         />
         {mounted && isLoading && (
           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
@@ -130,7 +130,7 @@ export function Autocomplete({
         {mounted && query && !isLoading && (
           <button
             onClick={() => handleInputChange("")}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-700 rounded"
             aria-label="Clear search"
           >
             <X className="w-4 h-4 text-gray-400" />
@@ -140,21 +140,21 @@ export function Autocomplete({
 
       {/* Suggestions Dropdown */}
       {showSuggestions && filteredArticles.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
           {filteredArticles.map((article, index) => (
             <button
               key={article.id}
               onClick={() => handleSelect(article)}
-              className={`w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                index === selectedIndex ? "bg-gray-100 dark:bg-gray-700" : ""
+              className={`w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors ${
+                index === selectedIndex ? "bg-gray-700" : ""
               } ${index === 0 ? "rounded-t-lg" : ""} ${
                 index === filteredArticles.length - 1 ? "rounded-b-lg" : ""
               }`}
             >
-              <div className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
+              <div className="font-medium text-sm text-white truncate">
                 {article.title}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+              <div className="text-xs text-gray-400 mt-1 truncate">
                 {article.source} • {article.category}
               </div>
             </button>
@@ -167,7 +167,7 @@ export function Autocomplete({
         query.length > 0 &&
         filteredArticles.length === 0 &&
         !isLoading && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 p-4 text-center text-sm text-gray-400">
             No articles found
           </div>
         )}

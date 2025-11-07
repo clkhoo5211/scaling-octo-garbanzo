@@ -161,12 +161,15 @@ export function useArticles(
     queryKey: ["articles", category, "realtime"],
     enabled: isClient,
     queryFn: async () => {
-      console.log(`Fetching real-time articles for ${category}...`);
+      console.log(`[useArticles] Fetching articles for ${category}...`);
       
       // CRITICAL: Add timeout to prevent hanging forever
       // Fetch RSS and non-RSS sources in parallel with 5s timeout each
       const [rssArticles, nonRSSArticles] = await Promise.allSettled([
-        fetchWithTimeout(modularRSSAggregator.fetchByCategory(category), 5000).catch(() => []),
+        fetchWithTimeout(modularRSSAggregator.fetchByCategory(category), 5000).catch((err) => {
+          console.warn(`[useArticles] RSS fetch failed for ${category}:`, err);
+          return [];
+        }),
         (async () => {
           const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
             ? category as "tech" | "crypto" | "social" | "general"
@@ -179,9 +182,15 @@ export function useArticles(
                 extractLinks: options?.extractLinks ?? true,
               }),
               5000
-            ).catch(() => []);
+            ).catch((err) => {
+              console.warn(`[useArticles] Non-RSS fetch failed for ${category}:`, err);
+              return [];
+            });
           } else {
-            return fetchWithTimeout(fetchRedditFallback(category), 5000).catch(() => []);
+            return fetchWithTimeout(fetchRedditFallback(category), 5000).catch((err) => {
+              console.warn(`[useArticles] Reddit fallback failed for ${category}:`, err);
+              return [];
+            });
           }
         })(),
       ]);
@@ -193,8 +202,9 @@ export function useArticles(
       const allArticles = [...rss, ...nonRSS];
       const uniqueArticles = deduplicateArticles(allArticles);
 
-      console.log(`✅ Fetched ${uniqueArticles.length} articles for ${category} (RSS: ${rss.length}, Non-RSS: ${nonRSS.length})`);
+      console.log(`[useArticles] ✅ Fetched ${uniqueArticles.length} articles for ${category} (RSS: ${rss.length}, Non-RSS: ${nonRSS.length})`);
 
+      // Return empty array if no articles (don't throw error)
       return uniqueArticles;
     },
     staleTime: 2 * 60 * 1000, // 2 minutes - use cached data

@@ -253,7 +253,7 @@ export const ArticleCard = memo(function ArticleCard({
 
 export function ArticleCardSkeleton() {
   return (
-    <div className="bg-dark-surface rounded-lg border border-dark-border p-4 animate-pulse">
+    <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 animate-pulse">
       <Skeleton height={20} className="mb-2" />
       <Skeleton height={16} width="60%" className="mb-4" />
       <Skeleton height={16} width="40%" />
