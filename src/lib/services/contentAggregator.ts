@@ -254,16 +254,58 @@ class ContentAggregator {
       },
       // Additional Social Sources
       {
-        name: "LinkedIn Tech",
-        type: "rss",
-        endpoint: "https://www.linkedin.com/feed/update/",
+        name: "Reddit Popular",
+        type: "rest",
+        endpoint: "https://www.reddit.com",
         category: "social",
-        enabled: false, // Requires authentication
+        enabled: true,
+      },
+      {
+        name: "Reddit All",
+        type: "rest",
+        endpoint: "https://www.reddit.com",
+        category: "social",
+        enabled: true,
+      },
+      {
+        name: "Reddit Videos",
+        type: "rest",
+        endpoint: "https://www.reddit.com",
+        category: "social",
+        enabled: true,
+      },
+      {
+        name: "Reddit Pics",
+        type: "rest",
+        endpoint: "https://www.reddit.com",
+        category: "social",
+        enabled: true,
       },
       {
         name: "Reddit Crypto",
         type: "rest",
         endpoint: "https://www.reddit.com",
+        category: "crypto", // FIXED: Should be crypto, not social
+        enabled: true,
+      },
+      {
+        name: "YouTube Viral",
+        type: "rss",
+        endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ", // YouTube Trending
+        category: "social",
+        enabled: true,
+      },
+      {
+        name: "YouTube Music",
+        type: "rss",
+        endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UC-9-kyTW8ZkZNDHQJ6FgpwQ", // YouTube Music
+        category: "social",
+        enabled: true,
+      },
+      {
+        name: "YouTube Gaming",
+        type: "rss",
+        endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCOpNcN46UbXVtpKMrmU4Abg", // YouTube Gaming
         category: "social",
         enabled: true,
       },
@@ -572,19 +614,32 @@ class ContentAggregator {
       });
 
       if (!response.ok) {
-        throw new Error(`Reddit API error: ${response.status}`);
+        console.error(`Reddit API error for r/${subreddit}: ${response.status} ${response.statusText}`);
+        return { articles: [] };
       }
 
       const data = await response.json();
+      
+      // Check if Reddit returned an error
+      if (data.error) {
+        console.error(`Reddit API error for r/${subreddit}:`, data.error);
+        return { articles: [] };
+      }
+
       const posts = data.data?.children || [];
       const nextAfter = data.data?.after;
+
+      if (posts.length === 0) {
+        console.warn(`Reddit r/${subreddit} returned no posts`);
+        return { articles: [], nextAfter };
+      }
 
       const articles = posts.map((child: any) => {
         const post = child.data;
         const article: Article = {
           id: `rd-${post.id}`,
           title: post.title,
-          url: post.url,
+          url: post.url.startsWith("http") ? post.url : `https://reddit.com${post.permalink || post.url}`,
           source: `Reddit r/${subreddit}`,
           category: category,
           upvotes: post.ups || 0,
@@ -610,9 +665,10 @@ class ContentAggregator {
         return article;
       });
 
+      console.log(`✓ Reddit r/${subreddit}: ${articles.length} articles`);
       return { articles, nextAfter };
     } catch (error) {
-      console.error("Error fetching Reddit:", error);
+      console.error(`Error fetching Reddit r/${subreddit}:`, error);
       return { articles: [] };
     }
   }
@@ -695,7 +751,62 @@ class ContentAggregator {
   }
 
   /**
-   * Fetch from RSS feed
+   * Parse RSS XML directly (fallback when proxy fails)
+   */
+  private parseRSSXML(xmlText: string): Array<{
+    title?: string;
+    link?: string;
+    description?: string;
+    pubDate?: string;
+    author?: string;
+    thumbnail?: string;
+  }> {
+    const items: Array<{
+      title?: string;
+      link?: string;
+      description?: string;
+      pubDate?: string;
+      author?: string;
+      thumbnail?: string;
+    }> = [];
+
+    try {
+      // Match all <item> tags
+      const itemMatches = xmlText.matchAll(/<item[^>]*>([\s\S]*?)<\/item>/gi);
+
+      for (const match of itemMatches) {
+        const itemXml = match[1];
+        const titleMatch = itemXml.match(/<title[^>]*>(.*?)<\/title>/is);
+        const linkMatch = itemXml.match(/<link[^>]*>(.*?)<\/link>/is);
+        const descMatch = itemXml.match(/<description[^>]*>(.*?)<\/description>/is);
+        const dateMatch = itemXml.match(/<pubDate[^>]*>(.*?)<\/pubDate>/is);
+        const authorMatch = itemXml.match(/<(?:author|dc:creator)[^>]*>(.*?)<\/(?:author|dc:creator)>/is);
+        const thumbnailMatch = itemXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i) ||
+                                itemXml.match(/<enclosure[^>]*url=["']([^"']+)["']/i);
+
+        const title = titleMatch?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').trim() || titleMatch?.[1]?.trim();
+        const link = linkMatch?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').trim() || linkMatch?.[1]?.trim();
+
+        if (title && link) {
+          items.push({
+            title,
+            link,
+            description: descMatch?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').trim() || descMatch?.[1]?.trim(),
+            pubDate: dateMatch?.[1]?.trim(),
+            author: authorMatch?.[1]?.trim(),
+            thumbnail: thumbnailMatch?.[1],
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing RSS XML:", error);
+    }
+
+    return items;
+  }
+
+  /**
+   * Fetch from RSS feed with fallback parsing
    */
   private async fetchRSSFeed(
     url: string,
@@ -704,33 +815,68 @@ class ContentAggregator {
   ): Promise<Article[]> {
     await this.rateLimiter.wait("rss");
 
+    // Try proxy first
     try {
-      // Use CORS proxy for RSS feeds
       const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
-      const response = await fetch(proxyUrl);
+      const response = await fetch(proxyUrl, {
+        headers: {
+          'User-Agent': 'Web3News/1.0',
+        },
+      });
       
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Check if RSS2JSON returned an error
+        if (data.status === "error") {
+          throw new Error(`RSS2JSON error: ${data.message || 'Unknown error'}`);
+        }
+
+        const items = data.items || [];
+        
+        if (items.length > 0) {
+          return items.map((item: any) => ({
+            id: `rss-${item.guid || item.link || `${sourceName}-${Date.now()}-${Math.random()}`}`,
+            title: item.title || "Untitled",
+            url: item.link || url,
+            source: sourceName,
+            category: category,
+            publishedAt: item.pubDate ? new Date(item.pubDate).getTime() : Date.now(),
+            author: item.author,
+            excerpt: item.description?.replace(/<[^>]*>/g, "").substring(0, 200),
+            thumbnail: item.enclosure?.link || item.thumbnail,
+            urlHash: "",
+            cachedAt: 0,
+          }));
+        }
+      }
+    } catch (proxyError) {
+      console.warn(`RSS proxy failed for ${sourceName}, trying direct parsing...`, proxyError);
+    }
+
+    // Fallback: Direct RSS parsing
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Web3News/1.0',
+        },
+      });
+
       if (!response.ok) {
         console.warn(`RSS feed ${sourceName} returned status ${response.status}`);
         return [];
       }
 
-      const data = await response.json();
-      
-      // Check if RSS2JSON returned an error
-      if (data.status === "error") {
-        console.warn(`RSS feed ${sourceName} error:`, data.message);
-        return [];
-      }
+      const xmlText = await response.text();
+      const items = this.parseRSSXML(xmlText);
 
-      const items = data.items || [];
-      
       if (items.length === 0) {
-        console.warn(`RSS feed ${sourceName} returned no items`);
+        console.warn(`RSS feed ${sourceName} returned no items after parsing`);
         return [];
       }
 
-      return items.map((item: any) => ({
-        id: `rss-${item.guid || item.link || `${sourceName}-${Date.now()}-${Math.random()}`}`,
+      return items.map((item) => ({
+        id: `rss-${item.link || `${sourceName}-${Date.now()}-${Math.random()}`}`,
         title: item.title || "Untitled",
         url: item.link || url,
         source: sourceName,
@@ -738,7 +884,7 @@ class ContentAggregator {
         publishedAt: item.pubDate ? new Date(item.pubDate).getTime() : Date.now(),
         author: item.author,
         excerpt: item.description?.replace(/<[^>]*>/g, "").substring(0, 200),
-        thumbnail: item.enclosure?.link || item.thumbnail,
+        thumbnail: item.thumbnail,
         urlHash: "",
         cachedAt: 0,
       }));
@@ -785,17 +931,43 @@ class ContentAggregator {
             : (await this.fetchReddit("technology", 25, undefined, source.category)).articles;
         case "Reddit Social":
           // Fetch from social subreddits
-          const socialSubreddits = ["social", "funny", "gaming", "movies", "music"];
+          const socialSubreddits = ["funny", "gaming", "movies", "music", "videos", "pics", "memes", "aww"];
           const socialArticles = await Promise.allSettled(
             socialSubreddits.map((sub) =>
               usePagination
-                ? this.fetchRedditAllPages(sub, 3, source.category)
+                ? this.fetchRedditAllPages(sub, 2, source.category)
                 : this.fetchReddit(sub, 25, undefined, source.category).then((r) => r.articles)
             )
           );
-          return socialArticles
+          const successfulSocial = socialArticles
             .filter((r) => r.status === "fulfilled")
             .flatMap((r) => (r as PromiseFulfilledResult<Article[]>).value);
+          const failedSocial = socialArticles.filter((r) => r.status === "rejected");
+          if (failedSocial.length > 0) {
+            console.warn(`Reddit Social: ${failedSocial.length} subreddits failed`);
+          }
+          console.log(`Reddit Social: Fetched ${successfulSocial.length} articles from ${socialSubreddits.length} subreddits`);
+          return successfulSocial;
+        case "Reddit Popular":
+          // Fetch from r/popular (aggregated popular content)
+          return usePagination
+            ? await this.fetchRedditAllPages("popular", 3, source.category)
+            : (await this.fetchReddit("popular", 50, undefined, source.category)).articles;
+        case "Reddit All":
+          // Fetch from r/all (all subreddits)
+          return usePagination
+            ? await this.fetchRedditAllPages("all", 3, source.category)
+            : (await this.fetchReddit("all", 50, undefined, source.category)).articles;
+        case "Reddit Videos":
+          // Fetch from r/videos
+          return usePagination
+            ? await this.fetchRedditAllPages("videos", 2, source.category)
+            : (await this.fetchReddit("videos", 25, undefined, source.category)).articles;
+        case "Reddit Pics":
+          // Fetch from r/pics
+          return usePagination
+            ? await this.fetchRedditAllPages("pics", 2, source.category)
+            : (await this.fetchReddit("pics", 25, undefined, source.category)).articles;
         case "Medium":
           return await this.fetchRSSFeed(source.endpoint, "Medium", source.category);
         case "CoinDesk":
@@ -834,6 +1006,9 @@ class ContentAggregator {
         case "The New York Times":
         case "YouTube Tech":
         case "YouTube Crypto":
+        case "YouTube Viral":
+        case "YouTube Music":
+        case "YouTube Gaming":
           return await this.fetchRSSFeed(source.endpoint, source.name, source.category);
         default:
           return [];
@@ -891,19 +1066,24 @@ class ContentAggregator {
     console.log(`Aggregating from ${sources.length} sources for category: ${category || "all"}`);
     console.log(`Sources:`, sources.map(s => s.name).join(", "));
 
-    // Fetch from all sources in parallel
-    const results = await Promise.allSettled(
-      sources.map(async (source) => {
-        try {
-          const articles = await this.fetchSource(source, usePagination);
-          console.log(`✓ ${source.name}: ${articles.length} articles`);
-          return articles;
-        } catch (error) {
-          console.error(`✗ ${source.name}:`, error);
-          return [];
-        }
-      })
-    );
+        // Fetch from all sources in parallel
+        const results = await Promise.allSettled(
+          sources.map(async (source) => {
+            try {
+              console.log(`Fetching from ${source.name}...`);
+              const articles = await this.fetchSource(source, usePagination);
+              if (articles.length > 0) {
+                console.log(`✓ ${source.name}: ${articles.length} articles`);
+              } else {
+                console.warn(`⚠ ${source.name}: 0 articles (may be rate limited or source unavailable)`);
+              }
+              return articles;
+            } catch (error) {
+              console.error(`✗ ${source.name}:`, error);
+              return [];
+            }
+          })
+        );
 
     // Log results
     const successful = results.filter(r => r.status === "fulfilled").length;

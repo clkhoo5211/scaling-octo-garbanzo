@@ -144,16 +144,14 @@ export class LinkExtractor {
             continue;
           }
         }
+        // Silently return empty array - 404s are expected for repos without READMEs
         return [];
       }
 
       const content = await response.text();
       return this.extractLinks(content);
     } catch (error) {
-      console.error(
-        `Failed to extract links from GitHub repo ${repoUrl}:`,
-        error
-      );
+      // Silently fail - GitHub README extraction is optional
       return [];
     }
   }
