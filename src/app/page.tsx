@@ -123,14 +123,16 @@ export default function HomePage() {
           />
         )}
 
-        {/* Category Tabs */}
-        <CategoryTabs
-          selectedCategory={activeCategory}
-          onSelectCategory={(category) => {
-            setSelectedCategory(category);
-            setShowAllArticles(false);
-          }}
-        />
+        {/* Category Tabs - Only render after mount to prevent hydration mismatch */}
+        {mounted && (
+          <CategoryTabs
+            selectedCategory={selectedCategory}
+            onSelectCategory={(category) => {
+              setSelectedCategory(category);
+              setShowAllArticles(false);
+            }}
+          />
+        )}
 
         {/* Article Feed */}
         {isLoading ? (
