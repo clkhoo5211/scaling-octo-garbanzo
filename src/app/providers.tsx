@@ -18,10 +18,8 @@ export function Providers({ children }: { children: ReactNode }) {
     <ContextProvider cookies={null}>
       <ClerkProvider
         publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ""}
-        afterSignInUrl="/"
-        afterSignUpUrl="/"
-        signInUrl="/auth"
-        signUpUrl="/auth"
+        // No sign-in/sign-up URLs - Clerk is ONLY for user management
+        // All authentication handled by Reown (PRIMARY)
       >
         <ReownClerkIntegration>
           <ToastProvider>{children}</ToastProvider>

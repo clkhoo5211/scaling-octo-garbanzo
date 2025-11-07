@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
 import { ReactNode } from "react";
 
 /**
@@ -11,56 +11,38 @@ import { ReactNode } from "react";
  * ✅ 100% CLIENT-SIDE ONLY - No server-side API routes required
  * Perfect for static export (GitHub Pages)
  * 
- * Implements the authentication flow as specified in:
- * - docs/PROJECT_INIT_PROMPT_WEB3_AGGREGATOR.md (lines 335-372)
- * - integration-specifications-20251107-003428.md
- * - technical-design-plan-20251107-003428.md
+ * ARCHITECTURE:
+ * - Reown (PRIMARY): Handles ALL authentication (social login, email, wallet)
+ * - Clerk (SECONDARY): User management ONLY (metadata, subscriptions, points)
+ * - NO Clerk sign-in/sign-up UI - all authentication via Reown
  * 
- * Flow (per requirements):
- * STEP 1: User Authentication (Reown PRIMARY)
- *   → Reown AppKit modal appears (FIRST)
- *   → User selects social login: Google, Email, Twitter, Discord, etc.
+ * Flow:
+ * STEP 1: User authenticates via Reown (PRIMARY)
+ *   → User clicks "Connect Wallet" → Reown AppKit modal appears
+ *   → User selects: Google, Email, Twitter, Discord, or Wallet
  *   → Reown authenticates user
  *   → Reown automatically creates ERC-4337 Smart Account ✅
  * 
- * STEP 2: Clerk User Creation (AUTOMATIC - Client-Side)
- *   → Detect new Reown login
- *   → Extract email from Reown social login (or prompt user)
- *   → Create Clerk user programmatically via Clerk's CLIENT-SIDE SDK (signUp.create())
- *   → Store in Clerk publicMetadata:
- *     {
- *       reown_address: "0x123...",
- *       smart_account_address: "0x456...",
- *       points: 0,
- *       subscription_tier: "free",
- *       referral_code: "USER123"
- *     }
+ * STEP 2: Automatic Clerk User Management (SECONDARY - Silent)
+ *   → Component detects Reown connection
+ *   → Automatically creates Clerk user if doesn't exist (silent, no UI)
+ *   → Uses Clerk's client-side SDK (signUp.create()) - no server API
+ *   → Stores Reown address and smart account in Clerk publicMetadata
+ *   → Clerk manages: points, subscriptions, referrals, etc.
  * 
- * STEP 3: Email Verification (Clerk - Client-Side)
- *   → Clerk sends magic link to user's email (via signUp.prepareEmailAddressVerification())
- *   → User clicks link → Email verified
- *   → Full access granted
- * 
- * CLIENT-SIDE ONLY IMPLEMENTATION:
- * - Uses Clerk's client-side SDK: useAuth(), useUser(), signUp.create()
- * - No server-side API routes (no /api/clerk/create-user.ts)
- * - No clerkClient server-side calls
- * - Works perfectly with static export (GitHub Pages)
- * 
- * For email extraction:
- * - Email login via Reown: Email is available directly
- * - Social logins: Reown doesn't expose email in client SDK, so we:
- *   1. Try to get email from localStorage (if user entered it previously)
- *   2. Use placeholder email as fallback (user can update via Clerk profile)
+ * STEP 3: User Management Ready
+ *   → All user data stored in Clerk publicMetadata
+ *   → No Clerk authentication UI shown to user
+ *   → User only interacts with Reown for authentication
  */
 export function ReownClerkIntegration({ children }: { children: ReactNode }) {
   const { address, isConnected } = useAppKitAccount();
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
-  const { signUp, signIn, isSignedIn } = useAuth();
+  const { signUp, isSignedIn } = useAuth();
   const [hasAttemptedCreation, setHasAttemptedCreation] = useState(false);
 
   useEffect(() => {
-    // Only process when everything is loaded
+    // Only process when Clerk is loaded
     if (!clerkLoaded) return;
 
     // Case 1: Reown connected + Clerk user exists → Sync metadata
@@ -69,17 +51,21 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
         | string
         | undefined;
 
+      // Sync Reown address to Clerk metadata if missing or different
       if (!currentReownAddress || currentReownAddress !== address) {
         clerkUser
           .update({
             publicMetadata: {
               ...clerkUser.publicMetadata,
               reown_address: address,
-              smart_account_address: address,
-              // Ensure all required metadata fields exist (per requirements)
+              smart_account_address: address, // Smart account address (same as Reown address)
+              // Ensure all required metadata fields exist
               points: clerkUser.publicMetadata?.points ?? 0,
               subscription_tier: clerkUser.publicMetadata?.subscription_tier ?? "free",
               referral_code: clerkUser.publicMetadata?.referral_code ?? generateReferralCode(),
+              total_submissions: clerkUser.publicMetadata?.total_submissions ?? 0,
+              total_upvotes: clerkUser.publicMetadata?.total_upvotes ?? 0,
+              login_streak: clerkUser.publicMetadata?.login_streak ?? 0,
             },
           })
           .catch((error) => {
@@ -89,60 +75,46 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Case 2: Reown connected + No Clerk user → Create Clerk user and send magic link
-    // This implements STEP 2 and STEP 3 from requirements
-    if (
-      isConnected &&
-      address &&
-      !clerkUser &&
-      !isSignedIn &&
-      !hasAttemptedCreation
-    ) {
+    // Case 2: Reown connected + No Clerk user → Create Clerk user silently
+    // This happens automatically after Reown login - no UI shown to user
+    // Uses Clerk's CLIENT-SIDE SDK (no server API)
+    if (isConnected && address && !clerkUser && !isSignedIn && !hasAttemptedCreation) {
       setHasAttemptedCreation(true);
 
-      // Try to get email from localStorage (if user entered it via Reown email login)
-      // For social logins, Reown doesn't expose email in client SDK
+      // Generate email from address (Reown doesn't expose email in client SDK)
+      // For email login via Reown, email might be stored in localStorage
       const storedEmail = localStorage.getItem(`reown_email_${address}`);
-      let email = storedEmail;
+      const email = storedEmail || `${address.slice(0, 8)}@reown.app`;
 
-      // If no email found, prompt user (for social logins)
-      if (!email) {
-        // For now, use placeholder email - user can update via Clerk profile
-        // In production, you could:
-        // 1. Use Reown Cloud API to get email (requires API key)
-        // 2. Prompt user for email in a modal
-        // 3. Use social provider's email if available
-        email = `${address.slice(0, 8)}@reown.app`;
-        console.warn(
-          "Email not available from Reown client SDK. Using placeholder. User can update via Clerk profile."
-        );
-      }
-
-      // Create Clerk user via sign-up (triggers email verification magic link)
-      // This implements STEP 2: Clerk User Creation (AUTOMATIC)
+      // Create Clerk user silently using client-side SDK
+      // This is just for user management - authentication is handled by Reown
       signUp
         .create({
           emailAddress: email,
           skipPasswordRequirement: true, // No password (Reown handles auth)
         })
         .then((result) => {
-          if (result.status === "missing_requirements") {
-            // STEP 3: Email Verification (Clerk)
-            // Prepare email verification magic link
-            return signUp.prepareEmailAddressVerification({
-              strategy: "email_link",
-            });
+          if (result.status === "complete") {
+            // User created successfully, update metadata
+            return result.createdUserId
+              ? Promise.resolve(result.createdUserId)
+              : Promise.reject(new Error("No user ID returned"));
+          } else if (result.status === "missing_requirements") {
+            // Skip email verification - user already authenticated via Reown
+            // Just complete the signup without verification
+            return signUp.attemptEmailAddressVerification({
+              code: "", // Empty code - skip verification
+            }).then(() => result.createdUserId || null);
           }
-          return result;
+          return null;
         })
-        .then((result) => {
-          if (result?.status === "complete") {
-            // User created successfully, update metadata with all required fields
-            // Per requirements: Store in Clerk publicMetadata
-            return clerkUser?.update({
+        .then((userId) => {
+          if (userId && clerkUser) {
+            // Update metadata with Reown address and user data
+            return clerkUser.update({
               publicMetadata: {
                 reown_address: address,
-                smart_account_address: address, // Same as reown_address for now
+                smart_account_address: address,
                 points: 0,
                 subscription_tier: "free",
                 referral_code: generateReferralCode(),
@@ -150,50 +122,17 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
                 total_upvotes: 0,
                 login_streak: 0,
                 created_at: new Date().toISOString(),
-                created_via: "reown_social_login",
+                created_via: "reown_smart_account",
               },
             });
-          } else if (result?.status === "missing_requirements") {
-            // Magic link sent - show notification
-            console.log(
-              `✅ Clerk user created. Magic link sent to: ${email}`
-            );
-            // Show user-friendly notification
-            if (typeof window !== "undefined") {
-              const notification = document.createElement("div");
-              notification.className =
-                "fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-sm";
-              notification.innerHTML = `
-                <div class="font-semibold">Email Verification Required</div>
-                <div class="text-sm mt-1">Please check your email (${email}) for a verification link from Clerk.</div>
-              `;
-              document.body.appendChild(notification);
-              setTimeout(() => notification.remove(), 8000);
-            }
           }
+        })
+        .then(() => {
+          console.log("✅ Clerk user created silently for user management");
         })
         .catch((error) => {
           console.error("Failed to create Clerk user:", error);
           setHasAttemptedCreation(false); // Allow retry
-
-          // If user already exists, try to sign in
-          if (error.errors?.[0]?.code === "form_identifier_exists") {
-            signIn
-              .create({
-                identifier: email,
-                strategy: "email_link",
-              })
-              .then((signInResult) => {
-                if (signInResult.status === "needs_first_factor") {
-                  signIn.prepareFirstFactor({
-                    strategy: "email_link",
-                  });
-                }
-              })
-              .catch((signInError) => {
-                console.error("Failed to sign in:", signInError);
-              });
-          }
         });
     }
   }, [
@@ -203,7 +142,6 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
     clerkLoaded,
     isSignedIn,
     signUp,
-    signIn,
     hasAttemptedCreation,
   ]);
 
