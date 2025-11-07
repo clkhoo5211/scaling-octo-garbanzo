@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
-    optimizePackageImports: ['@reown/appkit-react', '@clerk/nextjs'],
+    optimizePackageImports: ['@reown/appkit', '@clerk/nextjs'],
   },
 };
 
