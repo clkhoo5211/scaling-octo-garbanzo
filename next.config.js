@@ -52,29 +52,11 @@ const nextConfig = {
       }
       
       const webpack = require('webpack');
-      const path = require('path');
       
-      // Try to resolve stub file, fallback to empty object if not found
-      let stubPath;
-      try {
-        stubPath = require.resolve('./webpack/react-native-stub.js');
-      } catch (e) {
-        // If stub file doesn't exist, create a temporary one
-        stubPath = path.join(__dirname, 'webpack', 'react-native-stub.js');
-      }
-      
-      // Use NormalModuleReplacementPlugin to replace React Native modules with empty mocks
-      // This is more aggressive than IgnorePlugin and prevents the warning
+      // Use IgnorePlugin to ignore React Native modules
+      // NormalModuleReplacementPlugin can cause issues if stub file path resolution fails
+      // IgnorePlugin is safer and sufficient for suppressing warnings
       config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(
-          /^@react-native-async-storage\/async-storage$/,
-          stubPath
-        ),
-        new webpack.NormalModuleReplacementPlugin(
-          /^react-native$/,
-          stubPath
-        ),
-        // Also use IgnorePlugin as backup
         new webpack.IgnorePlugin({
           resourceRegExp: /^@react-native-async-storage\/async-storage$/,
         }),
