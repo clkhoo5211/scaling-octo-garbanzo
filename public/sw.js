@@ -18,23 +18,76 @@ const STATIC_ASSETS = [
   '/icon-512x512.png',
 ];
 
+// Helper: Check if URL scheme is cacheable
+function isCacheableScheme(url) {
+  try {
+    // Handle relative URLs (e.g., '/manifest.webmanifest')
+    // Relative URLs are always cacheable (they'll be resolved to http/https)
+    if (url.startsWith('/') || url.startsWith('./')) {
+      return true;
+    }
+    
+    const urlObj = new URL(url);
+    // Only cache http:// and https:// URLs
+    // Skip chrome-extension://, chrome://, file://, etc.
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    // If URL parsing fails, assume it's cacheable (might be relative)
+    return true;
+  }
+}
+
+// Helper: Safely cache a response
+async function safeCachePut(cache, request, response) {
+  try {
+    // Check if request URL is cacheable
+    if (!isCacheableScheme(request.url)) {
+      return; // Silently skip unsupported schemes (chrome-extension://, etc.)
+    }
+    
+    // Only cache successful responses
+    if (response && response.status === 200 && response.type !== 'error') {
+      await cache.put(request, response);
+    }
+  } catch (error) {
+    // Silently fail - don't log errors for unsupported schemes
+    if (error.message && !error.message.includes('chrome-extension') && !error.message.includes('unsupported')) {
+      console.warn('Cache put failed:', error.message);
+    }
+  }
+}
+
 // Install event
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME).then((cache) => {
       // Try to cache assets, but don't fail if some are missing
       return Promise.allSettled(
-        STATIC_ASSETS.map((url) => 
-          fetch(url).then((response) => {
-            if (response.ok) {
-              return cache.put(url, response);
+        STATIC_ASSETS.map(async (url) => {
+          try {
+            // Skip if URL is not cacheable
+            if (!isCacheableScheme(url)) {
+              return;
             }
-          }).catch(() => {
-            // Silently fail for missing assets
-            console.warn(`Failed to cache ${url}`);
-          })
-        )
+            
+            const response = await fetch(url);
+            if (response && response.ok) {
+              // Create a Request object for caching
+              const request = new Request(url);
+              await safeCachePut(cache, request, response);
+            }
+          } catch (error) {
+            // Silently fail for missing assets (e.g., manifest.webmanifest might not exist)
+            // Only log in development
+            if (process.env.NODE_ENV === 'development') {
+              console.warn(`Failed to cache ${url}:`, error.message);
+            }
+          }
+        })
       );
+    }).catch((error) => {
+      // Don't fail installation if caching fails
+      console.warn('Service Worker install error:', error.message);
     })
   );
   self.skipWaiting();
@@ -64,6 +117,11 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
+  // Skip unsupported URL schemes (chrome-extension://, chrome://, etc.)
+  if (!isCacheableScheme(request.url)) {
+    return; // Let browser handle it normally
+  }
+
   // Cache static assets
   if (STATIC_ASSETS.includes(url.pathname)) {
     event.respondWith(
@@ -71,15 +129,22 @@ self.addEventListener('fetch', (event) => {
         if (cachedResponse) {
           return cachedResponse;
         }
-        return fetch(request).then((response) => {
-          if (response && response.status === 200) {
-            const responseToCache = response.clone();
-            caches.open(STATIC_CACHE_NAME).then((cache) => {
-              cache.put(request, responseToCache);
+        return fetch(request)
+          .then((response) => {
+            if (response && response.status === 200) {
+              const responseToCache = response.clone();
+              caches.open(STATIC_CACHE_NAME).then((cache) => {
+                safeCachePut(cache, request, responseToCache);
+              });
+            }
+            return response;
+          })
+          .catch((error) => {
+            // Network error - return cached version if available
+            return caches.match(request).then((cachedResponse) => {
+              return cachedResponse || new Response('Network error', { status: 408 });
             });
-          }
-          return response;
-        });
+          });
       })
     );
     return;
@@ -92,21 +157,32 @@ self.addEventListener('fetch', (event) => {
         if (cachedResponse) {
           return cachedResponse;
         }
-        return fetch(request).then((response) => {
-          if (response && response.status === 200) {
-            const responseToCache = response.clone();
-            caches.open(ARTICLES_CACHE_NAME).then(async (cache) => {
-              // Limit cached articles to MAX_ARTICLES_CACHED
-              const keys = await cache.keys();
-              if (keys.length >= MAX_ARTICLES_CACHED) {
-                // Remove oldest article (first key)
-                await cache.delete(keys[0]);
-              }
-              cache.put(request, responseToCache);
+        return fetch(request)
+          .then((response) => {
+            if (response && response.status === 200) {
+              const responseToCache = response.clone();
+              caches.open(ARTICLES_CACHE_NAME).then(async (cache) => {
+                try {
+                  // Limit cached articles to MAX_ARTICLES_CACHED
+                  const keys = await cache.keys();
+                  if (keys.length >= MAX_ARTICLES_CACHED) {
+                    // Remove oldest article (first key)
+                    await cache.delete(keys[0]);
+                  }
+                  await safeCachePut(cache, request, responseToCache);
+                } catch (error) {
+                  // Silently fail - don't break article loading
+                }
+              });
+            }
+            return response;
+          })
+          .catch((error) => {
+            // Network error - return cached version if available
+            return caches.match(request).then((cachedResponse) => {
+              return cachedResponse || new Response('Network error', { status: 408 });
             });
-          }
-          return response;
-        });
+          });
       })
     );
     return;
@@ -119,14 +195,16 @@ self.addEventListener('fetch', (event) => {
         if (response && response.status === 200) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache);
+            safeCachePut(cache, request, responseToCache);
           });
         }
         return response;
       })
-      .catch(() => {
+      .catch((error) => {
         // Fallback to cache if network fails
-        return caches.match(request);
+        return caches.match(request).then((cachedResponse) => {
+          return cachedResponse || new Response('Network error', { status: 408 });
+        });
       })
   );
 });
