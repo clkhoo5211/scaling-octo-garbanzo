@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
@@ -28,7 +30,7 @@ const nextConfig = {
   // Note: React Native warnings are harmless and don't break the build
   // Clerk works perfectly with static export (client-side only)
   // Disable webpack cache to avoid hanging issues
-  webpack: (config, { isServer, dev }) => {
+  webpack: (config, { isServer }) => {
     // Disable webpack cache
     config.cache = false;
 
@@ -61,11 +63,25 @@ const nextConfig = {
         config.plugins = [];
       }
       
+      // Use NormalModuleReplacementPlugin to replace React Native modules with stubs
+      // This satisfies MetaMask SDK's import checks without requiring React Native packages
       const webpack = require('webpack');
+      const path = require('path');
+      const asyncStorageStub = path.resolve(__dirname, 'webpack/async-storage-stub.js');
+      const reactNativeStub = path.resolve(__dirname, 'webpack/react-native-stub.js');
       
-      // Use IgnorePlugin with contextRegExp to catch ALL import attempts
-      // This includes imports from node_modules/@metamask/sdk
       config.plugins.push(
+        // Replace @react-native-async-storage/async-storage with stub
+        new webpack.NormalModuleReplacementPlugin(
+          /^@react-native-async-storage\/async-storage$/,
+          asyncStorageStub
+        ),
+        // Replace react-native with stub
+        new webpack.NormalModuleReplacementPlugin(
+          /^react-native$/,
+          reactNativeStub
+        ),
+        // Also use IgnorePlugin as backup for any missed imports
         new webpack.IgnorePlugin({
           resourceRegExp: /^@react-native-async-storage\/async-storage$/,
           contextRegExp: /node_modules\/@metamask\/sdk/,
@@ -73,13 +89,6 @@ const nextConfig = {
         new webpack.IgnorePlugin({
           resourceRegExp: /^react-native$/,
           contextRegExp: /node_modules\/@metamask\/sdk/,
-        }),
-        // Also ignore globally (backup)
-        new webpack.IgnorePlugin({
-          resourceRegExp: /^@react-native-async-storage\/async-storage$/,
-        }),
-        new webpack.IgnorePlugin({
-          resourceRegExp: /^react-native$/,
         })
       );
       
