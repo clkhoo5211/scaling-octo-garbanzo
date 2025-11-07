@@ -15,12 +15,23 @@ const ARTICLES_PER_PAGE = 10; // Top 10 for guests
 
 export default function HomePage() {
   // Default to "tech" category - no "All" option for faster loading
-  const [selectedCategory, setSelectedCategory] = useState<NewsCategory>("tech");
+  // Use useState with no initial value to prevent hydration mismatch
+  const [selectedCategory, setSelectedCategory] = useState<NewsCategory | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterChip[]>([]);
   const [showAllArticles, setShowAllArticles] = useState(false);
 
-  const { data: articles, isLoading, isError, error } = useArticles(selectedCategory, {
+  // Set default category on client-side only to prevent hydration mismatch
+  useEffect(() => {
+    if (selectedCategory === null) {
+      setSelectedCategory("tech");
+    }
+  }, [selectedCategory]);
+
+  // Use "tech" as fallback during SSR
+  const activeCategory = selectedCategory || "tech";
+
+  const { data: articles, isLoading, isError, error } = useArticles(activeCategory, {
     usePagination: true,
     extractLinks: true,
     enableRealtime: true, // Enable real-time updates with animation
