@@ -43,6 +43,8 @@ const nextConfig = {
   // This is expected for static export - pages will work at runtime
   experimental: {
     missingSuspenseWithCSRBailout: false,
+    optimizeCss: true, // CSS optimization
+    optimizePackageImports: ['lucide-react', '@reown/appkit', '@clerk/clerk-react'], // Tree-shaking
   },
   eslint: {
     // Don't fail build on lint errors - we'll fix them incrementally
@@ -79,6 +81,49 @@ const nextConfig = {
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
 
     if (!isServer) {
+      // Performance: Optimize bundle splitting
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic', // Better caching
+        runtimeChunk: 'single', // Shared runtime
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            // Vendor chunk for stable libraries
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: 10,
+              reuseExistingChunk: true,
+            },
+            // Reown AppKit separate chunk (large library ~500KB)
+            reown: {
+              test: /[\\/]node_modules[\\/]@reown/,
+              name: 'reown',
+              chunks: 'all',
+              priority: 20,
+            },
+            // wagmi/viem separate chunk (~300KB)
+            web3: {
+              test: /[\\/]node_modules[\\/](wagmi|viem|@wagmi)/,
+              name: 'web3',
+              chunks: 'all',
+              priority: 15,
+            },
+            // Clerk separate chunk
+            clerk: {
+              test: /[\\/]node_modules[\\/]@clerk/,
+              name: 'clerk',
+              chunks: 'all',
+              priority: 15,
+            },
+          },
+        },
+      };
+      
+      // Performance: Reduce module resolution time
+      config.resolve.symlinks = false;
+      
       // Client-side only - no server actions
       config.resolve.fallback = {
         ...config.resolve.fallback,

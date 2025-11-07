@@ -124,7 +124,7 @@ export const ArticleCard = memo(function ArticleCard({
 
   return (
     <>
-      <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+      <article className="bg-dark-surface rounded-lg border border-dark-border overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-200 group">
         <div
           onClick={handleCardClick}
           className="cursor-pointer"
@@ -140,10 +140,10 @@ export const ArticleCard = memo(function ArticleCard({
                 />
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
+                <h3 className="font-semibold text-dark-text-primary mb-1 line-clamp-2 group-hover:text-primary transition-colors">
                   {article.title}
                 </h3>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-dark-text-secondary">
                   <span>{article.source}</span>
                   <span>•</span>
                   <span>{formatRelativeTime(article.publishedAt)}</span>
@@ -159,20 +159,20 @@ export const ArticleCard = memo(function ArticleCard({
 
             {/* Excerpt */}
             {article.excerpt && variant !== "compact" && (
-              <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+              <p className="text-sm text-dark-text-secondary mb-3 line-clamp-2">
                 {truncate(article.excerpt, 150)}
               </p>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-dark-border">
               <div className="flex items-center gap-4">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     handleLike();
                   }}
-                  className={liked ? "text-red-500" : "text-gray-400"}
+                  className={`transition-colors hover:scale-110 ${liked ? "text-red-500" : "text-dark-text-secondary hover:text-red-400"}`}
                   aria-label="Like article"
                 >
                   <span className="text-sm font-medium">👍 {likesCount || 0}</span>
@@ -182,7 +182,7 @@ export const ArticleCard = memo(function ArticleCard({
                     e.preventDefault();
                     handleBookmark();
                   }}
-                  className={bookmarked ? "text-yellow-500" : "text-gray-400"}
+                  className={`transition-colors hover:scale-110 ${bookmarked ? "text-yellow-500" : "text-dark-text-secondary hover:text-yellow-400"}`}
                   aria-label="Bookmark article"
                 >
                   🔖
@@ -192,14 +192,14 @@ export const ArticleCard = memo(function ArticleCard({
                     e.preventDefault();
                     handleShare();
                   }}
-                  className="text-gray-400"
+                  className="text-dark-text-secondary hover:text-primary transition-colors hover:scale-110"
                   aria-label="Share article"
                 >
                   📤
                 </button>
               </div>
               {article.comments !== undefined && (
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-dark-text-secondary">
                   {article.comments} comments
                 </span>
               )}
@@ -253,7 +253,7 @@ export const ArticleCard = memo(function ArticleCard({
 
 export function ArticleCardSkeleton() {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+    <div className="bg-dark-surface rounded-lg border border-dark-border p-4 animate-pulse">
       <Skeleton height={20} className="mb-2" />
       <Skeleton height={16} width="60%" className="mb-4" />
       <Skeleton height={16} width="40%" />

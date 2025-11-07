@@ -5,7 +5,7 @@ import { AuthStatus } from "@/components/auth/AuthStatus";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-dark-border glass">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -15,7 +15,7 @@ export function Header() {
                 W3
               </span>
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            <span className="text-xl font-bold text-dark-text-primary">
               Web3News
             </span>
           </Link>
@@ -26,7 +26,7 @@ export function Header() {
               <input
                 type="text"
                 placeholder="Search articles..."
-                className="w-full h-10 px-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+                className="w-full h-10 px-4 rounded-lg border border-dark-border bg-dark-surface text-dark-text-primary placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                 readOnly
               />
             </Link>

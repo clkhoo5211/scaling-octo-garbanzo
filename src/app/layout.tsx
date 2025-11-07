@@ -1,12 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+import dynamic from "next/dynamic";
 
-const inter = Inter({ subsets: ["latin"] });
+// Lazy load heavy components for better performance
+const BottomNavLazy = dynamic(() => import("@/components/layout/BottomNav").then(mod => ({ default: mod.BottomNav })), {
+  ssr: false,
+  loading: () => null,
+});
 
 // Calculate basePath for manifest (same logic as next.config.js)
 const basePath = process.env.GITHUB_REPOSITORY_NAME
@@ -43,12 +47,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className="font-sans antialiased">
         <Providers>
           <Header />
-          <main className="min-h-screen pb-16 md:pb-0">{children}</main>
-          <BottomNav />
+          <main className="min-h-screen pb-16 md:pb-0 bg-dark-bg">{children}</main>
+          <BottomNavLazy />
           <ServiceWorkerRegistration />
         </Providers>
       </body>
