@@ -3,34 +3,21 @@
 import { WalletConnect } from "@/components/web3/WalletConnect";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKit } from "@reown/appkit/react";
-import { useEffect } from "react";
 
 /**
  * AuthPage Component
  * PRIMARY: Reown AppKit (social logins + wallet connection)
- * Opens Reown modal automatically when user visits /auth
+ * Users click button to trigger login - no auto-prompt
  * 
  * CRITICAL: useAppKit hook must be called unconditionally (React rules)
- * But AppKit is only initialized client-side, so this will fail during SSR
- * The error is caught and handled gracefully during static export
+ * The hook itself handles cases where AppKit isn't initialized yet
  */
 export function AuthPage() {
   const { user, isLoaded } = useUser();
   
-  // CRITICAL: useAppKit must be called unconditionally (React hooks rule)
-  // During SSR/build, this will throw, but Next.js handles it gracefully
-  // The page will work correctly at runtime when AppKit is initialized
-  let appKitOpen: ((options?: { view?: string }) => void) | null = null;
-  try {
-    const appKit = useAppKit();
-    appKitOpen = appKit.open;
-  } catch (error) {
-    // Expected during SSR/build - AppKit not initialized yet
-    // Will work correctly at runtime
-  }
-
-  // REMOVED: Auto-open behavior - users should click button to login
-  // Guests can browse freely without being prompted
+  // CRITICAL: Call hook unconditionally - React rules requirement
+  // The hook will handle initialization errors internally
+  const { open } = useAppKit();
 
   if (!isLoaded) {
     return (
@@ -65,7 +52,7 @@ export function AuthPage() {
     );
   }
 
-  // Show instructions while Reown modal is opening
+  // Show sign-in page - user clicks button to trigger login
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="max-w-md w-full text-center">
@@ -75,9 +62,8 @@ export function AuthPage() {
         </p>
         <button
           onClick={() => {
-            if (appKitOpen) {
-              appKitOpen({ view: "Connect" });
-            }
+            // Safe to call - useAppKit hook handles initialization
+            open({ view: "Connect" });
           }}
           className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         >

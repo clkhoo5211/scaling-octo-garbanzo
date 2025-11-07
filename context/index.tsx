@@ -80,16 +80,21 @@ function getAppKit() {
 function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
   const [wagmiConfig, setWagmiConfig] = useState<Config | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [appKitReady, setAppKitReady] = useState(false);
   
-  // CRITICAL: Only initialize Wagmi config on client-side
+  // CRITICAL: Initialize Wagmi and AppKit on client-side only
   useEffect(() => {
     setIsClient(true);
     if (typeof window !== 'undefined') {
       const adapter = getWagmiAdapter();
       if (adapter) {
         setWagmiConfig(adapter.wagmiConfig as Config);
-        // Initialize AppKit (side effect)
-        getAppKit();
+        // Initialize AppKit synchronously after adapter is ready
+        // This ensures useAppKit hooks work immediately
+        const appKit = getAppKit();
+        if (appKit) {
+          setAppKitReady(true);
+        }
       }
     }
   }, []);
