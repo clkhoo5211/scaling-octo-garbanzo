@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getBasePath } from "@/lib/utils/basePath";
 
 /**
@@ -9,17 +9,28 @@ import { getBasePath } from "@/lib/utils/basePath";
  * This component ensures the manifest link is correct at runtime
  */
 export function ManifestLink() {
+  const injectedRef = useRef(false);
+
   useEffect(() => {
-    // Use requestIdleCallback for non-blocking execution, fallback to setTimeout
+    // Prevent multiple injections
+    if (injectedRef.current) return;
+    
     const injectManifest = () => {
       try {
+        // Only inject if we're in the browser
+        if (typeof window === 'undefined' || !document.head) return;
+
         // Remove any existing manifest links (from metadata or previous renders)
         const existingLinks = document.querySelectorAll('link[rel="manifest"]');
         existingLinks.forEach((link) => {
           try {
-            link.remove();
+            // Check if link is still in the DOM before removing
+            if (link.parentNode) {
+              link.remove();
+            }
           } catch (e) {
             // Ignore errors if link was already removed
+            console.warn('[ManifestLink] Error removing link:', e);
           }
         });
 
@@ -30,23 +41,20 @@ export function ManifestLink() {
         manifestLink.href = `${basePath}/manifest.webmanifest`;
         document.head.appendChild(manifestLink);
         
+        injectedRef.current = true;
         console.log(`[ManifestLink] Injected manifest link: ${manifestLink.href}`);
       } catch (error) {
         console.warn('[ManifestLink] Error injecting manifest link:', error);
       }
     };
 
-    // Try to inject immediately
-    if (typeof window !== 'undefined' && document.head) {
-      injectManifest();
-    } else {
-      // Fallback: wait for DOM to be ready
-      if (typeof window !== 'undefined') {
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', injectManifest);
-        } else {
-          injectManifest();
-        }
+    // Try to inject immediately if DOM is ready
+    if (typeof window !== 'undefined') {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', injectManifest, { once: true });
+      } else {
+        // Use setTimeout to ensure React has finished rendering
+        setTimeout(injectManifest, 0);
       }
     }
   }, []);
