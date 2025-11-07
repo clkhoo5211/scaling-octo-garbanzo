@@ -31,10 +31,13 @@ export function Providers({ children }: { children: ReactNode }) {
 
   // For static export, we don't have access to cookies
   // This is fine - Wagmi will use localStorage instead
+  // CRITICAL: AppKitProvider must be inside ContextProvider (WagmiProvider)
+  // because it needs access to the Wagmi config from ContextProvider
   return (
     <ContextProvider cookies={null}>
       {/* CRITICAL: AppKitProvider must wrap components using useAppKit hooks */}
       {/* This initializes the W3mFrame iframe that was missing */}
+      {/* AppKitProvider uses the appKit instance from context/index.tsx via context */}
       {mounted ? (
         <AppKitProvider>
           <ClerkProvider

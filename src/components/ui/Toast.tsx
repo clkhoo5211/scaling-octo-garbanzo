@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ReactNode, createContext, useContext, useState } from "react";
+import { ReactNode, createContext, useContext, useState, useRef } from "react";
 
 interface Toast {
   id: string;
@@ -20,6 +20,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const counterRef = useRef(0);
 
   const addToast = (toast: Omit<Toast, "id">) => {
     // CRITICAL: Use stable ID generation to prevent hydration mismatches
@@ -29,8 +30,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       id = window.crypto.randomUUID();
     } else {
       const timestamp = Date.now();
-      const counter = (addToast.counter = (addToast.counter || 0) + 1);
-      id = `${timestamp}-${counter}`;
+      counterRef.current += 1;
+      id = `${timestamp}-${counterRef.current}`;
     }
     const newToast = { ...toast, id };
     setToasts((prev) => [...prev, newToast]);
