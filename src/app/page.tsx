@@ -1,7 +1,6 @@
 "use client";
 
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import dynamic from "next/dynamic";
 import { ArticleFeed } from "@/components/feed/ArticleFeed";
 import { CategoryTabs } from "@/components/feed/CategoryTabs";
 import { ShowMoreButton } from "@/components/feed/ShowMoreButton";
@@ -11,17 +10,6 @@ import { useState } from "react";
 import { useArticles } from "@/lib/hooks/useArticles";
 import type { Article } from "@/lib/services/indexedDBCache";
 import type { NewsCategory } from "@/lib/sources/types";
-
-// CRITICAL: Load LoadingState client-only to prevent hydration mismatch
-const LoadingState = dynamic(() => import("@/components/ui/LoadingState").then(mod => ({ default: mod.LoadingState })), {
-  ssr: false,
-  loading: () => (
-    <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-8">
-      <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
-      <p className="text-sm text-gray-600 dark:text-gray-400">Loading articles...</p>
-    </div>
-  ),
-});
 
 const ARTICLES_PER_PAGE = 10; // Top 10 for guests
 
@@ -132,7 +120,10 @@ export default function HomePage() {
 
         {/* Article Feed */}
         {isLoading ? (
-          <LoadingState message="Loading articles..." />
+          <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-8">
+            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
+            <p className="text-sm text-gray-600 dark:text-gray-400">Loading articles...</p>
+          </div>
         ) : (
           <>
             <ArticleFeed
