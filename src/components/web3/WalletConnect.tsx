@@ -10,10 +10,15 @@ import { useState, useEffect } from "react";
  * CRITICAL: Only render on client-side to prevent hydration mismatches
  */
 export function WalletConnect() {
-  const { address, isConnected } = useAppKitAccount();
-  const { open } = useAppKit();
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
+  
+  // Only call hooks after mount to prevent SSR errors
+  const appKitAccount = mounted ? useAppKitAccount() : { address: null, isConnected: false };
+  const appKit = mounted ? useAppKit() : { open: null };
+  
+  const { address, isConnected } = appKitAccount;
+  const { open } = appKit;
 
   // CRITICAL: Only render after mount to prevent hydration mismatch
   // useAppKitAccount() may return different values during SSR vs client
@@ -33,15 +38,20 @@ export function WalletConnect() {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  // Show loading state during SSR/hydration
+  // Show button immediately (SSR-safe)
   if (!mounted) {
     return (
       <button
-        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors animate-pulse"
-        disabled
+        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        onClick={() => {
+          // Will work once mounted
+          if (typeof window !== 'undefined') {
+            window.location.reload();
+          }
+        }}
       >
         <Wallet className="w-4 h-4" />
-        <span>Loading...</span>
+        <span>Connect to Sign In</span>
       </button>
     );
   }
@@ -53,7 +63,9 @@ export function WalletConnect() {
         className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         onClick={() => {
           console.warn('AppKit not ready yet');
-          window.location.reload();
+          if (typeof window !== 'undefined') {
+            window.location.reload();
+          }
         }}
       >
         <Wallet className="w-4 h-4" />
