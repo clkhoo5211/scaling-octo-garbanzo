@@ -90,20 +90,46 @@ export function ArticleReaderClient({
       // Fetch full article content if article found
       if (found && !found.content) {
         setIsLoadingContent(true);
-        fetchArticleContent(found.url)
-          .then((parsed) => {
+        
+        // CRITICAL: Wrap async code in async IIFE since useEffect callback cannot be async
+        (async () => {
+          // CRITICAL: Try server-side content fetching first (bypasses CORS)
+          // Fallback to client-side fetching if server-side fails
+          try {
+            const serverResponse = await fetch(`/api/article-content?url=${encodeURIComponent(found.url)}`, {
+              cache: 'no-store',
+              signal: AbortSignal.timeout(25000), // 25 second timeout
+            });
+
+            if (serverResponse.ok) {
+              const serverData = await serverResponse.json();
+              if (serverData.success && serverData.content) {
+                console.log(`✅ Server-side article content fetch succeeded for: ${found.url.substring(0, 50)}...`);
+                // Sanitize the HTML content
+                const sanitized = sanitizeArticleHtml(serverData.content);
+                setParsedContent(sanitized);
+                setIsLoadingContent(false);
+                return; // Success - exit early
+              }
+            }
+          } catch (serverError) {
+            console.warn(`Server-side article content fetch failed, falling back to client-side:`, serverError);
+          }
+
+          // Fallback to client-side fetching
+          try {
+            const parsed = await fetchArticleContent(found.url);
             if (parsed) {
               // Sanitize HTML content for security
               const sanitized = sanitizeArticleHtml(parsed.content);
               setParsedContent(sanitized);
             }
-          })
-          .catch((error) => {
+          } catch (error) {
             console.error("Failed to fetch article content:", error);
-          })
-          .finally(() => {
+          } finally {
             setIsLoadingContent(false);
-          });
+          }
+        })();
       } else if (found?.content) {
         // Sanitize cached content
         const sanitized = sanitizeArticleHtml(found.content);

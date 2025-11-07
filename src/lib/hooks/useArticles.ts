@@ -52,62 +52,65 @@ async function fetchRedditFallback(category: NewsCategory): Promise<Article[]> {
   if (subreddits.length === 0) return [];
 
   try {
+    // Fetch from multiple subreddits in parallel with retry logic
     const results = await Promise.allSettled(
       subreddits.map(async (subreddit) => {
-        try {
-          // Add small delay between requests to avoid rate limiting
-          await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
-          
-          const response = await fetch(
-            `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
-            {
-              headers: {
-                "User-Agent": "Web3News/1.0 (https://web3news.app)",
-              },
-            }
-          );
-
-          if (!response.ok) {
-            // Log but don't throw - continue with other subreddits
-            console.warn(`Reddit r/${subreddit} returned ${response.status}`);
-            return [];
-          }
-
-          const data = await response.json();
-          const posts = data.data?.children || [];
-
-          return posts
-            .map((child: any) => {
-              const post = child.data;
-              // Skip Reddit internal links and self-posts without external URLs
-              if (!post.url || 
-                  post.url.startsWith("https://www.reddit.com/") ||
-                  post.url.startsWith("https://reddit.com/") ||
-                  post.url.startsWith("/r/")) {
-                return null;
+        return fetchWithRetry(
+          async () => {
+            // Add small random delay to avoid hitting rate limits
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
+            
+            const response = await fetch(
+              `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
+              {
+                headers: {
+                  "User-Agent": "Web3News/1.0 (https://web3news.app)",
+                },
               }
+            );
 
-              return {
-                id: `reddit-${post.id}`,
-                title: post.title,
-                url: post.url,
-                source: `Reddit r/${subreddit}`,
-                category: category,
-                upvotes: post.ups || 0,
-                comments: post.num_comments || 0,
-                publishedAt: post.created_utc * 1000,
-                author: post.author,
-                excerpt: post.selftext?.substring(0, 200) || "",
-                thumbnail: post.thumbnail?.startsWith("http") ? post.thumbnail : undefined,
-                urlHash: "",
-                cachedAt: 0,
-              } as Article;
-            })
-            .filter((article: Article | null) => article !== null);
-        } catch (error) {
-          console.warn(`Error fetching Reddit r/${subreddit}:`, error);
-          return [];
-        }
+            if (!response.ok) {
+              // Log but don't throw - continue with other subreddits
+              console.warn(`Reddit r/${subreddit} returned ${response.status}`);
+              return [];
+            }
+
+            const data = await response.json();
+            const posts = data.data?.children || [];
+
+            return posts
+              .map((child: any) => {
+                const post = child.data;
+                // Skip Reddit internal links and self-posts without external URLs
+                if (!post.url || 
+                    post.url.startsWith("https://www.reddit.com/") ||
+                    post.url.startsWith("https://reddit.com/") ||
+                    post.url.startsWith("/r/")) {
+                  return null;
+                }
+
+                return {
+                  id: `reddit-${post.id}`,
+                  title: post.title,
+                  url: post.url,
+                  source: `Reddit r/${subreddit}`,
+                  category: category,
+                  upvotes: post.ups || 0,
+                  comments: post.num_comments || 0,
+                  publishedAt: post.created_utc * 1000,
+                  author: post.author,
+                  excerpt: post.selftext?.substring(0, 200) || "",
+                  thumbnail: post.thumbnail?.startsWith("http") ? post.thumbnail : undefined,
+                  urlHash: "",
+                  cachedAt: 0,
+                } as Article;
+              })
+              .filter((article: Article | null) => article !== null);
+          },
+          2, // maxRetries: 2 (will try 3 times total)
+          2000, // baseDelay: 2 seconds
+          15000 // timeout: 15 seconds per attempt
+        );
       })
     );
 
@@ -146,6 +149,47 @@ async function fetchWithTimeout<T>(
   return Promise.race([promise, timeout]);
 }
 
+/**
+ * Fetch with exponential backoff retry logic
+ * Handles rate limits (429) and timeouts (408) by retrying with increasing delays
+ */
+async function fetchWithRetry<T>(
+  fetchFn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000,
+  timeoutMs: number = 30000
+): Promise<T> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      // Use timeout wrapper
+      return await fetchWithTimeout(fetchFn(), timeoutMs);
+    } catch (error: any) {
+      lastError = error;
+      
+      // Don't retry on certain errors
+      if (error?.message?.includes('401') || error?.message?.includes('403') || error?.message?.includes('404')) {
+        throw error; // Auth/permission errors - don't retry
+      }
+      
+      // If this is the last attempt, throw the error
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Calculate exponential backoff delay with jitter
+      const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+      console.log(`[fetchWithRetry] Attempt ${attempt + 1} failed, retrying in ${Math.round(delay)}ms...`);
+      
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError || new Error('Unknown error in fetchWithRetry');
+}
+
 export function useArticles(
   category: NewsCategory,
   options?: { usePagination?: boolean; extractLinks?: boolean }
@@ -163,46 +207,109 @@ export function useArticles(
     queryFn: async () => {
       console.log(`[useArticles] Fetching articles for ${category}...`);
       
-      // CRITICAL: Add timeout to prevent hanging forever
-      // Fetch RSS and non-RSS sources in parallel with 5s timeout each
+      // CRITICAL: Try server-side RSS fetching first (bypasses CORS and rate limits)
+      // Fallback to client-side fetching if server-side fails
+      let rssArticlesResult: PromiseSettledResult<Article[]>;
+      
+      try {
+        // Try server-side RSS fetching first
+        const serverResponse = await fetch(`/api/rss?category=${category}`, {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(20000), // 20 second timeout
+        });
+
+        if (serverResponse.ok) {
+          const serverData = await serverResponse.json();
+          if (serverData.articles && serverData.articles.length > 0) {
+            console.log(`[useArticles] ✅ Server-side RSS fetch succeeded for ${category}: ${serverData.articles.length} articles from ${serverData.successfulSources}/${serverData.totalSources} sources`);
+            rssArticlesResult = {
+              status: 'fulfilled',
+              value: serverData.articles,
+            };
+          } else {
+            // Server-side returned empty, fallback to client-side
+            throw new Error('Server-side returned empty articles');
+          }
+        } else {
+          throw new Error(`Server-side RSS fetch failed: ${serverResponse.status}`);
+        }
+      } catch (serverError) {
+        console.warn(`[useArticles] Server-side RSS fetch failed for ${category}, falling back to client-side:`, serverError);
+        // Fallback to client-side RSS fetching with retry logic
+        rssArticlesResult = await Promise.allSettled([
+          fetchWithRetry(
+            () => modularRSSAggregator.fetchByCategory(category),
+            2, // maxRetries: 2 (3 attempts total)
+            2000, // baseDelay: 2 seconds
+            30000 // timeout: 30 seconds per attempt
+          ).catch((err) => {
+            console.warn(`[useArticles] RSS fetch failed for ${category} after retries:`, err);
+            return [];
+          }),
+        ]).then(results => results[0]);
+      }
+
       const [rssArticles, nonRSSArticles] = await Promise.allSettled([
-        fetchWithTimeout(modularRSSAggregator.fetchByCategory(category), 5000).catch((err) => {
-          console.warn(`[useArticles] RSS fetch failed for ${category}:`, err);
-          return [];
-        }),
+        Promise.resolve(rssArticlesResult.status === 'fulfilled' ? rssArticlesResult.value : []),
         (async () => {
+          // Categories that have contentAggregator support (non-RSS sources)
           const supportedCategory = (category === "tech" || category === "crypto" || category === "social" || category === "general") 
             ? category as "tech" | "crypto" | "social" | "general"
             : undefined;
           
           if (supportedCategory) {
-            return fetchWithTimeout(
-              contentAggregator.aggregateSources(supportedCategory, {
+            // Use contentAggregator for categories with non-RSS sources
+            return fetchWithRetry(
+              () => contentAggregator.aggregateSources(supportedCategory, {
                 usePagination: options?.usePagination ?? false,
                 extractLinks: options?.extractLinks ?? true,
               }),
-              5000
+              2, // maxRetries: 2
+              2000, // baseDelay: 2 seconds
+              30000 // timeout: 30 seconds
             ).catch((err) => {
-              console.warn(`[useArticles] Non-RSS fetch failed for ${category}:`, err);
+              console.warn(`[useArticles] Non-RSS fetch failed for ${category} after retries:`, err);
               return [];
             });
           } else {
-            return fetchWithTimeout(fetchRedditFallback(category), 5000).catch((err) => {
-              console.warn(`[useArticles] Reddit fallback failed for ${category}:`, err);
-              return [];
-            });
+            // For other categories (business, science, sports, etc.), they rely on RSS sources only
+            // RSS sources are already fetched above, so return empty array here
+            // Only use Reddit as a last resort fallback if RSS sources fail
+            return [];
           }
         })(),
       ]);
 
       const rss = rssArticles.status === "fulfilled" ? rssArticles.value : [];
-      const nonRSS = nonRSSArticles.status === "fulfilled" ? nonRSSArticles.value : [];
+      const nonRSS = nonRSSArticles.status === "fulfilled" ? (Array.isArray(nonRSSArticles.value) ? nonRSSArticles.value : []) : [];
 
       // Combine and deduplicate
-      const allArticles = [...rss, ...nonRSS];
+      let allArticles = [...rss, ...nonRSS];
+      
+      // If no articles from RSS or non-RSS sources, try Reddit fallback for certain categories
+      if (allArticles.length === 0 && (category === "business" || category === "science" || category === "health" || category === "sports" || category === "entertainment")) {
+        console.log(`[useArticles] No articles from RSS sources for ${category}, trying Reddit fallback with retry logic...`);
+        try {
+          const redditArticles = await fetchRedditFallback(category);
+          allArticles = [...allArticles, ...redditArticles];
+          if (redditArticles.length > 0) {
+            console.log(`[useArticles] ✅ Reddit fallback succeeded for ${category}: ${redditArticles.length} articles`);
+          }
+        } catch (err) {
+          console.warn(`[useArticles] Reddit fallback error for ${category}:`, err);
+        }
+      }
+      
       const uniqueArticles = deduplicateArticles(allArticles);
 
       console.log(`[useArticles] ✅ Fetched ${uniqueArticles.length} articles for ${category} (RSS: ${rss.length}, Non-RSS: ${nonRSS.length})`);
+      console.log(`[useArticles] Debug - RSS status: ${rssArticles.status}, Non-RSS status: ${nonRSSArticles.status}`);
+      if (nonRSSArticles.status === "rejected") {
+        console.error(`[useArticles] Non-RSS rejected:`, nonRSSArticles.reason);
+      }
+      if (rssArticles.status === "rejected") {
+        console.error(`[useArticles] RSS rejected:`, rssArticles.reason);
+      }
 
       // Return empty array if no articles (don't throw error)
       return uniqueArticles;

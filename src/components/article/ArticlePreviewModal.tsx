@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
@@ -8,6 +8,7 @@ import { useAllArticles } from "@/lib/hooks/useArticles";
 import {
   fetchArticleContent,
   estimateReadingTime,
+  type ParsedArticle,
 } from "@/lib/services/articleContent";
 import { sanitizeArticleHtml } from "@/lib/utils/sanitizeHtml";
 import type { Article } from "@/lib/services/indexedDBCache";
@@ -37,6 +38,10 @@ export function ArticlePreviewModal({
   const [parsedContent, setParsedContent] = useState<string | null>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [fontSize, setFontSize] = useState(16);
+  
+  // Use ref to track if we've found the article to prevent rapid re-renders
+  const articleFoundRef = useRef(false);
+  const contentFetchedRef = useRef(false);
 
   // CRITICAL: Use useAllArticles to search across ALL categories, not just "general"
   // This ensures articles from tech, crypto, business, etc. can be found
@@ -45,22 +50,75 @@ export function ArticlePreviewModal({
     extractLinks: true,
   });
 
-  useEffect(() => {
-    if (articles && articleUrl && isOpen) {
-      // Normalize URLs for comparison (remove trailing slashes, lowercase)
-      const normalizedUrl = articleUrl.toLowerCase().replace(/\/$/, "");
-      const found = articles.find((a) => {
-        const articleUrlNormalized = a.url.toLowerCase().replace(/\/$/, "");
-        return articleUrlNormalized === normalizedUrl || 
-               articleUrlNormalized.includes(normalizedUrl) ||
-               normalizedUrl.includes(articleUrlNormalized);
-      });
-      setArticle(found || null);
+  // Memoize article lookup to prevent unnecessary re-computations
+  const foundArticle = useMemo(() => {
+    if (!articles || !articleUrl || !isOpen) return null;
+    
+    // Normalize URLs for comparison (remove trailing slashes, lowercase)
+    const normalizedUrl = articleUrl.toLowerCase().replace(/\/$/, "");
+    return articles.find((a) => {
+      const articleUrlNormalized = a.url.toLowerCase().replace(/\/$/, "");
+      return articleUrlNormalized === normalizedUrl || 
+             articleUrlNormalized.includes(normalizedUrl) ||
+             normalizedUrl.includes(articleUrlNormalized);
+    }) || null;
+  }, [articles, articleUrl, isOpen]);
 
-      // Fetch full article content if article found
-      if (found && !found.content) {
-        setIsLoadingContent(true);
-        // CRITICAL: Add timeout wrapper to prevent infinite loading
+  // Update article state only when foundArticle changes
+  useEffect(() => {
+    if (foundArticle && !articleFoundRef.current) {
+      setArticle(foundArticle);
+      articleFoundRef.current = true;
+    } else if (!foundArticle && isOpen) {
+      // Reset when article not found and modal is open
+      setArticle(null);
+      articleFoundRef.current = false;
+    }
+  }, [foundArticle, isOpen]);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setArticle(null);
+      setParsedContent(null);
+      setIsLoadingContent(false);
+      articleFoundRef.current = false;
+      contentFetchedRef.current = false;
+    }
+  }, [isOpen]);
+
+  // Fetch full article content if article found
+  useEffect(() => {
+    if (article && !article.content && !contentFetchedRef.current && isOpen) {
+      setIsLoadingContent(true);
+      contentFetchedRef.current = true;
+      
+      // CRITICAL: Wrap async code in async IIFE since useEffect callback cannot be async
+      (async () => {
+        // CRITICAL: Try server-side content fetching first (bypasses CORS)
+        // Fallback to client-side fetching if server-side fails
+        try {
+          const serverResponse = await fetch(`/api/article-content?url=${encodeURIComponent(article.url)}`, {
+            cache: 'no-store',
+            signal: AbortSignal.timeout(25000), // 25 second timeout
+          });
+
+          if (serverResponse.ok) {
+            const serverData = await serverResponse.json();
+            if (serverData.success && serverData.content) {
+              console.log(`✅ Server-side article content fetch succeeded for: ${article.url.substring(0, 50)}...`);
+              // Sanitize the HTML content
+              const sanitized = sanitizeArticleHtml(serverData.content);
+              setParsedContent(sanitized);
+              setIsLoadingContent(false);
+              return; // Success - exit early
+            }
+          }
+        } catch (serverError) {
+          console.warn(`Server-side article content fetch failed, falling back to client-side:`, serverError);
+        }
+
+        // Fallback to client-side fetching with timeout wrapper
         const timeoutPromise = new Promise<ParsedArticle | null>((resolve) => {
           setTimeout(() => {
             console.warn("Article content fetch timed out");
@@ -69,7 +127,7 @@ export function ArticlePreviewModal({
         });
 
         Promise.race([
-          fetchArticleContent(found.url),
+          fetchArticleContent(article.url),
           timeoutPromise
         ])
           .then((parsed) => {
@@ -90,13 +148,14 @@ export function ArticlePreviewModal({
           .finally(() => {
             setIsLoadingContent(false);
           });
-      } else if (found?.content) {
-        // Sanitize cached content
-        const sanitized = sanitizeArticleHtml(found.content);
-        setParsedContent(sanitized);
-      }
+      })();
+    } else if (article?.content && !contentFetchedRef.current && isOpen) {
+      // Sanitize cached content
+      const sanitized = sanitizeArticleHtml(article.content);
+      setParsedContent(sanitized);
+      contentFetchedRef.current = true;
     }
-  }, [articles, articleUrl, isOpen]);
+  }, [article, isOpen]);
 
   const handleOpenFullPage = () => {
     if (onOpenFullPage) {
@@ -109,7 +168,9 @@ export function ArticlePreviewModal({
 
   if (!isOpen) return null;
 
-  if (isLoading) {
+  // CRITICAL: Always use same modal size (xl) to prevent blinking
+  // Show loading state only if articles are still loading AND we don't have article yet
+  if (isLoading && !article) {
     return (
       <Modal
         isOpen={isOpen}
@@ -122,12 +183,13 @@ export function ArticlePreviewModal({
     );
   }
 
-  if (!article) {
+  // Show "not found" only if articles loaded but article not found
+  if (!isLoading && !article) {
     return (
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        size="md"
+        size="xl"
         title="Article not found"
       >
         <EmptyState
@@ -138,6 +200,9 @@ export function ArticlePreviewModal({
       </Modal>
     );
   }
+
+  // If we have article, show main modal (always xl size)
+  if (!article) return null; // Safety check
 
   const readingTime = parsedContent
     ? estimateReadingTime(parsedContent.replace(/<[^>]*>/g, ""))

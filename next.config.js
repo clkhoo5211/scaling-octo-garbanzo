@@ -43,7 +43,7 @@ const nextConfig = {
   // This is expected for static export - pages will work at runtime
   experimental: {
     missingSuspenseWithCSRBailout: false,
-    optimizeCss: true, // CSS optimization
+    // optimizeCss: true, // Disabled - requires 'critters' module which isn't installed
     optimizePackageImports: ['lucide-react', '@reown/appkit', '@clerk/clerk-react'], // Tree-shaking
   },
   eslint: {
