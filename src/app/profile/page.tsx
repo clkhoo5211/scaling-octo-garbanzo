@@ -7,6 +7,9 @@ import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { User, Wallet, Bookmark, Heart, MessageCircle, Crown, Star } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { PointsConversion } from "@/components/points/PointsConversion";
+import { AdSlotSubscriptions } from "@/components/adslot/AdSlotSubscriptions";
+import Link from "next/link";
 
 /**
  * ProfilePage Component
@@ -38,12 +41,18 @@ export default function ProfilePage() {
   // Read all data from Clerk publicMetadata (per requirements)
   const points = (user.publicMetadata?.points as number) || 0;
   const subscriptionTier = (user.publicMetadata?.subscription_tier as string) || "free";
+  const subscriptionExpiry = user.publicMetadata?.subscription_expiry as string | null;
   const referralCode = (user.publicMetadata?.referral_code as string) || "N/A";
   const totalSubmissions = (user.publicMetadata?.total_submissions as number) || 0;
   const totalUpvotes = (user.publicMetadata?.total_upvotes as number) || 0;
   const loginStreak = (user.publicMetadata?.login_streak as number) || 0;
   const reownAddress = (user.publicMetadata?.reown_address as string) || address || "Not connected";
   const smartAccountAddress = (user.publicMetadata?.smart_account_address as string) || address || "Not connected";
+  
+  // Check if subscription is active
+  const isSubscriptionActive = subscriptionExpiry
+    ? new Date(subscriptionExpiry) > new Date()
+    : false;
 
   // Subscription tier display
   const getTierBadge = (tier: string) => {
@@ -190,7 +199,22 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Subscription Tier</p>
-              <div className="mt-1">{getTierBadge(subscriptionTier)}</div>
+              <div className="mt-1 flex items-center gap-2">
+                {getTierBadge(subscriptionTier)}
+                {subscriptionExpiry && isSubscriptionActive && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Expires {new Date(subscriptionExpiry).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              {subscriptionTier === "free" && (
+                <Link
+                  href="/subscription"
+                  className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 mt-1 inline-block"
+                >
+                  Upgrade →
+                </Link>
+              )}
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Reown Address</p>
@@ -207,6 +231,16 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Points Conversion */}
+        <div className="mb-6">
+          <PointsConversion />
+        </div>
+
+        {/* Ad Slot Subscriptions */}
+        <div className="mb-6">
+          <AdSlotSubscriptions />
         </div>
       </div>
     </ErrorBoundary>

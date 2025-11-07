@@ -1,8 +1,18 @@
 "use client";
 
+"use client";
+
+import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Gavel, Clock, Users, DollarSign } from "lucide-react";
+import { Gavel, Clock, Users, DollarSign, Bell, BellOff, Loader2 } from "lucide-react";
 import { TransactionStatus } from "@/components/web3/TransactionStatus";
+import { useClerkUser } from "@/lib/hooks/useClerkUser";
+import { useToast } from "@/components/ui/Toast";
+import {
+  subscribeToSlot,
+  unsubscribeFromSlot,
+  getSubscribedSlots,
+} from "@/lib/services/adSlotSubscriptionService";
 
 interface AuctionCardProps {
   auction: {
@@ -31,6 +41,11 @@ interface AuctionCardProps {
  * Displays ad auction information
  */
 export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
+  const { user } = useClerkUser();
+  const { addToast } = useToast();
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  
   const endTime =
     auction.end_time || auction.endTime || new Date().toISOString();
   const currentBid =
@@ -43,6 +58,84 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
   const timeRemaining = formatDistanceToNow(new Date(endTime), {
     addSuffix: true,
   });
+
+  // Check subscription status
+  useEffect(() => {
+    if (user) {
+      getSubscribedSlots(user.id).then((result) => {
+        if (!result.error) {
+          const subscribed = result.data.some((sub) => sub.slot_id === slotId);
+          setIsSubscribed(subscribed);
+        }
+      });
+    }
+  }, [user, slotId]);
+
+  const handleSubscribe = async () => {
+    if (!user) {
+      addToast({ message: "Please sign in to subscribe", type: "error" });
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const result = await subscribeToSlot({
+        userId: user.id,
+        user,
+        slotId,
+      });
+
+      if (result.success) {
+        setIsSubscribed(true);
+        addToast({
+          message: "Subscribed! You'll receive notifications when this auction opens.",
+          type: "success",
+        });
+        await user.reload(); // Refresh to update points
+      } else {
+        addToast({
+          message: result.error || "Failed to subscribe",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      addToast({
+        message: error instanceof Error ? error.message : "Failed to subscribe",
+        type: "error",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleUnsubscribe = async () => {
+    if (!user) return;
+
+    setIsUpdating(true);
+    try {
+      const result = await unsubscribeFromSlot(user.id, slotId);
+
+      if (result.success) {
+        setIsSubscribed(false);
+        addToast({
+          message: "Unsubscribed from ad slot",
+          type: "success",
+        });
+      } else {
+        addToast({
+          message: result.error || "Failed to unsubscribe",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      addToast({
+        message: error instanceof Error ? error.message : "Failed to unsubscribe",
+        type: "error",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
@@ -116,20 +209,48 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
         </div>
       </div>
 
-      {/* Bid Button */}
-      {auction.status === "active" && !isEnded && (
+      {/* Actions */}
+      <div className="space-y-2">
+        {/* Subscribe Button */}
         <button
-          onClick={() => {
-            if (onBid) {
-              onBid(auction.id);
-            }
-          }}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          onClick={isSubscribed ? handleUnsubscribe : handleSubscribe}
+          disabled={isUpdating}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+            isSubscribed
+              ? "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+              : "bg-green-500 text-white hover:bg-green-600"
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          <DollarSign className="w-4 h-4" />
-          <span>Place Bid</span>
+          {isUpdating ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : isSubscribed ? (
+            <>
+              <BellOff className="w-4 h-4" />
+              <span>Unsubscribe</span>
+            </>
+          ) : (
+            <>
+              <Bell className="w-4 h-4" />
+              <span>Subscribe for Notifications</span>
+            </>
+          )}
         </button>
-      )}
+
+        {/* Bid Button */}
+        {auction.status === "active" && !isEnded && (
+          <button
+            onClick={() => {
+              if (onBid) {
+                onBid(auction.id);
+              }
+            }}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            <DollarSign className="w-4 h-4" />
+            <span>Place Bid</span>
+          </button>
+        )}
+      </div>
     </div>
   );
 }

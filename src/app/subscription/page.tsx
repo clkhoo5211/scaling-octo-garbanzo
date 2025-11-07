@@ -6,6 +6,8 @@ import { EmptyState } from "@/components/ui/LoadingState";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { Crown, Star, Check, X } from "lucide-react";
 import Link from "next/link";
+import { SubscriptionPurchase } from "@/components/subscription/SubscriptionPurchase";
+import { useState } from "react";
 
 /**
  * SubscriptionPage Component
@@ -14,6 +16,7 @@ import Link from "next/link";
  */
 export default function SubscriptionPage() {
   const { user, isLoaded } = useUser();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   if (!isLoaded) {
     return <LoadingState message="Loading subscription..." fullScreen />;
@@ -189,9 +192,13 @@ export default function SubscriptionPage() {
                     </li>
                   ))}
                 </ul>
-                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                  Upgrade to Pro
-                </button>
+                <SubscriptionPurchase
+                  tier="pro"
+                  onSuccess={() => {
+                    setRefreshKey((k) => k + 1);
+                    window.location.reload();
+                  }}
+                />
               </div>
 
               {/* Premium Tier */}
@@ -216,9 +223,13 @@ export default function SubscriptionPage() {
                     </li>
                   ))}
                 </ul>
-                <button className="w-full px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
-                  Upgrade to Premium
-                </button>
+                <SubscriptionPurchase
+                  tier="premium"
+                  onSuccess={() => {
+                    setRefreshKey((k) => k + 1);
+                    window.location.reload();
+                  }}
+                />
               </div>
             </div>
           </div>
