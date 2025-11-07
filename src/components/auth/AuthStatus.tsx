@@ -22,7 +22,7 @@ export function AuthStatus() {
 
   return (
     <div className="flex items-center gap-3">
-      {/* User Info */}
+      {/* User Info - Only show if user exists and wallet is NOT connected */}
       {user && (
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -36,6 +36,7 @@ export function AuthStatus() {
       )}
 
       {/* Wallet/Sign In - WalletConnect handles both */}
+      {/* Note: WalletConnect will show address if connected, so we don't duplicate it */}
       <WalletConnect />
     </div>
   );

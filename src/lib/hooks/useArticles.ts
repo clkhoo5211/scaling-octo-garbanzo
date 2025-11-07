@@ -56,27 +56,50 @@ export function useArticles(
 
       return uniqueArticles;
     },
-    staleTime: 0, // Always fetch fresh (no caching)
-    gcTime: 0, // No cache time
+    staleTime: 5 * 60 * 1000, // 5 minutes - cache for better performance
+    gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache
     retry: 2,
-    refetchOnMount: true, // Always refetch on mount
-    refetchOnWindowFocus: true, // Refetch when window gains focus
+    refetchOnMount: false, // Use cache if available
+    refetchOnWindowFocus: false, // Don't refetch on focus to reduce load
   });
 }
 
 /**
- * Deduplicate articles by URL
+ * Hook to fetch articles from all categories
+ * Useful for searching articles by URL across all sources
  */
-function deduplicateArticles(articles: any[]): any[] {
-  const seen = new Set<string>();
-  return articles.filter((article) => {
-    const normalizedUrl = article.url.toLowerCase().replace(/\/$/, "");
-    if (seen.has(normalizedUrl)) {
-      return false;
-    }
-    seen.add(normalizedUrl);
-    return true;
-  });
+export function useAllArticles(options?: { usePagination?: boolean; extractLinks?: boolean }) {
+  // Call all hooks at top level (React rules)
+  const techQuery = useArticles("tech", options);
+  const cryptoQuery = useArticles("crypto", options);
+  const socialQuery = useArticles("social", options);
+  const generalQuery = useArticles("general", options);
+  const businessQuery = useArticles("business", options);
+  const scienceQuery = useArticles("science", options);
+  const sportsQuery = useArticles("sports", options);
+  const entertainmentQuery = useArticles("entertainment", options);
+  const healthQuery = useArticles("health", options);
+  
+  const queries = [techQuery, cryptoQuery, socialQuery, generalQuery, businessQuery, scienceQuery, sportsQuery, entertainmentQuery, healthQuery];
+  
+  const isLoading = queries.some(q => q.isLoading);
+  const isError = queries.some(q => q.isError);
+  const error = queries.find(q => q.error)?.error;
+  
+  // Combine all articles and deduplicate
+  const allArticles = queries
+    .map(q => q.data || [])
+    .flat()
+    .filter((a, index, self) => 
+      index === self.findIndex((t) => t.url === a.url)
+    );
+  
+  return {
+    data: allArticles,
+    isLoading,
+    isError,
+    error,
+  };
 }
 
 /**

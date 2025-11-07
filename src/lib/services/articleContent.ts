@@ -37,7 +37,7 @@ const CORS_PROXIES = [
  */
 async function fetchWithTimeout(
   url: string,
-  timeout: number = 10000
+  timeout: number = 8000 // Reduced timeout from 10s to 8s for faster failure
 ): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -64,7 +64,7 @@ async function fetchWithTimeout(
  */
 export async function fetchArticleContent(
   url: string,
-  retries: number = 2
+  retries: number = 1 // Reduced retries for faster failure
 ): Promise<ParsedArticle | null> {
   if (typeof window === "undefined") {
     // Server-side: return null (will be fetched on client)

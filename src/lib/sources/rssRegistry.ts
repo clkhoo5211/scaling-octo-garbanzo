@@ -29,6 +29,7 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     techSources.theVergeSource,
     techSources.arsTechnicaSource,
     techSources.mediumSource,
+    techSources.androidAuthoritySource,
     
     // Crypto sources
     cryptoSources.coinDeskSource,
@@ -51,6 +52,7 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     generalSources.cnnSource,
     generalSources.associatedPressSource,
     generalSources.newYorkTimesSource,
+    generalSources.msnSource,
     
     // Business sources
     businessSources.bloombergSource,
@@ -58,6 +60,17 @@ export function getAllRSSSources(): RSSSourceHandler[] {
     businessSources.wallStreetJournalSource,
     businessSources.forbesSource,
     businessSources.businessInsiderSource,
+    businessSources.cnbcSource,
+    businessSources.marketWatchSource,
+    businessSources.investingComSource,
+    businessSources.nasdaqSource,
+    businessSources.foxBusinessSource,
+    businessSources.morningstarSource,
+    businessSources.barronsSource,
+    businessSources.investorsComSource,
+    businessSources.yahooFinanceSource,
+    businessSources.theStarSource,
+    businessSources.bursaMalaysiaSource,
     
     // Science sources
     scienceSources.scienceMagSource,

@@ -87,3 +87,13 @@ export const mediumSource = new BaseRSSSource({
   maxArticles: 20,
 });
 
+export const androidAuthoritySource = new BaseRSSSource({
+  id: "android-authority",
+  name: "Android Authority",
+  url: "https://www.androidauthority.com/feed/",
+  category: "tech",
+  enabled: true,
+  updateFrequency: 900000, // 15 minutes
+  maxArticles: 20,
+});
+

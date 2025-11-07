@@ -64,3 +64,15 @@ export const newYorkTimesSource = new BaseRSSSource({
   maxArticles: 30,
 });
 
+// New General News Sources (Added 2025-11-07)
+
+export const msnSource = new BaseRSSSource({
+  id: "msn",
+  name: "MSN",
+  url: "https://www.msn.com/en-us/money/feed",
+  category: "general",
+  enabled: true,
+  updateFrequency: 900000, // 15 minutes
+  maxArticles: 30,
+});
+

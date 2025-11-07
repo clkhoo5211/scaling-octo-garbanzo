@@ -4,7 +4,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
 import { useEffect, useState, lazy, Suspense } from "react";
-import { useArticles } from "@/lib/hooks/useArticles";
+import { useAllArticles } from "@/lib/hooks/useArticles";
 import {
   useArticleLikes,
   useLikeArticle,
@@ -54,8 +54,8 @@ export function ArticleReaderClient({
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const { userId } = useAppStore();
 
-  // Use "general" category to find article by URL
-  const { data: articles, isLoading } = useArticles("general", {
+  // Search across ALL categories to find article by URL
+  const { data: allArticles, isLoading } = useAllArticles({
     usePagination: false,
     extractLinks: true,
   });
@@ -76,8 +76,15 @@ export function ArticleReaderClient({
   const likesCount = likes?.length || 0;
 
   useEffect(() => {
-    if (articles && articleUrl) {
-      const found = articles.find((a) => a.url === articleUrl);
+    if (allArticles.length > 0 && articleUrl) {
+      // Normalize URL for comparison (remove trailing slashes, lowercase)
+      const normalizedUrl = articleUrl.toLowerCase().replace(/\/$/, "");
+      const found = allArticles.find((a) => {
+        const articleUrlNormalized = a.url.toLowerCase().replace(/\/$/, "");
+        return articleUrlNormalized === normalizedUrl || 
+               articleUrlNormalized.includes(normalizedUrl) ||
+               normalizedUrl.includes(articleUrlNormalized);
+      });
       setArticle(found || null);
 
       // Fetch full article content if article found
@@ -103,7 +110,7 @@ export function ArticleReaderClient({
         setParsedContent(sanitized);
       }
     }
-  }, [articles, articleUrl]);
+  }, [allArticles, articleUrl]);
 
   const handleLike = () => {
     if (!article || !userId) return;
