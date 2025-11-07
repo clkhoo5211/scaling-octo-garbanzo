@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
-import { useArticles } from "@/lib/hooks/useArticles";
+import { useAllArticles } from "@/lib/hooks/useArticles";
 import {
   fetchArticleContent,
   estimateReadingTime,
@@ -38,15 +38,23 @@ export function ArticlePreviewModal({
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [fontSize, setFontSize] = useState(16);
 
-  // Use "general" category to find article by URL
-  const { data: articles, isLoading } = useArticles("general", {
+  // CRITICAL: Use useAllArticles to search across ALL categories, not just "general"
+  // This ensures articles from tech, crypto, business, etc. can be found
+  const { data: articles, isLoading } = useAllArticles({
     usePagination: false,
     extractLinks: true,
   });
 
   useEffect(() => {
     if (articles && articleUrl && isOpen) {
-      const found = articles.find((a) => a.url === articleUrl);
+      // Normalize URLs for comparison (remove trailing slashes, lowercase)
+      const normalizedUrl = articleUrl.toLowerCase().replace(/\/$/, "");
+      const found = articles.find((a) => {
+        const articleUrlNormalized = a.url.toLowerCase().replace(/\/$/, "");
+        return articleUrlNormalized === normalizedUrl || 
+               articleUrlNormalized.includes(normalizedUrl) ||
+               normalizedUrl.includes(articleUrlNormalized);
+      });
       setArticle(found || null);
 
       // Fetch full article content if article found
