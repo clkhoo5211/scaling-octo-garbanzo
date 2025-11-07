@@ -1,26 +1,20 @@
 /**
- * Reown AppKit Configuration
- * Web3 wallet connection and authentication (PRIMARY)
- * Social logins and email enabled
+ * Reown AppKit Configuration (DEPRECATED)
+ * 
+ * This file is deprecated. The proper implementation is now in:
+ * - config/index.tsx (WagmiAdapter configuration)
+ * - context/index.tsx (AppKit modal creation with WagmiProvider)
+ * 
+ * This file is kept for backward compatibility but should not be used.
+ * All AppKit functionality is now handled through the WagmiAdapter setup.
  */
 
 import { createAppKit } from "@reown/appkit/react";
+import { mainnet, polygon } from "@reown/appkit/networks";
+import type { AppKitNetwork } from "@reown/appkit/networks";
 
-// Use a simpler network config to avoid build issues
-const networks = [
-  {
-    id: 1,
-    name: "Ethereum",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: { default: { http: ["https://eth.llamarpc.com"] } },
-  },
-  {
-    id: 137,
-    name: "Polygon",
-    nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
-    rpcUrls: { default: { http: ["https://polygon.llamarpc.com"] } },
-  },
-];
+// Use proper AppKitNetwork types from @reown/appkit/networks
+const networks: [AppKitNetwork, ...AppKitNetwork[]] = [mainnet, polygon];
 
 export const appKit = createAppKit({
   projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || "",
@@ -37,10 +31,5 @@ export const appKit = createAppKit({
     email: true, // Enable email login
     socials: ["google", "x", "github", "discord", "apple"], // Enable social logins
   },
-  networks: networks as Array<{
-    id: number;
-    name: string;
-    nativeCurrency: { name: string; symbol: string; decimals: number };
-    rpcUrls: { default: { http: string[] } };
-  }>,
+  networks: networks,
 });
