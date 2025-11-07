@@ -36,7 +36,29 @@ export function WalletConnect() {
   // Show loading state during SSR/hydration
   if (!mounted) {
     return (
-      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+      <button
+        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors animate-pulse"
+        disabled
+      >
+        <Wallet className="w-4 h-4" />
+        <span>Loading...</span>
+      </button>
+    );
+  }
+
+  // If AppKit isn't ready, show button anyway
+  if (!open) {
+    return (
+      <button
+        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        onClick={() => {
+          console.warn('AppKit not ready yet');
+          window.location.reload();
+        }}
+      >
+        <Wallet className="w-4 h-4" />
+        <span>Connect to Sign In</span>
+      </button>
     );
   }
 
