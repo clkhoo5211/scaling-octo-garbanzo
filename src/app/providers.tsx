@@ -1,52 +1,20 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
-import { AppKitProvider } from "@reown/appkit/react";
-import { appKit } from "@/lib/config/reown";
+import ContextProvider from "@/context";
 import { ToastProvider } from "@/components/ui/Toast";
 
-// Temporarily disable Clerk for static export - will use client-side only
-// const ClerkProvider = dynamic(
-//   () => import("@clerk/nextjs").then((mod) => mod.ClerkProvider),
-//   { ssr: false }
-// );
-
-// Create a client instance
-function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 30 * 60 * 1000, // 30 minutes
-        gcTime: 60 * 60 * 1000, // 1 hour (formerly cacheTime)
-        retry: 1,
-        refetchOnWindowFocus: false,
-      },
-    },
-  });
-}
-
-let browserQueryClient: QueryClient | undefined = undefined;
-
-function getQueryClient() {
-  if (typeof window === "undefined") {
-    // Server: always make a new query client
-    return makeQueryClient();
-  } else {
-    // Browser: make a new query client if we don't already have one
-    if (!browserQueryClient) browserQueryClient = makeQueryClient();
-    return browserQueryClient;
-  }
-}
-
+/**
+ * Providers Component
+ * Wraps app with Reown AppKit + Wagmi + React Query
+ * For static export, cookies will be null (SSR not available)
+ */
 export function Providers({ children }: { children: ReactNode }) {
-  const queryClient = getQueryClient();
-
+  // For static export, we don't have access to cookies
+  // This is fine - Wagmi will use localStorage instead
   return (
-    <AppKitProvider config={appKit}>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>{children}</ToastProvider>
-      </QueryClientProvider>
-    </AppKitProvider>
+    <ContextProvider cookies={null}>
+      <ToastProvider>{children}</ToastProvider>
+    </ContextProvider>
   );
 }

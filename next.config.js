@@ -28,6 +28,9 @@ const nextConfig = {
     // Disable webpack cache
     config.cache = false;
 
+    // Required for Reown AppKit SSR compatibility
+    config.externals.push('pino-pretty', 'lokijs', 'encoding');
+
     if (!isServer) {
       // Client-side only - no server actions
       config.resolve.fallback = {
