@@ -1,0 +1,48 @@
+bug:
+  - '.*bug.*'
+  - '.*error.*'
+  - '.*issue.*'
+  - '.*crash.*'
+  - '.*broken.*'
+
+feature:
+  - '.*feature.*'
+  - '.*enhancement.*'
+  - '.*request.*'
+  - '.*add.*'
+
+question:
+  - '.*question.*'
+  - '.*help.*'
+  - '.*how.*'
+  - '.*why.*'
+
+documentation:
+  - '.*doc.*'
+  - '.*readme.*'
+  - '.*guide.*'
+  - '.*tutorial.*'
+
+security:
+  - '.*security.*'
+  - '.*vulnerability.*'
+  - '.*exploit.*'
+
+performance:
+  - '.*performance.*'
+  - '.*slow.*'
+  - '.*optimization.*'
+
+ui:
+  - '.*ui.*'
+  - '.*design.*'
+  - '.*styling.*'
+  - '.*css.*'
+
+web3:
+  - '.*web3.*'
+  - '.*blockchain.*'
+  - '.*crypto.*'
+  - '.*wallet.*'
+  - '.*smart.*contract.*'
+
