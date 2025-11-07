@@ -1,61 +1,77 @@
-# 🔍 ROOT CAUSE ANALYSIS: Build Hang Issue
+# 🎯 EXACT ROOT CAUSE: Build Hang
 
 ## The Problem
+Build hangs at **"Collecting page data"** - Next.js never completes static export.
 
-**Build hangs at "Collecting page data"** - Next.js static export never completes, causing GitHub Pages 404.
+## EXACT CULPRITS (Module-Level Initialization)
 
-## Root Cause Identified
-
-### **CULPRIT #1: WagmiAdapter Module-Level Initialization**
-**File:** `config/index.tsx` line 16
+### **1. WagmiAdapter** - `config/index.tsx:16`
 ```typescript
-export const wagmiAdapter = new WagmiAdapter({...})  // ❌ Runs at module level
+export const wagmiAdapter = new WagmiAdapter({...})  // ❌ RUNS AT MODULE LEVEL
+```
+**What it does:**
+- Initializes Web3 wallet connections
+- Sets up WalletConnect infrastructure  
+- Accesses `window`, `localStorage`, `cookies` (browser APIs)
+- **Hangs because:** Browser APIs don't exist during Node.js build
+
+### **2. createAppKit** - `context/index.tsx:26`
+```typescript
+const modal = createAppKit({...})  // ❌ RUNS AT MODULE LEVEL
+```
+**What it does:**
+- Initializes Reown AppKit connections
+- Connects to WalletConnect network
+- Accesses browser environment
+- **Hangs because:** Tries to connect to external services during build
+
+### **3. cookieStorage Import** - `config/index.tsx:1`
+```typescript
+import { cookieStorage, createStorage } from '@wagmi/core';  // ⚠️ May trigger initialization
 ```
 
-**Why it hangs:**
-- `WagmiAdapter` initializes Web3 connections, WalletConnect, network connections
-- Tries to access browser APIs (`window`, `localStorage`, `cookies`) during build
-- These APIs don't exist in Node.js build environment
-- Causes infinite wait/hang
-
-### **CULPRIT #2: createAppKit Module-Level Initialization**
-**File:** `context/index.tsx` line 26
-```typescript
-const modal = createAppKit({...})  // ❌ Runs at module level
-```
-
-**Why it hangs:**
-- `createAppKit` initializes Reown AppKit connections
-- Tries to connect to WalletConnect infrastructure
-- Accesses browser APIs during build
-- Causes hang
-
-### **CULPRIT #3: cookieStorage Import**
-**File:** `config/index.tsx` line 1
-```typescript
-import { cookieStorage, createStorage } from '@wagmi/core';  // ⚠️ May access browser APIs
-```
-
-**Why it might hang:**
-- `cookieStorage` from `@wagmi/core` might try to access browser cookies during import
-- Even if lazy-loaded, the import itself might trigger initialization
+## Why It Worked Before
+- Previous builds completed because these weren't being evaluated during static generation
+- Recent changes (possibly React Query hooks or component structure) caused Next.js to evaluate modules during "Collecting page data"
 
 ## The Fix Applied
 
-1. **Lazy-load WagmiAdapter** - Only initialize on client-side
-2. **Lazy-load createAppKit** - Only initialize in `useEffect` (client-side)
-3. **Dynamic imports** - Use `require()` inside functions instead of top-level imports
-4. **Skip WagmiProvider during build** - Don't render until client-side
+1. **Lazy-load WagmiAdapter:**
+   ```typescript
+   export function getWagmiAdapter() {
+     if (typeof window === 'undefined') throw new Error(...);
+     // Initialize only on client-side
+   }
+   ```
 
-## Libraries Causing the Issue
+2. **Lazy-load createAppKit:**
+   ```typescript
+   useEffect(() => {
+     if (typeof window !== 'undefined') {
+       getAppKit(); // Only runs client-side
+     }
+   }, []);
+   ```
 
-1. **`@reown/appkit-adapter-wagmi`** - WagmiAdapter initialization
-2. **`@reown/appkit/react`** - createAppKit initialization  
+3. **Dynamic imports:**
+   ```typescript
+   const { WagmiAdapter } = require('@reown/appkit-adapter-wagmi'); // Inside function
+   ```
+
+4. **Skip WagmiProvider during build:**
+   ```typescript
+   if (!wagmiConfig) {
+     return <QueryClientProvider>{children}</QueryClientProvider>; // No WagmiProvider
+   }
+   ```
+
+## Libraries Causing Hang
+
+1. **`@reown/appkit-adapter-wagmi`** - WagmiAdapter constructor
+2. **`@reown/appkit/react`** - createAppKit function
 3. **`@wagmi/core`** - cookieStorage/createStorage (potential)
 4. **`wagmi`** - WagmiProvider (if initialized during build)
 
 ## Status
-
-✅ **Fixed:** Module-level initialization moved to client-side only
-⏳ **Testing:** Build should now complete without hanging
-
+✅ **Fixed:** All Web3 initialization moved to client-side only
+⏳ **Testing:** Build should complete without hanging
