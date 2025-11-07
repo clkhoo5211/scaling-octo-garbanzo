@@ -112,7 +112,7 @@
 - Comprehensive documentation
 
 **GitHub Repository:**
-- Repository: https://github.com/SharlanAndy/redesigned-giggle
+- Repository: https://github.com/clkhoo5211/scaling-octo-garbanzo
 - Status: Ready for initial push
 - Next Steps: Push code, configure secrets, enable GitHub Pages
 

@@ -1,8 +1,8 @@
 # GitHub Pages Deployment Verification
 ## Web3News - Blockchain Content Aggregator
 
-**Repository**: https://github.com/SharlanAndy/redesigned-giggle  
-**Deployment URL**: https://sharlanandy.github.io/redesigned-giggle/  
+**Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo  
+**Deployment URL**: https://clkhoo5211.github.io/scaling-octo-garbanzo/  
 **Status**: ✅ Workflow Configured - Ready for Verification
 
 ---
@@ -91,7 +91,7 @@ After pushing to `main` branch:
    - [ ] Check deployment status (should show "Active")
 
 3. **Verify Site Accessibility:**
-   - [ ] Visit: https://sharlanandy.github.io/redesigned-giggle/
+   - [ ] Visit: https://clkhoo5211.github.io/scaling-octo-garbanzo/
    - [ ] Verify homepage loads
    - [ ] Check browser console for errors
    - [ ] Verify all assets load (CSS, JS, images)
@@ -186,7 +186,7 @@ After pushing to `main` branch:
    - Deploy to GitHub Pages ✅
    ↓
 5. Site available at:
-   https://sharlanandy.github.io/redesigned-giggle/
+   https://clkhoo5211.github.io/scaling-octo-garbanzo/
 ```
 
 ### Workflow Status Indicators
@@ -200,11 +200,11 @@ After pushing to `main` branch:
 
 ## 🔗 Useful Links
 
-- **Repository**: https://github.com/SharlanAndy/redesigned-giggle
-- **Actions**: https://github.com/SharlanAndy/redesigned-giggle/actions
-- **Pages Settings**: https://github.com/SharlanAndy/redesigned-giggle/settings/pages
-- **Secrets**: https://github.com/SharlanAndy/redesigned-giggle/settings/secrets/actions
-- **Deployed Site**: https://sharlanandy.github.io/redesigned-giggle/
+- **Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo
+- **Actions**: https://github.com/clkhoo5211/scaling-octo-garbanzo/actions
+- **Pages Settings**: https://github.com/clkhoo5211/scaling-octo-garbanzo/settings/pages
+- **Secrets**: https://github.com/clkhoo5211/scaling-octo-garbanzo/settings/secrets/actions
+- **Deployed Site**: https://clkhoo5211.github.io/scaling-octo-garbanzo/
 
 ---
 

@@ -413,6 +413,6 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 
 ## 🔗 Links
 
-- **Repository**: [https://github.com/SharlanAndy/redesigned-giggle](https://github.com/SharlanAndy/redesigned-giggle)
+- **Repository**: [https://github.com/clkhoo5211/scaling-octo-garbanzo](https://github.com/clkhoo5211/scaling-octo-garbanzo)
 - **Documentation**: See `docs/` directory
-- **Issues**: [GitHub Issues](https://github.com/SharlanAndy/redesigned-giggle/issues)
+- **Issues**: [GitHub Issues](https://github.com/clkhoo5211/scaling-octo-garbanzo/issues)

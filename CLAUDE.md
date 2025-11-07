@@ -8,8 +8,8 @@
 - **Current Phase**: DevOps Complete ✅ → Code Review Phase Next
 - **Overall Status**: ✅ DevOps Complete (100% - Ready for Code Review)
 - **Last Enhancement**: GitHub Pages deployment configuration verified and enhanced (2025-11-07)
-- **GitHub Repository**: https://github.com/SharlanAndy/redesigned-giggle
-- **Deployment URL**: https://sharlanandy.github.io/redesigned-giggle/
+- **GitHub Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo
+- **Deployment URL**: https://clkhoo5211.github.io/scaling-octo-garbanzo/
 
 ## 🎯 Agent Workflow Dashboard
 | Agent | Task ID | Status | Dependencies | Last Update | Blocker | Generated Files | Slash Command |

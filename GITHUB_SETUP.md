@@ -1,7 +1,7 @@
 # GitHub Repository Setup Guide
 ## Web3News - Blockchain Content Aggregator
 
-**Repository**: https://github.com/SharlanAndy/redesigned-giggle  
+**Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo  
 **Created**: 2025-11-07  
 **Status**: Ready for initial push
 
@@ -24,7 +24,7 @@
 - ✅ Build output path correct (`out/`)
 - ✅ All workflow syntax valid
 
-**Deployment URL:** https://sharlanandy.github.io/redesigned-giggle/
+**Deployment URL:** https://sharlanandy.github.io/scaling-octo-garbanzo/
 
 ---
 
@@ -32,9 +32,9 @@
 
 ### 1. Repository Setup
 
-- [x] GitHub repository created: `redesigned-giggle`
+- [x] GitHub repository created: `scaling-octo-garbanzo`
 - [ ] Repository initialized (empty repository)
-- [ ] Remote added: `git remote add origin https://github.com/SharlanAndy/redesigned-giggle.git`
+- [ ] Remote added: `git remote add origin https://github.com/clkhoo5211/scaling-octo-garbanzo.git`
 
 ### 2. Initial Commit
 
@@ -131,7 +131,7 @@ After pushing to `main` branch:
    - View "Deploy to GitHub Pages" workflow
 
 3. Access your site:
-   - URL: `https://sharlanandy.github.io/redesigned-giggle/`
+   - URL: `https://sharlanandy.github.io/scaling-octo-garbanzo/`
    - Or custom domain (if configured)
 
 ---
@@ -139,7 +139,7 @@ After pushing to `main` branch:
 ## 📊 Repository Structure
 
 ```
-redesigned-giggle/
+scaling-octo-garbanzo/
 ├── .github/
 │   ├── workflows/          # GitHub Actions workflows
 │   ├── ISSUE_TEMPLATE/     # Issue templates

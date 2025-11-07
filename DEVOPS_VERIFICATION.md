@@ -4,7 +4,7 @@
 **Date**: 2025-11-07  
 **Agent**: DevOps Agent  
 **Status**: ✅ Complete - All Workflows Verified and Ready  
-**Repository**: https://github.com/SharlanAndy/redesigned-giggle
+**Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo
 
 ---
 
@@ -58,14 +58,14 @@ basePath: process.env.GITHUB_REPOSITORY_NAME
   : ''
 ```
 - ✅ Dynamically sets basePath from environment variable
-- ✅ Defaults to `/redesigned-giggle` for GitHub Pages
+- ✅ Defaults to `/scaling-octo-garbanzo` for GitHub Pages
 - ✅ Empty string for root domain deployments
 - ✅ Compatible with GitHub Pages subdirectory structure
 
 **2. Deployment Workflow (`.github/workflows/deploy.yml`)**
 ```yaml
 env:
-  GITHUB_REPOSITORY_NAME: redesigned-giggle
+  GITHUB_REPOSITORY_NAME: scaling-octo-garbanzo
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   NEXT_PUBLIC_REOWN_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_REOWN_PROJECT_ID }}
@@ -100,7 +100,7 @@ env:
 ### Pre-Deployment Requirements
 
 **Repository Setup:**
-- [x] GitHub repository created: `redesigned-giggle`
+- [x] GitHub repository created: `scaling-octo-garbanzo`
 - [x] Workflow files created and verified
 - [x] Configuration files created
 - [ ] Code pushed to repository
@@ -122,7 +122,7 @@ env:
 1. [ ] Check GitHub Actions tab for workflow run
 2. [ ] Verify all steps complete successfully
 3. [ ] Check GitHub Pages settings for deployment URL
-4. [ ] Visit deployed site: https://sharlanandy.github.io/redesigned-giggle/
+4. [ ] Visit deployed site: https://clkhoo5211.github.io/scaling-octo-garbanzo/
 5. [ ] Verify homepage loads correctly
 6. [ ] Check browser console for errors
 7. [ ] Verify all assets load (CSS, JS, images)
@@ -155,7 +155,7 @@ env:
    - Deploy to GitHub Pages ✅
    ↓
 5. Site live at:
-   https://sharlanandy.github.io/redesigned-giggle/
+   https://clkhoo5211.github.io/scaling-octo-garbanzo/
 ```
 
 ### Manual Deployment
@@ -226,11 +226,11 @@ env:
 
 ## 🔗 Important Links
 
-- **Repository**: https://github.com/SharlanAndy/redesigned-giggle
-- **Actions**: https://github.com/SharlanAndy/redesigned-giggle/actions
-- **Pages Settings**: https://github.com/SharlanAndy/redesigned-giggle/settings/pages
-- **Secrets**: https://github.com/SharlanAndy/redesigned-giggle/settings/secrets/actions
-- **Deployed Site**: https://sharlanandy.github.io/redesigned-giggle/
+- **Repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo
+- **Actions**: https://github.com/clkhoo5211/scaling-octo-garbanzo/actions
+- **Pages Settings**: https://github.com/clkhoo5211/scaling-octo-garbanzo/settings/pages
+- **Secrets**: https://github.com/clkhoo5211/scaling-octo-garbanzo/settings/secrets/actions
+- **Deployed Site**: https://clkhoo5211.github.io/scaling-octo-garbanzo/
 
 ---
 
@@ -250,7 +250,7 @@ env:
 1. **Push Code to GitHub**
    ```bash
    cd projects/project-20251107-003428-web3news-aggregator
-   git remote add origin https://github.com/SharlanAndy/redesigned-giggle.git
+   git remote add origin https://github.com/clkhoo5211/scaling-octo-garbanzo.git
    git add .
    git commit -m "feat: initial project setup - Web3News aggregator"
    git push -u origin main
