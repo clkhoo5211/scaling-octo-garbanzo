@@ -4,7 +4,7 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/LoadingState';
 import { useUser } from '@clerk/nextjs';
-import { useAppKit } from '@reown/appkit-react';
+import { useAppKit } from '@reown/appkit/react';
 import { User, Wallet, Settings, Bookmark, Heart, MessageCircle } from 'lucide-react';
 import { useBookmarks } from '@/lib/hooks/useArticles';
 import { usePointsTransactions } from '@/lib/hooks/useArticles';
