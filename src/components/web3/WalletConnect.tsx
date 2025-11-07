@@ -2,16 +2,24 @@
 
 import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
 import { Wallet, LogOut, Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * WalletConnect Component
  * Connects wallet using Reown AppKit
+ * CRITICAL: Only render on client-side to prevent hydration mismatches
  */
 export function WalletConnect() {
   const { address, isConnected } = useAppKitAccount();
   const { open } = useAppKit();
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // CRITICAL: Only render after mount to prevent hydration mismatch
+  // useAppKitAccount() may return different values during SSR vs client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCopyAddress = async () => {
     if (address) {
@@ -24,6 +32,13 @@ export function WalletConnect() {
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
+
+  // Show loading state during SSR/hydration
+  if (!mounted) {
+    return (
+      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+    );
+  }
 
   if (isConnected && address) {
     return (

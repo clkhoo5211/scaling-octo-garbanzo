@@ -16,6 +16,7 @@ interface AutocompleteProps {
 /**
  * Autocomplete Component
  * Search input with autocomplete suggestions
+ * CRITICAL: Client-only to prevent hydration mismatches with lucide-react icons
  */
 export function Autocomplete({
   articles,
@@ -28,8 +29,14 @@ export function Autocomplete({
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // CRITICAL: Only render icons after mount to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Filter articles based on query
   const filteredArticles = articles
@@ -104,7 +111,9 @@ export function Autocomplete({
     <div ref={containerRef} className="relative w-full">
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        {mounted && (
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        )}
         <input
           ref={inputRef}
           type="text"
@@ -113,12 +122,12 @@ export function Autocomplete({
           onKeyDown={handleKeyDown}
           onFocus={() => query.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full ${mounted ? 'pl-10' : 'pl-4'} pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />
-        {isLoading && (
+        {mounted && isLoading && (
           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
         )}
-        {query && !isLoading && (
+        {mounted && query && !isLoading && (
           <button
             onClick={() => handleInputChange("")}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"

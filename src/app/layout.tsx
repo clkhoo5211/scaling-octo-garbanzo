@@ -8,20 +8,25 @@ import { BottomNav } from "@/components/layout/BottomNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Calculate basePath for manifest (same logic as next.config.js)
+const basePath = process.env.GITHUB_REPOSITORY_NAME
+  ? `/${process.env.GITHUB_REPOSITORY_NAME}`
+  : "";
+
 export const metadata: Metadata = {
   title: "Web3News - Decentralized News Aggregation",
   description: "Decentralized news aggregation with crypto-powered rewards",
   // Next.js will generate manifest.webmanifest from manifest.ts
   // The path will be automatically adjusted based on basePath
-  manifest: "/manifest.webmanifest",
+  manifest: `${basePath}/manifest.webmanifest`,
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Web3News",
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-icon.png",
+    icon: `${basePath}/favicon.ico`,
+    apple: `${basePath}/apple-icon.png`,
   },
 };
 

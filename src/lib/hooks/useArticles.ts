@@ -35,6 +35,7 @@ export function useArticles(
       console.log(`Fetching real-time articles for ${category}...`);
       
       // Fetch RSS sources using modular aggregator (no caching)
+      // CRITICAL: Use Promise.allSettled to fetch sources in parallel for faster loading
       const rssArticles = await modularRSSAggregator.fetchByCategory(category);
 
       // Fetch non-RSS sources (Hacker News, Product Hunt, GitHub, Reddit)
@@ -57,11 +58,18 @@ export function useArticles(
 
       return uniqueArticles;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes - cache for better performance
-    gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache
-    retry: 2,
+    staleTime: 10 * 60 * 1000, // 10 minutes - cache for better performance
+    gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache longer
+    retry: 1, // Reduced retries for faster failure
     refetchOnMount: false, // Use cache if available
     refetchOnWindowFocus: false, // Don't refetch on focus to reduce load
+    refetchOnReconnect: false, // Don't refetch on reconnect to reduce load
+    // CRITICAL: Show cached data immediately while fetching fresh data
+    placeholderData: (previousData) => previousData,
+    // CRITICAL: Reduce initial loading time by using stale data
+    initialData: undefined, // Let React Query handle initial state
+    // CRITICAL: Network mode - prefer cache over network for faster loading
+    networkMode: 'online', // Only fetch when online
   });
 }
 

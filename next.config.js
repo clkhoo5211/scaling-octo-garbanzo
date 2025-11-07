@@ -158,13 +158,9 @@ const nextConfig = {
         })
       );
       
-      // Add to externals to prevent bundling
-      if (!config.externals) {
-        config.externals = [];
-      }
-      if (Array.isArray(config.externals)) {
-        config.externals.push('@react-native-async-storage/async-storage', 'react-native');
-      }
+          // CRITICAL: Don't add to externals - externals creates runtime checks that throw errors
+          // Instead, rely on NormalModuleReplacementPlugin and IgnorePlugin to handle these modules
+          // The stub files will be used instead of the real modules
     }
     
     return config;

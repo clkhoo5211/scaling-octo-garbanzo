@@ -25,6 +25,9 @@ export async function getBookmarks(userId: string): Promise<{
   error: Error | null;
 }> {
   return safeAsync(async () => {
+    if (!supabase) {
+      throw new Error("Supabase client not initialized");
+    }
     const { data, error } = await supabase
       .from("bookmarks")
       .select("*")

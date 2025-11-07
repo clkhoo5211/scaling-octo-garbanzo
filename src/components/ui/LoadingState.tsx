@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 interface LoadingStateProps {
@@ -12,15 +12,27 @@ interface LoadingStateProps {
 /**
  * LoadingState Component
  * Displays loading indicator
+ * CRITICAL: Client-only to prevent hydration mismatches with lucide-react icons
  */
 export function LoadingState({
   children,
   message = "Loading...",
   fullScreen = false,
 }: LoadingStateProps) {
+  const [mounted, setMounted] = useState(false);
+
+  // CRITICAL: Only render icons after mount to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const content = (
     <div className="flex flex-col items-center justify-center gap-4 p-8">
-      <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      {mounted ? (
+        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      ) : (
+        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
+      )}
       {message && (
         <p className="text-sm text-gray-600 dark:text-gray-400">{message}</p>
       )}

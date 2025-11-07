@@ -8,12 +8,16 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn("Supabase credentials not configured");
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false, // Clerk handles authentication
-    autoRefreshToken: false,
-  },
-});
+// CRITICAL: Only create Supabase client if credentials are available
+// This prevents crashes during development when env vars aren't set
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false, // Clerk handles authentication
+        autoRefreshToken: false,
+      },
+    })
+  : null as any; // Type assertion - will be null if credentials missing
 
 // Helper function to get authenticated user ID from Clerk
 export async function getUserId(): Promise<string | null> {

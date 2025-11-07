@@ -109,14 +109,24 @@ export class BaseRSSSource implements RSSSourceHandler {
               'User-Agent': 'Web3News/1.0',
             },
             cache: 'no-store',
+            // Add timeout to prevent hanging
+            signal: AbortSignal.timeout(10000), // 10 second timeout
           });
 
           if (proxyResponse.ok) {
             const proxyData = await proxyResponse.json();
             xmlText = proxyData.contents || null;
+            if (!xmlText) {
+              throw new Error('Empty response from CORS proxy');
+            }
+          } else {
+            throw new Error(`CORS proxy returned ${proxyResponse.status}`);
           }
-        } catch (proxyError) {
-          console.warn(`⚠ ${this.config.name}: CORS proxy failed, trying RSS2JSON...`, proxyError);
+        } catch (proxyError: any) {
+          // Only log warning if it's not a timeout (timeouts are expected for slow feeds)
+          if (!proxyError?.name?.includes('Timeout') && !proxyError?.name?.includes('Abort')) {
+            console.warn(`⚠ ${this.config.name}: CORS proxy failed, trying RSS2JSON...`, proxyError.message);
+          }
           
           // Fallback to RSS2JSON proxy
           try {
@@ -126,6 +136,8 @@ export class BaseRSSSource implements RSSSourceHandler {
                 'User-Agent': 'Web3News/1.0',
               },
               cache: 'no-store',
+              // Add timeout to prevent hanging
+              signal: AbortSignal.timeout(10000), // 10 second timeout
             });
 
             if (rss2jsonResponse.ok) {
@@ -168,8 +180,11 @@ export class BaseRSSSource implements RSSSourceHandler {
                 };
               }
             }
-          } catch (rss2jsonError) {
-            console.warn(`⚠ ${this.config.name}: RSS2JSON proxy also failed`, rss2jsonError);
+          } catch (rss2jsonError: any) {
+            // Only log if it's not a timeout
+            if (!rss2jsonError?.name?.includes('Timeout') && !rss2jsonError?.name?.includes('Abort')) {
+              console.warn(`⚠ ${this.config.name}: RSS2JSON proxy also failed`, rss2jsonError.message);
+            }
           }
         }
       } else {

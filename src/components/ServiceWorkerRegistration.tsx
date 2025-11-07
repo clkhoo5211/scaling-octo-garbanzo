@@ -21,12 +21,29 @@ export function ServiceWorkerRegistration() {
         basePath = process.env.NEXT_PUBLIC_BASE_PATH;
       }
       
-      const swPath = `${basePath}/sw.js`;
+      // Try both with and without basePath for compatibility
+      const swPaths = [
+        `${basePath}/sw.js`,
+        '/sw.js',
+        `${basePath}/sw.js?t=${Date.now()}`, // Cache buster
+      ];
       
-      navigator.serviceWorker
-        .register(swPath)
-        .then((reg) => {
-          console.log("Service Worker registered:", reg);
+      // Try registering Service Worker with fallback paths
+      const tryRegister = async (paths: string[], index: number = 0) => {
+        if (index >= paths.length) {
+          // All paths failed - silently fail (Service Worker is optional)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn("Service Worker not found - skipping registration (expected in development)");
+          }
+          return;
+        }
+        
+        try {
+          const reg = await navigator.serviceWorker.register(paths[index], {
+            scope: basePath || '/',
+          });
+          
+          console.log("Service Worker registered:", reg.scope);
           setRegistration(reg);
 
           // Check for updates
@@ -47,16 +64,20 @@ export function ServiceWorkerRegistration() {
 
           // Check if there's an update available
           reg.update();
-        })
-        .catch((error) => {
-          // Silently fail in development or if service worker file doesn't exist
-          // This is expected on GitHub Pages if sw.js isn't deployed yet
-          if (process.env.NODE_ENV === 'development') {
-            console.warn("Service Worker registration skipped in development:", error.message);
+        } catch (error: any) {
+          // Try next path if this one failed
+          if (error.message?.includes('404') || error.message?.includes('Failed to fetch')) {
+            tryRegister(paths, index + 1);
           } else {
-            console.error("Service Worker registration failed:", error);
+            // Other error - log but don't fail
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("Service Worker registration skipped:", error.message);
+            }
           }
-        });
+        }
+      };
+      
+      tryRegister(swPaths);
 
       // Listen for controller change (new service worker activated)
       navigator.serviceWorker.addEventListener("controllerchange", () => {
