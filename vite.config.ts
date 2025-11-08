@@ -22,7 +22,8 @@ export default defineConfig({
         theme_color: '#000000',
         background_color: '#000000',
         display: 'standalone',
-        start_url: basePath,
+        // CRITICAL: start_url must match scope (both should have trailing slash for non-root paths)
+        start_url: basePath && basePath !== '/' && !basePath.endsWith('/') ? `${basePath}/` : basePath,
         // CRITICAL: Service worker scope must end with trailing slash
         scope: basePath && !basePath.endsWith('/') ? `${basePath}/` : (basePath || '/'),
         icons: [
