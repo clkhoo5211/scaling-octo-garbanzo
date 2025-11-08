@@ -133,6 +133,9 @@ async function fetchRSSFeed(url: string, sourceName: string, category: NewsCateg
 
 /**
  * Fetch RSS feeds for a specific category
+ * 
+ * NEW: Optionally uses MCP server's get_news_by_category tool for better coverage
+ * Falls back to individual RSS feeds if MCP fails
  */
 export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string) {
   try {
@@ -140,7 +143,46 @@ export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string
       throw new Error('Category parameter is required');
     }
 
-    // Get RSS sources for this category
+    // Try MCP server's get_news_by_category first (if enabled)
+    const useMCPCategoryFetch = import.meta.env.VITE_USE_MCP_CATEGORY_FETCH !== 'false';
+    
+    if (useMCPCategoryFetch) {
+      try {
+        console.log(`[RSS] Attempting MCP category fetch for ${category}...`);
+        const mcpResult = await fetchNewsByCategoryViaMCP(category, 5);
+        
+        if (mcpResult.success && mcpResult.articles.length > 0) {
+          console.log(`[RSS] ✅ MCP category fetch succeeded for ${category}: ${mcpResult.articles.length} articles`);
+          
+          // Deduplicate by URL
+          const uniqueArticles = Array.from(
+            new Map(mcpResult.articles.map(article => [article.url, article])).values()
+          );
+          
+          // Sort by published date (newest first)
+          uniqueArticles.sort((a, b) => b.publishedAt - a.publishedAt);
+          
+          // Limit to top 50 articles
+          const limitedArticles = uniqueArticles.slice(0, 50);
+          
+          return {
+            articles: limitedArticles,
+            category,
+            totalSources: 0, // MCP doesn't provide source count
+            successfulSources: 0,
+            totalArticles: limitedArticles.length,
+            source: 'mcp-category',
+          };
+        } else {
+          console.debug(`[RSS] ⚠️ MCP category fetch failed for ${category}: ${mcpResult.error || 'Unknown error'}. Falling back to individual RSS feeds...`);
+        }
+      } catch (mcpError) {
+        console.debug(`[RSS] ⚠️ MCP category fetch error for ${category}:`, mcpError);
+        // Continue to fallback RSS fetching
+      }
+    }
+
+    // Fallback: Get RSS sources for this category and fetch individually
     let sources = getRSSSourcesByCategory(category);
 
     // If category is "local", fetch country-specific sources only
