@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PWA Install Test</title>
+</head>
+<body>
+  <h1>PWA Install Test</h1>
+  <p>Open browser console (F12) and run:</p>
+  <pre>window.triggerPWAInstall()</pre>
+  
+  <script>
+    // Simulate the PWAInstallHandler logic
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      console.log('✅ PWA install prompt available!');
+      console.log('Run: window.triggerPWAInstall() to trigger install');
+    });
+
+    window.triggerPWAInstall = async () => {
+      if (!deferredPrompt) {
+        console.log('❌ Install prompt not available.');
+        console.log('Try:');
+        console.log('1. Wait a few seconds and interact with the page');
+        console.log('2. Check Chrome menu → Install Web3News');
+        console.log('3. Ensure you\'re on HTTPS (not localhost)');
+        return false;
+      }
+
+      try {
+        await deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          console.log('✅ User accepted the install prompt');
+        } else {
+          console.log('❌ User dismissed the install prompt');
+        }
+
+        deferredPrompt = null;
+        return outcome === 'accepted';
+      } catch (error) {
+        console.error('Error showing install prompt:', error);
+        return false;
+      }
+    };
+
+    console.log('✅ PWA Install Handler loaded!');
+    console.log('Run: window.triggerPWAInstall() to trigger install');
+  </script>
+</body>
+</html>
+

@@ -13,16 +13,14 @@ import {
   useLikeArticle,
   useArticleLikes,
 } from "./useArticles";
-import * as modularRSSAggregator from "@/lib/sources/modularRSSAggregator";
+import * as rssService from "@/lib/services/rssService";
 import * as contentAggregator from "@/lib/services/contentAggregator";
 import * as supabaseApi from "@/lib/api/supabaseApi";
 
 // Mock dependencies
-jest.mock("@/lib/sources/modularRSSAggregator", () => ({
-  modularRSSAggregator: {
-    fetchByCategory: jest.fn(),
-    fetchAllSources: jest.fn(),
-  },
+jest.mock("@/lib/services/rssService", () => ({
+  getArticlesFromRSS: jest.fn(),
+  fetchRSSFeeds: jest.fn(),
 }));
 jest.mock("@/lib/services/contentAggregator", () => ({
   contentAggregator: {
@@ -101,8 +99,14 @@ describe("useArticles", () => {
     ];
 
     (
-      modularRSSAggregator.modularRSSAggregator.fetchByCategory as jest.Mock
-    ).mockResolvedValue(mockRSSArticles);
+      rssService.getArticlesFromRSS as jest.Mock
+    ).mockResolvedValue({
+      articles: mockRSSArticles,
+      category: "tech",
+      totalSources: 1,
+      successfulSources: 1,
+      totalArticles: mockRSSArticles.length,
+    });
     (
       contentAggregator.contentAggregator.aggregateSources as jest.Mock
     ).mockResolvedValue(mockNonRSSArticles);
@@ -125,8 +129,8 @@ describe("useArticles", () => {
     expect(result.current.isSuccess).toBe(true);
     expect(result.current.data).toHaveLength(2); // Combined RSS + non-RSS articles
     expect(
-      modularRSSAggregator.modularRSSAggregator.fetchByCategory
-    ).toHaveBeenCalledWith("tech");
+      rssService.getArticlesFromRSS
+    ).toHaveBeenCalledWith("tech", undefined);
     expect(
       contentAggregator.contentAggregator.aggregateSources
     ).toHaveBeenCalledWith("tech", {

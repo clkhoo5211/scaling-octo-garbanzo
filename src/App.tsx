@@ -4,6 +4,7 @@ import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
 import { ServiceWorkerRegistration } from './components/ServiceWorkerRegistration';
 import { CookieConsentBanner } from './components/compliance';
+import { PWAInstallHandler } from './components/pwa/PWAInstallHandler';
 import './app/globals.css';
 
 // Pages
@@ -55,6 +56,7 @@ function App() {
           <BottomNav />
           <ServiceWorkerRegistration />
           <CookieConsentBanner />
+          <PWAInstallHandler />
         </div>
       </BrowserRouter>
     </Providers>
