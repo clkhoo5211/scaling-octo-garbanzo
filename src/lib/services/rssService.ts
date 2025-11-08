@@ -1,13 +1,14 @@
 /**
  * Client-Side RSS Fetching Service
  * Fetches RSS feeds client-side
- * Note: Some feeds may require CORS proxy in production
+ * Falls back to MCP server for CORS-blocked feeds
  */
 
 import { getRSSSourcesByCategory } from '@/lib/sources/rssRegistry';
 import { getCountryNewsSources } from '@/lib/sources/rss/country';
 import type { NewsCategory } from '@/lib/sources/types';
 import type { Article } from '../services/indexedDBCache';
+import { fetchRSSFeedViaMCP } from './mcpService';
 
 /**
  * Parse RSS XML to extract articles
@@ -65,9 +66,10 @@ function parseRSSXML(xmlText: string, sourceName: string, category: NewsCategory
 
 /**
  * Fetch RSS feed client-side
- * Handles CORS errors gracefully - some feeds may block cross-origin requests
+ * Falls back to MCP server if CORS blocks direct fetch
  */
 async function fetchRSSFeed(url: string, sourceName: string, category: NewsCategory) {
+  // Try direct fetch first (faster, no server dependency)
   try {
     const response = await fetch(url, {
       headers: {
@@ -85,32 +87,48 @@ async function fetchRSSFeed(url: string, sourceName: string, category: NewsCateg
     const xmlText = await response.text();
     const articles = parseRSSXML(xmlText, sourceName, category);
     
-    return {
-      success: true,
-      articles,
-      source: sourceName,
-    };
+    if (articles.length > 0) {
+      return {
+        success: true,
+        articles,
+        source: sourceName,
+      };
+    }
   } catch (error: any) {
-    // Handle CORS errors gracefully - don't spam console with errors
+    // Check if it's a CORS error
     const isCorsError = error?.message?.includes('CORS') || 
                        error?.message?.includes('Failed to fetch') ||
                        error?.name === 'TypeError';
     
     if (isCorsError) {
-      // CORS errors are expected for some RSS feeds - log at debug level only
-      console.debug(`⚠️ CORS blocked RSS feed ${sourceName} (${url}). This is expected for some feeds.`);
+      // CORS blocked - try MCP server as fallback
+      console.debug(`⚠️ CORS blocked RSS feed ${sourceName} (${url}). Trying MCP server fallback...`);
+      
+      const mcpResult = await fetchRSSFeedViaMCP(url, sourceName, category);
+      
+      if (mcpResult.success && mcpResult.articles.length > 0) {
+        console.log(`✅ MCP server successfully fetched ${sourceName}: ${mcpResult.articles.length} articles`);
+        return {
+          success: true,
+          articles: mcpResult.articles,
+          source: sourceName,
+        };
+      } else {
+        console.debug(`⚠️ MCP server also failed for ${sourceName}: ${mcpResult.error || 'Unknown error'}`);
+      }
     } else {
       // Other errors should be logged normally
       console.error(`❌ Error fetching RSS feed ${sourceName} (${url}):`, error?.message || error);
     }
-    
-    return {
-      success: false,
-      articles: [],
-      source: sourceName,
-      error: isCorsError ? 'CORS blocked' : (error?.message || 'Unknown error'),
-    };
   }
+  
+  // All methods failed
+  return {
+    success: false,
+    articles: [],
+    source: sourceName,
+    error: 'Direct fetch and MCP fallback both failed',
+  };
 }
 
 /**
