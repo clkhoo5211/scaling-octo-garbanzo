@@ -17,8 +17,12 @@ export function ServiceWorkerRegistration() {
       
       const tryRegister = async () => {
         try {
+          // CRITICAL: Service worker scope must end with trailing slash
+          // The scope '/scaling-octo-garbanzo' must be '/scaling-octo-garbanzo/'
+          const scope = basePath && !basePath.endsWith('/') ? `${basePath}/` : (basePath || '/');
+          
           const reg = await navigator.serviceWorker.register(swPath, {
-            scope: basePath || '/',
+            scope: scope,
           });
           
           console.log("Service Worker registered:", reg.scope);

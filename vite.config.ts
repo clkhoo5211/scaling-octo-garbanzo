@@ -23,7 +23,8 @@ export default defineConfig({
         background_color: '#000000',
         display: 'standalone',
         start_url: basePath,
-        scope: basePath,
+        // CRITICAL: Service worker scope must end with trailing slash
+        scope: basePath && !basePath.endsWith('/') ? `${basePath}/` : (basePath || '/'),
         icons: [
           {
             src: `${basePath}icon-192x192.png`,

@@ -1,61 +1,96 @@
-# 🔍 Deployment Monitoring Report - Updated
+# GitHub Pages Deployment Guide
 
-## Current Status
+## ✅ Code Pushed Successfully
 
-**Workflow Status:** ❌ **BUILD FAILED** → ✅ **FIXED & RE-RUNNING**
+Your code has been pushed to GitHub. The deployment workflow should now be running.
 
-**Latest Run:** [Workflow #70](https://github.com/clkhoo5211/scaling-octo-garbanzo/actions/runs/19163419166)
-- **Status:** Failed
-- **Error:** Build step failed with exit code 1
-- **Cause:** NormalModuleReplacementPlugin causing path resolution issues
+## 🔍 How to Check Deployment Status
 
-**Fix Applied:** Simplified webpack config
-- Removed `NormalModuleReplacementPlugin` (was causing failures)
-- Kept `IgnorePlugin` (safer, sufficient)
-- Kept aliases and externals
+### Method 1: GitHub Actions Tab
 
-**New Commit:** `ea50c61` - "fix: simplify webpack config"
-- Pushed and triggering new workflow run
+1. **Go to your repository**: https://github.com/clkhoo5211/scaling-octo-garbanzo
+2. **Click on "Actions" tab** (top navigation)
+3. **Find the latest workflow run** (should be "Deploy to GitHub Pages")
+4. **Click on it** to see details
+5. **Check the workflow steps**:
+   - ✅ **build** job: Should show "Build React app with Vite"
+   - ✅ **deploy** job: Should show "Deploy to GitHub Pages"
 
----
+### Method 2: Repository Settings
 
-## 🔧 Issue & Resolution
+1. **Go to Settings** → **Pages**
+2. **Check deployment status**:
+   - Should show "Your site is live at..."
+   - URL: `https://clkhoo5211.github.io/scaling-octo-garbanzo/`
 
-### Problem
-The `NormalModuleReplacementPlugin` was trying to resolve `./webpack/react-native-stub.js` but the path resolution was failing in CI, causing the build to fail with exit code 1.
+### Method 3: Workflow File Status
 
-### Solution
-Removed `NormalModuleReplacementPlugin` and kept only:
-- `IgnorePlugin` - Ignores React Native modules
-- Webpack aliases (`false`) - Prevents resolution
-- Externals - Prevents bundling
+The workflow will:
+1. ✅ Checkout code
+2. ✅ Setup Node.js 20
+3. ✅ Install dependencies (`npm ci`)
+4. ✅ Build with Vite (`npm run build`)
+5. ✅ Upload `dist/` folder as artifact
+6. ✅ Deploy to GitHub Pages
 
-**Result:** Build should now succeed (warning may persist but won't break build)
+## ⏱️ Expected Timeline
 
----
+- **Build time**: 2-5 minutes
+- **Deployment time**: 1-2 minutes
+- **Total**: ~3-7 minutes
 
-## 📊 Monitoring
+## 🐛 Troubleshooting
 
-**Next Steps:**
-1. Wait for new workflow run to complete (~2-3 minutes)
-2. Check if build succeeds
-3. Verify deployment completes
-4. Check GitHub Pages site
+### If Workflow Fails
 
-**Expected Timeline:**
-- Build: ~1-2 minutes
-- Deploy: ~30 seconds
-- GitHub Pages update: ~1-2 minutes
+1. **Check the Actions tab** for error messages
+2. **Common issues**:
+   - Missing GitHub Secrets (check Settings → Secrets)
+   - Build errors (check build logs)
+   - Node version mismatch
 
----
+### If Site Shows 404
 
-## ⚠️ Note About Warning
+1. **Wait 2-3 minutes** after deployment completes
+2. **Clear browser cache**
+3. **Check basePath** matches repository name
+4. **Verify** `dist/index.html` exists in build
 
-The React Native dependency warning will likely persist, but:
-- ✅ Build will succeed
-- ✅ App will work correctly
-- ✅ Clerk will function properly
-- ⚠️ Warning is cosmetic (from MetaMask SDK)
+### If Build Fails
 
-This is a known limitation and can be safely ignored.
+Check the build logs for:
+- Missing dependencies
+- TypeScript errors
+- Environment variable issues
 
+## 🔗 Your Site URL
+
+Once deployed, your site will be available at:
+**https://clkhoo5211.github.io/scaling-octo-garbanzo/**
+
+## 📋 Required GitHub Secrets
+
+Make sure these are set in **Settings → Secrets and variables → Actions**:
+
+- ✅ `VITE_REOWN_PROJECT_ID`
+- ✅ `VITE_CLERK_PUBLISHABLE_KEY`
+- ✅ `VITE_SUPABASE_URL`
+- ✅ `VITE_SUPABASE_ANON_KEY`
+
+## ✅ Verification Checklist
+
+After deployment:
+- [ ] Workflow completes successfully
+- [ ] Site loads at GitHub Pages URL
+- [ ] All routes work correctly
+- [ ] Service worker registers
+- [ ] Manifest loads
+- [ ] PWA can be installed
+- [ ] No console errors
+
+## 🚀 Next Steps
+
+1. **Monitor deployment**: Check Actions tab
+2. **Test site**: Visit the GitHub Pages URL
+3. **Verify PWA**: Run Lighthouse audit
+4. **Check functionality**: Test all features

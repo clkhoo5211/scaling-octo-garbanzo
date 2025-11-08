@@ -1,28 +1,27 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 
-// Mock Next.js router
-jest.mock("next/navigation", () => ({
-  useRouter() {
-    return {
-      push: jest.fn(),
-      replace: jest.fn(),
-      prefetch: jest.fn(),
-      back: jest.fn(),
-      pathname: "/",
-      query: {},
-      asPath: "/",
-    };
-  },
-  usePathname() {
-    return "/";
-  },
-  useParams() {
-    return {};
-  },
-  useSearchParams() {
-    return new URLSearchParams();
-  },
+// Mock React Router (replacing Next.js router mocks)
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => jest.fn(),
+  useLocation: () => ({
+    pathname: "/",
+    search: "",
+    hash: "",
+    state: null,
+    key: "default",
+  }),
+  useParams: () => ({}),
+  useSearchParams: () => [new URLSearchParams(), jest.fn()],
+  Link: ({ children, to, ...props }) => (
+    <a href={to} {...props}>
+      {children}
+    </a>
+  ),
+  BrowserRouter: ({ children }) => children,
+  Routes: ({ children }) => children,
+  Route: ({ element }) => element,
 }));
 
 // Mock Reown AppKit
@@ -44,13 +43,16 @@ jest.mock("@reown/appkit/react", () => ({
   AppKitProvider: ({ children }) => children,
 }));
 
-// Mock Clerk
-jest.mock("@clerk/nextjs", () => ({
+// Mock Clerk (React version, not Next.js)
+jest.mock("@clerk/clerk-react", () => ({
   useUser: () => ({
     user: null,
     isLoaded: true,
   }),
   ClerkProvider: ({ children }) => children,
+  useClerk: () => ({
+    signOut: jest.fn(),
+  }),
 }));
 
 // Mock Supabase
