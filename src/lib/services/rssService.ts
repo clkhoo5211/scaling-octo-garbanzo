@@ -8,7 +8,7 @@ import { getRSSSourcesByCategory } from '@/lib/sources/rssRegistry';
 import { getCountryNewsSources } from '@/lib/sources/rss/country';
 import type { NewsCategory } from '@/lib/sources/types';
 import type { Article } from '../services/indexedDBCache';
-import { fetchRSSFeedViaMCP } from './mcpService';
+import { fetchRSSFeedViaMCP, fetchNewsByCategoryViaMCP } from './mcpService';
 
 /**
  * Parse RSS XML to extract articles
