@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.0.0",
-    "@mozilla/readability": "^0.4.4",
+    "@mozilla/readability": "^0.6.0",
     "@reown/appkit": "^1.0.0",
     "@reown/appkit-adapter-wagmi": "^1.8.13",
     "@supabase/supabase-js": "^2.39.0",
