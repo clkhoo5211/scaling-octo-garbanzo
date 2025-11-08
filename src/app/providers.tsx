@@ -6,6 +6,7 @@ import { ReownClerkIntegration } from "@/components/auth/ReownClerkIntegration";
 import { AppKitProvider } from "@reown/appkit/react";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { appKit } from "../../context/index";
+import type { AppKitInstance } from "@reown/appkit/react";
 
 /**
  * Providers Component
@@ -20,8 +21,7 @@ import { appKit } from "../../context/index";
  */
 export function Providers({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  const [appKitInstance, setAppKitInstance] = useState<any>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [appKitInstance, setAppKitInstance] = useState<AppKitInstance | null>(null);
 
   // Only render AppKitProvider on client-side to prevent SSR issues
   useEffect(() => {
@@ -35,14 +35,10 @@ export function Providers({ children }: { children: ReactNode }) {
           if (instance) {
             setAppKitInstance(instance);
           }
-          setIsInitializing(false);
         })
         .catch((error) => {
           console.error('Failed to get AppKit instance:', error);
-          setIsInitializing(false);
         });
-    } else {
-      setIsInitializing(false);
     }
   }, []);
 

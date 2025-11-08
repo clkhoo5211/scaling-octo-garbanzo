@@ -38,7 +38,7 @@ import { ReactNode } from "react";
 export function ReownClerkIntegration({ children }: { children: ReactNode }) {
   const { address, isConnected } = useAppKitAccount();
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
-  const { signUp, isSignedIn } = useAuth();
+  const auth = useAuth();
   const [hasAttemptedCreation, setHasAttemptedCreation] = useState(false);
 
   useEffect(() => {
@@ -46,8 +46,8 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
     if (!clerkLoaded) return;
 
     // Case 1: Reown connected + Clerk user exists → Sync metadata
-    if (isConnected && address && clerkUser && isSignedIn) {
-      const currentReownAddress = clerkUser.publicMetadata?.reown_address as
+    if (isConnected && address && clerkUser && auth.isSignedIn) {
+      const currentReownAddress = (clerkUser.publicMetadata as Record<string, unknown>)?.reown_address as
         | string
         | undefined;
 
@@ -55,20 +55,20 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
       if (!currentReownAddress || currentReownAddress !== address) {
         clerkUser
           .update({
-            publicMetadata: {
-              ...clerkUser.publicMetadata,
+            unsafeMetadata: {
+              ...(clerkUser.unsafeMetadata as Record<string, unknown> || {}),
               reown_address: address,
               smart_account_address: address, // Smart account address (same as Reown address)
               // Ensure all required metadata fields exist
-              points: clerkUser.publicMetadata?.points ?? 0,
-              subscription_tier: clerkUser.publicMetadata?.subscription_tier ?? "free",
-              referral_code: clerkUser.publicMetadata?.referral_code ?? generateReferralCode(),
-              total_submissions: clerkUser.publicMetadata?.total_submissions ?? 0,
-              total_upvotes: clerkUser.publicMetadata?.total_upvotes ?? 0,
-              login_streak: clerkUser.publicMetadata?.login_streak ?? 0,
+              points: (clerkUser.publicMetadata as Record<string, unknown>)?.points ?? 0,
+              subscription_tier: (clerkUser.publicMetadata as Record<string, unknown>)?.subscription_tier ?? "free",
+              referral_code: (clerkUser.publicMetadata as Record<string, unknown>)?.referral_code ?? generateReferralCode(),
+              total_submissions: (clerkUser.publicMetadata as Record<string, unknown>)?.total_submissions ?? 0,
+              total_upvotes: (clerkUser.publicMetadata as Record<string, unknown>)?.total_upvotes ?? 0,
+              login_streak: (clerkUser.publicMetadata as Record<string, unknown>)?.login_streak ?? 0,
             },
-          })
-          .catch((error) => {
+          } as Parameters<typeof clerkUser.update>[0])
+          .catch((error: unknown) => {
             console.error("Failed to sync Reown address to Clerk:", error);
           });
       }
@@ -78,7 +78,7 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
     // Case 2: Reown connected + No Clerk user → Create Clerk user silently
     // This happens automatically after Reown login - no UI shown to user
     // Uses Clerk's CLIENT-SIDE SDK (no server API)
-    if (isConnected && address && !clerkUser && !isSignedIn && !hasAttemptedCreation) {
+    if (isConnected && address && !clerkUser && !auth.isSignedIn && !hasAttemptedCreation && auth.signUp) {
       setHasAttemptedCreation(true);
 
       // Generate email from address (Reown doesn't expose email in client SDK)
@@ -88,31 +88,31 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
 
       // Create Clerk user silently using client-side SDK
       // This is just for user management - authentication is handled by Reown
-      signUp
+      auth.signUp
         .create({
           emailAddress: email,
           skipPasswordRequirement: true, // No password (Reown handles auth)
         })
-        .then((result) => {
+        .then((result: { status: string; createdUserId?: string | null }) => {
           if (result.status === "complete") {
             // User created successfully, update metadata
             return result.createdUserId
               ? Promise.resolve(result.createdUserId)
               : Promise.reject(new Error("No user ID returned"));
-          } else if (result.status === "missing_requirements") {
+          } else if (result.status === "missing_requirements" && auth.signUp) {
             // Skip email verification - user already authenticated via Reown
             // Just complete the signup without verification
-            return signUp.attemptEmailAddressVerification({
+            return auth.signUp.attemptEmailAddressVerification({
               code: "", // Empty code - skip verification
             }).then(() => result.createdUserId || null);
           }
           return null;
         })
-        .then((userId) => {
+        .then((userId: string | null | undefined) => {
           if (userId && clerkUser) {
             // Update metadata with Reown address and user data
             return clerkUser.update({
-              publicMetadata: {
+              unsafeMetadata: {
                 reown_address: address,
                 smart_account_address: address,
                 points: 0,
@@ -124,13 +124,13 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
                 created_at: new Date().toISOString(),
                 created_via: "reown_smart_account",
               },
-            });
+            } as Parameters<typeof clerkUser.update>[0]);
           }
         })
         .then(() => {
           console.log("✅ Clerk user created silently for user management");
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error("Failed to create Clerk user:", error);
           setHasAttemptedCreation(false); // Allow retry
         });
@@ -140,8 +140,8 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
     isConnected,
     clerkUser,
     clerkLoaded,
-    isSignedIn,
-    signUp,
+    auth.isSignedIn,
+    auth.signUp,
     hasAttemptedCreation,
   ]);
 
@@ -153,6 +153,9 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
  * CRITICAL: Use stable generation to prevent hydration mismatches
  * Only generate when actually needed (not during render)
  */
+// Use a module-level counter to avoid function property issues
+let referralCounter = 0;
+
 function generateReferralCode(): string {
   // Use crypto.randomUUID if available (browser), otherwise fallback to timestamp-based
   if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
@@ -160,6 +163,6 @@ function generateReferralCode(): string {
   }
   // Fallback: use timestamp + counter to ensure uniqueness without Math.random()
   const timestamp = Date.now().toString(36).toUpperCase();
-  const counter = (generateReferralCode.counter = (generateReferralCode.counter || 0) + 1);
-  return `USER${timestamp.slice(-4)}${counter.toString(36).toUpperCase().slice(-2)}`;
+  referralCounter += 1;
+  return `USER${timestamp.slice(-4)}${referralCounter.toString(36).toUpperCase().slice(-2)}`;
 }
