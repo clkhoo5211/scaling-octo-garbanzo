@@ -19,15 +19,17 @@ The admin key feature allows developers to bypass the login requirement during d
 Add to your `.env.local` file:
 
 ```bash
-NEXT_PUBLIC_ADMIN_KEY_ENABLED=false
+VITE_ADMIN_KEY_ENABLED=false
 ```
+
+**Note**: Vite uses `VITE_` prefix (not `VITE_PUBLIC_` or `NEXT_PUBLIC_`)
 
 ### Option 2: Code Change
 
 In `src/components/feed/ShowMoreButton.tsx`, change:
 
 ```typescript
-const ADMIN_KEY_ENABLED = process.env.NEXT_PUBLIC_ADMIN_KEY_ENABLED !== "false";
+const ADMIN_KEY_ENABLED = import.meta.env.VITE_ADMIN_KEY_ENABLED !== "false";
 ```
 
 To:
