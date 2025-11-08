@@ -39,11 +39,13 @@ jobs:
           echo "VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:0:10}..."
           echo "VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:0:20}..."
           echo "VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:0:10}..."
+          echo "VITE_MCP_SERVER_URL: ${VITE_MCP_SERVER_URL:0:30}..."
         env:
           VITE_REOWN_PROJECT_ID: ${{ secrets.VITE_REOWN_PROJECT_ID }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_MCP_SERVER_URL: ${{ secrets.VITE_MCP_SERVER_URL }}
 
       - name: Build React app with Vite
         run: npm run build
@@ -55,6 +57,10 @@ jobs:
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # MCP Server URL for RSS feed fetching (optional - defaults to Vercel deployment)
+          VITE_MCP_SERVER_URL: ${{ secrets.VITE_MCP_SERVER_URL }}
+          # Enable MCP category fetch (optional - defaults to true if not set)
+          VITE_USE_MCP_CATEGORY_FETCH: ${{ secrets.VITE_USE_MCP_CATEGORY_FETCH || 'true' }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
