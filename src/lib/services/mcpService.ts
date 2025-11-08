@@ -364,15 +364,13 @@ export async function fetchNewsByCategoryViaMCP(
   category: NewsCategory,
   maxItemsPerSource: number = 5
 ): Promise<{ success: boolean; articles: Article[]; error?: string }> {
-  // Check if MCP server URL is configured
-  if (!MCP_SERVER_URL || MCP_SERVER_URL === 'https://web3news-mcp-server.vercel.app/api/server') {
-    if (!import.meta.env.VITE_MCP_SERVER_URL) {
-      return {
-        success: false,
-        articles: [],
-        error: 'MCP server URL not configured',
-      };
-    }
+  // MCP_SERVER_URL defaults to Vercel deployment, so it's always configured
+  if (!MCP_SERVER_URL) {
+    return {
+      success: false,
+      articles: [],
+      error: 'MCP server URL not configured',
+    };
   }
 
   // Map React category to MCP category
@@ -431,16 +429,13 @@ export async function fetchRSSFeedViaMCP(
   sourceName: string,
   category: NewsCategory
 ): Promise<{ success: boolean; articles: Article[]; error?: string }> {
-  // Check if MCP server URL is configured
-  if (!MCP_SERVER_URL || MCP_SERVER_URL === 'https://web3news-mcp-server.vercel.app/api/server') {
-    // Only use default URL if explicitly set, otherwise skip
-    if (!import.meta.env.VITE_MCP_SERVER_URL) {
-      return {
-        success: false,
-        articles: [],
-        error: 'MCP server URL not configured',
-      };
-    }
+  // MCP_SERVER_URL defaults to Vercel deployment, so it's always configured
+  if (!MCP_SERVER_URL) {
+    return {
+      success: false,
+      articles: [],
+      error: 'MCP server URL not configured',
+    };
   }
 
   try {
