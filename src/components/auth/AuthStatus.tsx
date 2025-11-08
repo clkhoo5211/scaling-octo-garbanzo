@@ -4,7 +4,7 @@ import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { WalletConnect } from "@/components/web3/WalletConnect";
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 /**
  * AuthStatus Component
@@ -37,7 +37,7 @@ export function AuthStatus() {
       {/* User Info - Only show if wallet is NOT connected and Clerk user exists */}
       {mounted && clerkLoaded && user && !isConnected && (
         <Link 
-          href="/profile" 
+          to="/profile" 
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           title="View Profile"
         >
@@ -54,7 +54,7 @@ export function AuthStatus() {
       {/* Profile Link for Desktop - Show when wallet is connected */}
       {mounted && clerkLoaded && user && isConnected && (
         <Link
-          href="/profile"
+          to="/profile"
           className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           title="View Profile"
         >

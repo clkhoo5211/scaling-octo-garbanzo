@@ -9,37 +9,15 @@ export function ServiceWorkerRegistration() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      // Get basePath dynamically from window.location
-      // Extract basePath from current pathname (e.g., /scaling-octo-garbanzo/...)
-      const pathname = window.location.pathname;
-      let basePath = "";
+      // Get basePath dynamically from window.location or environment
+      const basePath = import.meta.env.VITE_BASE_PATH || '';
       
-      // Check if we're on GitHub Pages (pathname starts with /scaling-octo-garbanzo)
-      if (pathname.startsWith('/scaling-octo-garbanzo')) {
-        basePath = '/scaling-octo-garbanzo';
-      } else if (process.env.NEXT_PUBLIC_BASE_PATH) {
-        basePath = process.env.NEXT_PUBLIC_BASE_PATH;
-      }
+      // Service Worker path (Vite PWA plugin generates sw.js)
+      const swPath = `${basePath}/sw.js`;
       
-      // Try both with and without basePath for compatibility
-      const swPaths = [
-        `${basePath}/sw.js`,
-        '/sw.js',
-        `${basePath}/sw.js?t=${Date.now()}`, // Cache buster
-      ];
-      
-      // Try registering Service Worker with fallback paths
-      const tryRegister = async (paths: string[], index: number = 0) => {
-        if (index >= paths.length) {
-          // All paths failed - silently fail (Service Worker is optional)
-          if (process.env.NODE_ENV === 'development') {
-            console.warn("Service Worker not found - skipping registration (expected in development)");
-          }
-          return;
-        }
-        
+      const tryRegister = async () => {
         try {
-          const reg = await navigator.serviceWorker.register(paths[index], {
+          const reg = await navigator.serviceWorker.register(swPath, {
             scope: basePath || '/',
           });
           
@@ -65,19 +43,14 @@ export function ServiceWorkerRegistration() {
           // Check if there's an update available
           reg.update();
         } catch (error: any) {
-          // Try next path if this one failed
-          if (error.message?.includes('404') || error.message?.includes('Failed to fetch')) {
-            tryRegister(paths, index + 1);
-          } else {
-            // Other error - log but don't fail
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("Service Worker registration skipped:", error.message);
-            }
+          // Service Worker registration is optional - fail silently in production
+          if (import.meta.env.DEV) {
+            console.warn("Service Worker registration skipped:", error.message);
           }
         }
       };
       
-      tryRegister(swPaths);
+      tryRegister();
 
       // Listen for controller change (new service worker activated)
       navigator.serviceWorker.addEventListener("controllerchange", () => {

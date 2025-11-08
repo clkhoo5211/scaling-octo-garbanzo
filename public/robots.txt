@@ -1,0 +1,9 @@
+# robots.txt for Web3News
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+Sitemap: https://web3news.app/sitemap.xml
+

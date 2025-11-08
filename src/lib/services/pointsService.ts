@@ -5,11 +5,12 @@
  */
 
 import { createPointsTransaction } from "@/lib/api/supabaseApi";
-import type { User } from "@clerk/clerk-react";
+// Type from Clerk useUser hook - user can be null
+type ClerkUser = NonNullable<ReturnType<typeof import("@clerk/clerk-react").useUser>['user']>;
 
 export interface AwardPointsParams {
   userId: string;
-  user: User;
+  user: ClerkUser;
   amount: number;
   reason: string;
   source?: "submission" | "upvote" | "comment" | "login" | "share" | "referral" | "ad_slot_subscription" | "profile_completion";
@@ -17,7 +18,7 @@ export interface AwardPointsParams {
 
 export interface ConvertPointsParams {
   userId: string;
-  user: User;
+  user: ClerkUser;
   points: number;
 }
 
@@ -49,10 +50,10 @@ export async function awardPoints({
     // Update Clerk metadata
     await user.update({
       publicMetadata: {
-        ...user.publicMetadata,
+        ...(user.publicMetadata as Record<string, any>),
         points: newBalance,
       },
-    });
+    } as any);
 
     // Log transaction to Supabase for audit trail
     await createPointsTransaction({
@@ -169,13 +170,13 @@ export async function convertPointsToUSDT({
 
     await user.update({
       publicMetadata: {
-        ...user.publicMetadata,
+        ...(user.publicMetadata as Record<string, any>),
         points: newBalance,
         last_conversion_date: today,
         daily_converted_points: newDailyConverted,
         usdt_balance_offchain: ((user.publicMetadata?.usdt_balance_offchain as number) || 0) + netUSDT,
       },
-    });
+    } as any);
 
     // Log transaction to Supabase
     await createPointsTransaction({
@@ -222,7 +223,7 @@ export const POINTS_RULES = {
 /**
  * Check if user can convert points (validation helper)
  */
-export function canConvertPoints(user: User, points: number): { canConvert: boolean; reason?: string } {
+export function canConvertPoints(user: ClerkUser, points: number): { canConvert: boolean; reason?: string } {
   const currentPoints = (user.publicMetadata?.points as number) || 0;
   
   if (points < 100_000) {

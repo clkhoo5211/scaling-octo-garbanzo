@@ -5,15 +5,11 @@ import { Modal } from "@/components/ui/Modal";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/LoadingState";
 import { useAllArticles } from "@/lib/hooks/useArticles";
-import {
-  fetchArticleContent,
-  estimateReadingTime,
-  type ParsedArticle,
-} from "@/lib/services/articleContent";
+import { fetchArticleContent, estimateReadingTime } from "@/lib/services/articleContentService";
 import { sanitizeArticleHtml } from "@/lib/utils/sanitizeHtml";
 import type { Article } from "@/lib/services/indexedDBCache";
 import { FileText, ExternalLink, Maximize2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 interface ArticlePreviewModalProps {
   articleUrl: string;
@@ -33,7 +29,7 @@ export function ArticlePreviewModal({
   onClose,
   onOpenFullPage,
 }: ArticlePreviewModalProps) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [article, setArticle] = useState<Article | null>(null);
   const [parsedContent, setParsedContent] = useState<string | null>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
@@ -93,61 +89,26 @@ export function ArticlePreviewModal({
         setIsLoadingContent(true);
       contentFetchedRef.current = true;
       
-      // CRITICAL: Wrap async code in async IIFE since useEffect callback cannot be async
+        // CRITICAL: Wrap async code in async IIFE since useEffect callback cannot be async
       (async () => {
-        // CRITICAL: Try server-side content fetching first (bypasses CORS)
-        // Fallback to client-side fetching if server-side fails
+        // Use client-side article content service
         try {
-          const serverResponse = await fetch(`/api/article-content?url=${encodeURIComponent(article.url)}`, {
-            cache: 'no-store',
-            signal: AbortSignal.timeout(25000), // 25 second timeout
-          });
-
-          if (serverResponse.ok) {
-            const serverData = await serverResponse.json();
-            if (serverData.success && serverData.content) {
-              console.log(`✅ Server-side article content fetch succeeded for: ${article.url.substring(0, 50)}...`);
-              // Sanitize the HTML content
-              const sanitized = sanitizeArticleHtml(serverData.content);
-              setParsedContent(sanitized);
-              setIsLoadingContent(false);
-              return; // Success - exit early
-            }
-          }
-        } catch (serverError) {
-          console.warn(`Server-side article content fetch failed, falling back to client-side:`, serverError);
-        }
-
-        // Fallback to client-side fetching with timeout wrapper
-        const timeoutPromise = new Promise<ParsedArticle | null>((resolve) => {
-          setTimeout(() => {
-            console.warn("Article content fetch timed out");
-            resolve(null);
-          }, 20000); // 20 second timeout
-        });
-
-        Promise.race([
-          fetchArticleContent(article.url),
-          timeoutPromise
-        ])
-          .then((parsed) => {
-            if (parsed) {
-              // Sanitize the HTML content
-              const sanitized = sanitizeArticleHtml(parsed.content);
-              setParsedContent(sanitized);
-            } else {
-              // If fetch failed or timed out, show excerpt instead
-              console.warn("Article content fetch failed, showing excerpt");
-              setParsedContent(null);
-            }
-          })
-          .catch((error) => {
-            console.error("Failed to fetch article content:", error);
+          const result = await fetchArticleContent(article.url);
+          if (result.success && result.content) {
+            console.log(`✅ Article content fetch succeeded for: ${article.url.substring(0, 50)}...`);
+            // Sanitize the HTML content
+            const sanitized = sanitizeArticleHtml(result.content);
+            setParsedContent(sanitized);
+          } else {
+            console.warn("Article content fetch failed, showing excerpt");
             setParsedContent(null);
-          })
-          .finally(() => {
-            setIsLoadingContent(false);
-          });
+          }
+        } catch (error) {
+          console.error("Failed to fetch article content:", error);
+          setParsedContent(null);
+        } finally {
+          setIsLoadingContent(false);
+        }
       })();
     } else if (article?.content && !contentFetchedRef.current && isOpen) {
         // Sanitize cached content
@@ -161,7 +122,7 @@ export function ArticlePreviewModal({
     if (onOpenFullPage) {
       onOpenFullPage();
     } else {
-      router.push(`/article?url=${encodeURIComponent(articleUrl)}`);
+      navigate(`/article?url=${encodeURIComponent(articleUrl)}`);
     }
     onClose();
   };

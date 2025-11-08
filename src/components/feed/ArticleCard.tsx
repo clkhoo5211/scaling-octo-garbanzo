@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import type { Article } from "@/lib/services/indexedDBCache";
 import { formatRelativeTime, truncate } from "@/lib/utils";
 import { useAppStore } from "@/lib/stores/appStore";
@@ -11,7 +11,7 @@ import {
   useArticleLikes,
 } from "@/lib/hooks/useArticles";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
-import { useAppKit } from "@reown/appkit/react";
+import { useSafeAppKit } from "@/lib/hooks/useSafeAppKit";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ArticlePreviewModal } from "@/components/article/ArticlePreviewModal";
 import { Modal } from "@/components/ui/Modal";
@@ -35,9 +35,9 @@ export const ArticleCard = memo(function ArticleCard({
   onSelect,
   previewMode = "both", // Default to both modal and fullpage
 }: ArticleCardProps) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { user, isLoaded: authLoaded, isSignedIn } = useClerkUser();
-  const { open } = useAppKit();
+  const { open } = useSafeAppKit();
   const { isLiked, isBookmarked, addBookmark, removeBookmark } = useAppStore();
   const likeMutation = useLikeArticle();
   const unlikeMutation = useUnlikeArticle();
@@ -110,7 +110,7 @@ export const ArticleCard = memo(function ArticleCard({
       if (onSelect) {
         onSelect(article);
       } else {
-        router.push(`/article?url=${encodeURIComponent(article.url)}`);
+        navigate(`/article?url=${encodeURIComponent(article.url)}`);
       }
       return;
     }
@@ -243,7 +243,7 @@ export const ArticleCard = memo(function ArticleCard({
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}
           onOpenFullPage={() => {
-            router.push(`/article?url=${encodeURIComponent(article.url)}`);
+            navigate(`/article?url=${encodeURIComponent(article.url)}`);
           }}
         />
       ) : null}

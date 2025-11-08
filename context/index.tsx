@@ -1,6 +1,4 @@
-'use client';
-
-import { projectId, getWagmiAdapter } from '@/config';
+import { projectId, getWagmiAdapter } from '../config/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createAppKit } from '@reown/appkit/react';
 import { mainnet, polygon } from '@reown/appkit/networks';
@@ -11,8 +9,10 @@ import type { Config } from 'wagmi';
 // Set up queryClient
 const queryClient = new QueryClient();
 
-if (!projectId) {
-  throw new Error('Project ID is not defined');
+// Don't throw error immediately - handle gracefully
+// Project ID will be validated when AppKit is actually initialized
+if (typeof window !== 'undefined' && !projectId) {
+  console.warn('⚠️ Project ID is not defined. Please set VITE_REOWN_PROJECT_ID in your .env file');
 }
 
 // Set up metadata
@@ -23,13 +23,9 @@ const metadata = {
   icons: ['/icon-192x192.png', '/icon-512x512.png'],
 };
 
-// CRITICAL: Create a safe stub config for build/SSR (lazy-loaded)
-// This allows WagmiProvider to render during static generation without errors
+// CRITICAL: Create a safe stub config for SSR (lazy-loaded)
 function getStubConfig(): Config {
   if (typeof window === 'undefined') {
-    // During build, return a minimal stub that won't cause hangs
-    // We'll use dynamic import to avoid accessing browser APIs
-    const { createConfig, http } = require('wagmi');
     return createConfig({
       chains: [mainnet],
       transports: {
@@ -37,103 +33,130 @@ function getStubConfig(): Config {
       },
     }) as Config;
   }
-  // On client-side, this won't be used (real config will be available)
   return null as any;
 }
 
-// CRITICAL FIX: Initialize AppKit synchronously at module load time
-// During Next.js static export/prerendering, components using useAppKit hooks are rendered on server
-// AppKit MUST be initialized before any hooks are called, even during SSR
+// CRITICAL FIX: Initialize AppKit asynchronously on client-side only
 let appKitInstance: ReturnType<typeof createAppKit> | null = null;
+let appKitInitializing = false;
 
-function initializeAppKit() {
+async function initializeAppKit() {
   if (appKitInstance) {
     return appKitInstance;
   }
 
+  if (appKitInitializing) {
+    // Wait for initialization to complete
+    return new Promise<ReturnType<typeof createAppKit> | null>((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (appKitInstance) {
+          clearInterval(checkInterval);
+          resolve(appKitInstance);
+        } else if (!appKitInitializing) {
+          clearInterval(checkInterval);
+          resolve(null);
+        }
+      }, 100);
+    });
+  }
+
+  // Only initialize on client-side
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  // Don't initialize if projectId is missing
+  if (!projectId) {
+    console.warn('⚠️ Cannot initialize AppKit: Project ID is not defined');
+    return null;
+  }
+
+  appKitInitializing = true;
+
   try {
-    // Try to get real adapter first (works on client-side)
-    const adapter = getWagmiAdapter();
+    const adapter = await getWagmiAdapter();
     
     if (adapter) {
-      // Client-side: use real adapter
-    appKitInstance = createAppKit({
-      adapters: [adapter],
-  projectId,
-  networks: [mainnet, polygon],
-  defaultNetwork: mainnet,
-  metadata: metadata,
-  features: {
-        analytics: true,
-        email: true,
-        socials: ['google', 'x', 'github', 'discord', 'apple'],
-        onramp: true,
-        swaps: true,
-  },
-});
+      appKitInstance = createAppKit({
+        adapters: [adapter],
+        projectId,
+        networks: [mainnet, polygon],
+        defaultNetwork: mainnet,
+        metadata: metadata,
+        features: {
+          analytics: true,
+          email: true,
+          socials: ['google', 'x', 'github', 'discord', 'apple'],
+          onramp: true,
+          swaps: true,
+        },
+      });
+      
+      // Expose instance on window for components to check if AppKit is ready
+      if (typeof window !== 'undefined') {
+        (window as any).__REOWN_APPKIT_INSTANCE__ = appKitInstance;
+        (window as any).__REOWN_APPKIT_CONTEXT__ = true;
+      }
+      
+      appKitInitializing = false;
       return appKitInstance;
     }
   } catch (error) {
-    // Adapter might not be available during SSR/build
-    console.warn('Real adapter not available, creating stub for SSR:', error);
-  }
-
-  // SSR/Build time: create stub adapter
-  try {
-    const { WagmiAdapter } = require('@reown/appkit-adapter-wagmi');
-    const stubAdapter = new WagmiAdapter({
-      networks: [mainnet],
-      projectId,
-      ssr: true,
-    });
-    
-    appKitInstance = createAppKit({
-      adapters: [stubAdapter],
-      projectId,
-      networks: [mainnet, polygon],
-      defaultNetwork: mainnet,
-      metadata: metadata,
-      features: {
-        analytics: true,
-        email: true,
-        socials: ['google', 'x', 'github', 'discord', 'apple'],
-        onramp: true,
-        swaps: true,
-      },
-    });
-  return appKitInstance;
-  } catch (error) {
     console.error('Failed to initialize AppKit:', error);
-    // Return null - hooks will handle gracefully
+    appKitInitializing = false;
     return null;
   }
+
+  appKitInitializing = false;
+  return null;
 }
 
-// CRITICAL: Initialize AppKit synchronously at module load time
-// This ensures it's available before any hooks are called during SSR
-const appKit = initializeAppKit();
+// Initialize AppKit on client-side immediately (don't wait)
+// This ensures AppKit is available when AppKitProvider renders
+if (typeof window !== 'undefined') {
+  // Start initialization immediately but don't block
+  initializeAppKit().catch((error) => {
+    console.warn('AppKit initialization failed (will retry):', error);
+  });
+}
+
+// Export a getter that returns the instance (or null if not initialized yet)
+export const appKit = {
+  get instance() {
+    return appKitInstance;
+  },
+  async getInstance() {
+    if (!appKitInstance) {
+      await initializeAppKit();
+    }
+    return appKitInstance;
+  }
+};
 
 function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
   const [wagmiConfig, setWagmiConfig] = useState<Config | null>(null);
   const [isClient, setIsClient] = useState(false);
   
-  // CRITICAL: Initialize Wagmi config
+  // CRITICAL: Initialize Wagmi config and AppKit on client-side
   useEffect(() => {
     setIsClient(true);
-      const adapter = getWagmiAdapter();
+    
+    // Initialize AppKit
+    initializeAppKit().catch(console.error);
+    
+    // Initialize Wagmi adapter
+    getWagmiAdapter().then((adapter) => {
       if (adapter) {
         setWagmiConfig(adapter.wagmiConfig as Config);
-    }
+      }
+    }).catch(console.error);
   }, []);
   
-  // CRITICAL: Always render WagmiProvider (use stub during build, real config on client)
-  // This prevents Reown hooks from failing during static generation
   const config = wagmiConfig || (typeof window === 'undefined' ? getStubConfig() : null);
   const initialState = isClient && typeof window !== 'undefined' && cookies && wagmiConfig
     ? cookieToInitialState(wagmiConfig, cookies)
     : undefined;
   
-  // If no config available (shouldn't happen, but safety check)
   if (!config) {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
   }
@@ -144,9 +167,6 @@ function ContextProvider({ children, cookies }: { children: ReactNode; cookies: 
     </WagmiProvider>
   );
 }
-
-// Export AppKit instance for use in components
-export { appKit };
 
 export default ContextProvider;
 

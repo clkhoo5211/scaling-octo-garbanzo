@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { modularRSSAggregator } from "@/lib/sources/modularRSSAggregator";
+import { getArticlesFromRSS } from "@/lib/services/rssService";
 import { contentAggregator } from "@/lib/services/contentAggregator";
 import type { NewsCategory } from "@/lib/sources/types";
 import {
@@ -207,47 +207,26 @@ export function useArticles(
     queryFn: async () => {
       console.log(`[useArticles] Fetching articles for ${category}...`);
       
-      // CRITICAL: Try server-side RSS fetching first (bypasses CORS and rate limits)
-      // Fallback to client-side fetching if server-side fails
+      // Use client-side RSS fetching service
       let rssArticlesResult: PromiseSettledResult<Article[]>;
       
       try {
-        // Build URL with category and optional country code
-        const countryParam = options?.countryCode ? `&country=${options.countryCode}` : '';
-        const serverResponse = await fetch(`/api/rss?category=${category}${countryParam}`, {
-          cache: 'no-store',
-          signal: AbortSignal.timeout(20000), // 20 second timeout
-        });
-
-        if (serverResponse.ok) {
-          const serverData = await serverResponse.json();
-          if (serverData.articles && serverData.articles.length > 0) {
-            console.log(`[useArticles] ✅ Server-side RSS fetch succeeded for ${category}: ${serverData.articles.length} articles from ${serverData.successfulSources}/${serverData.totalSources} sources`);
-            rssArticlesResult = {
-              status: 'fulfilled',
-              value: serverData.articles,
-            };
-          } else {
-            // Server-side returned empty, fallback to client-side
-            throw new Error('Server-side returned empty articles');
-          }
+        const rssResult = await getArticlesFromRSS(category, options?.countryCode);
+        if (rssResult.articles && rssResult.articles.length > 0) {
+          console.log(`[useArticles] ✅ Client-side RSS fetch succeeded for ${category}: ${rssResult.articles.length} articles from ${rssResult.successfulSources}/${rssResult.totalSources} sources`);
+          rssArticlesResult = {
+            status: 'fulfilled',
+            value: rssResult.articles,
+          };
         } else {
-          throw new Error(`Server-side RSS fetch failed: ${serverResponse.status}`);
+          throw new Error('RSS fetch returned empty articles');
         }
-      } catch (serverError) {
-        console.warn(`[useArticles] Server-side RSS fetch failed for ${category}, falling back to client-side:`, serverError);
-        // Fallback to client-side RSS fetching with retry logic
-        rssArticlesResult = await Promise.allSettled([
-          fetchWithRetry(
-            () => modularRSSAggregator.fetchByCategory(category),
-            2, // maxRetries: 2 (3 attempts total)
-            2000, // baseDelay: 2 seconds
-            30000 // timeout: 30 seconds per attempt
-          ).catch((err) => {
-            console.warn(`[useArticles] RSS fetch failed for ${category} after retries:`, err);
-            return [];
-          }),
-        ]).then(results => results[0]);
+      } catch (rssError) {
+        console.warn(`[useArticles] RSS fetch failed for ${category}:`, rssError);
+        rssArticlesResult = {
+          status: 'rejected' as const,
+          reason: rssError,
+        };
       }
 
       const [rssArticles, nonRSSArticles] = await Promise.allSettled([

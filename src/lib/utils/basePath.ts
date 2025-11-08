@@ -4,8 +4,8 @@
  */
 export function getBasePath(): string {
   if (typeof window === "undefined") {
-    // Server-side: use environment variable
-    return process.env.NEXT_PUBLIC_BASE_PATH || "";
+    // Server-side: use environment variable (Vite format)
+    return import.meta.env.VITE_BASE_PATH || "";
   }
 
   // Client-side: detect from current pathname
@@ -16,7 +16,7 @@ export function getBasePath(): string {
     return "/scaling-octo-garbanzo";
   }
   
-  // Fallback to environment variable
-  return process.env.NEXT_PUBLIC_BASE_PATH || "";
+  // Fallback to environment variable (Vite format)
+  return import.meta.env.VITE_BASE_PATH || "";
 }
 

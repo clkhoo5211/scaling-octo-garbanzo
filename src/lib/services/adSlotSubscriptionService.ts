@@ -6,7 +6,8 @@
 
 import { createPointsTransaction } from "@/lib/api/supabaseApi";
 import { supabase } from "@/lib/services/supabase";
-import type { User } from "@clerk/clerk-react";
+// Type from Clerk useUser hook - user can be null
+type ClerkUser = NonNullable<ReturnType<typeof import("@clerk/clerk-react").useUser>['user']>;
 import { awardPoints } from "@/lib/services/pointsService";
 
 export interface AdSlotSubscription {
@@ -20,7 +21,7 @@ export interface AdSlotSubscription {
 
 export interface SubscribeToSlotParams {
   userId: string;
-  user: User;
+  user: ClerkUser;
   slotId: string;
   notificationEmail?: boolean;
   notificationPush?: boolean;

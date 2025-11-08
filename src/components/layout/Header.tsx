@@ -1,6 +1,4 @@
-"use client";
-
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { AuthStatus } from "@/components/auth/AuthStatus";
 
 export function Header() {
@@ -9,20 +7,20 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-black dark:bg-white flex items-center justify-center">
               <span className="text-white dark:text-black font-bold text-lg">
                 W3
               </span>
             </div>
-                  <span className="text-xl font-bold text-gray-900">
+            <span className="text-xl font-bold text-gray-900">
               Web3News
             </span>
           </Link>
 
           {/* Search Bar (Desktop) */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <Link href="/search" className="w-full">
+            <Link to="/search" className="w-full">
               <input
                 type="text"
                 placeholder="Search articles..."

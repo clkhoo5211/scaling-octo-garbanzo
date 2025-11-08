@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
-import { useAppKit } from "@reown/appkit/react";
+import { useSafeAppKit } from "@/lib/hooks/useSafeAppKit";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -14,7 +14,7 @@ interface ShowMoreButtonProps {
 }
 
 // Admin key for development - set to false to disable
-const ADMIN_KEY_ENABLED = process.env.NEXT_PUBLIC_ADMIN_KEY_ENABLED !== "false";
+const ADMIN_KEY_ENABLED = import.meta.env.VITE_ADMIN_KEY_ENABLED !== "false";
 const ADMIN_KEY = "123456";
 
 /**
@@ -25,7 +25,7 @@ const ADMIN_KEY = "123456";
  */
 export function ShowMoreButton({ onClick, disabled }: ShowMoreButtonProps) {
   const { isSignedIn, isLoaded, setMockUser } = useClerkUser();
-  const { open } = useAppKit();
+  const { open } = useSafeAppKit();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [adminKey, setAdminKey] = useState("");
   const [showAdminKey, setShowAdminKey] = useState(false);

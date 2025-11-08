@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web3News - Decentralized News Aggregation</title>
+    <script>
+      // GitHub Pages SPA routing fix
+      // Redirect all 404s to index.html for client-side routing
+      var pathSegmentsToKeep = 0;
+      var l = window.location;
+      var basePath = '';
+      
+      // Detect base path from repository name (if deployed to GitHub Pages)
+      var pathname = l.pathname;
+      var pathParts = pathname.split('/').filter(p => p);
+      if (pathParts.length > 0 && pathParts[0] !== 'index.html') {
+        basePath = '/' + pathParts[0];
+      }
+      
+      l.replace(
+        l.protocol +
+          '//' +
+          l.hostname +
+          (l.port ? ':' + l.port : '') +
+          basePath +
+          '/index.html' +
+          l.pathname.slice(basePath.length) +
+          (l.search ? l.search : '') +
+          l.hash
+      );
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.js"></script>
+  </body>
+</html>
+

@@ -439,7 +439,7 @@ class ContentAggregator {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_PRODUCT_HUNT_TOKEN || ""}`,
+            Authorization: `Bearer ${import.meta.env.VITE_PRODUCT_HUNT_TOKEN || ""}`,
           },
           body: JSON.stringify({
             query,
@@ -494,7 +494,7 @@ class ContentAggregator {
       };
 
       // Add auth token if available (increases rate limit)
-      const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+      const token = import.meta.env.VITE_GITHUB_TOKEN;
       if (token) {
         headers["Authorization"] = `token ${token}`;
       }
@@ -705,7 +705,7 @@ class ContentAggregator {
         `https://min-api.cryptocompare.com/data/v2/news/?lang=EN&limit=${limit}`,
         {
           headers: {
-            Authorization: `Apikey ${process.env.NEXT_PUBLIC_CRYPTOCOMPARE_API_KEY || ""}`,
+            Authorization: `Apikey ${import.meta.env.VITE_CRYPTOCOMPARE_API_KEY || ""}`,
           },
         }
       );
