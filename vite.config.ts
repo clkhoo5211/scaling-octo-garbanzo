@@ -17,6 +17,10 @@ export default defineConfig({
       // CRITICAL: Disable auto-registration - we use custom ServiceWorkerRegistration component
       // This allows us to handle basePath correctly for GitHub Pages
       injectRegister: false,
+      // Explicitly set service worker filename
+      filename: 'sw.js',
+      // Ensure service worker is generated even with injectRegister: false
+      strategies: 'generateSW',
       includeAssets: ['favicon.ico', 'apple-icon.png', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
         name: 'Web3News - Decentralized News Aggregation',
