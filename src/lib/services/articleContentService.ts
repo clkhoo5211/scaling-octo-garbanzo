@@ -1,6 +1,6 @@
 /**
  * Client-Side Article Content Fetching Service
- * Fetches article content client-side (may require CORS proxy for some sites)
+ * Uses CORS proxies to fetch article content (avoids CORS errors)
  * Uses Readability to extract clean content from HTML
  */
 
@@ -17,6 +17,16 @@ interface ArticleContentResult {
 }
 
 /**
+ * CORS Proxy Options (in order of preference)
+ * Try multiple proxies for better reliability
+ */
+const CORS_PROXIES = [
+  "https://api.allorigins.win/get?url=",
+  "https://corsproxy.io/?",
+  "https://api.codetabs.com/v1/proxy?quest=",
+];
+
+/**
  * Estimate reading time based on word count
  */
 export function estimateReadingTime(
@@ -28,69 +38,125 @@ export function estimateReadingTime(
 }
 
 /**
- * Parse HTML content using Readability-like extraction
+ * Fetch with timeout
  */
-async function fetchAndParseArticle(url: string) {
+async function fetchWithTimeout(
+  url: string,
+  timeout: number = 8000
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
   try {
-    // Fetch article HTML directly
-    // Note: Some sites may block CORS - in production, you'd use a proxy
     const response = await fetch(url, {
+      signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
+        "User-Agent": "Mozilla/5.0 (compatible; Web3News/1.0)",
       },
-      cache: 'no-store',
-      signal: AbortSignal.timeout(20000), // 20 second timeout
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const html = await response.text();
-
-    // Basic HTML parsing to extract article content
-    const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
-    const title = titleMatch?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').trim() || 'Untitled';
-
-    const descMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i) ||
-                     html.match(/<meta[^>]*property=["']og:description["'][^>]*content=["']([^"']+)["']/i);
-    const excerpt = descMatch?.[1] || '';
-
-    const articleMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/i) ||
-                       html.match(/<main[^>]*>([\s\S]*?)<\/main>/i) ||
-                       html.match(/<div[^>]*class=["'][^"']*article[^"']*["'][^>]*>([\s\S]*?)<\/div>/i) ||
-                       html.match(/<div[^>]*class=["'][^"']*content[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
-
-    let content = articleMatch?.[1] || html;
-
-    // Remove scripts, styles, and other non-content elements
-    content = content
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<nav[\s\S]*?<\/nav>/gi, '')
-      .replace(/<header[\s\S]*?<\/header>/gi, '')
-      .replace(/<footer[\s\S]*?<\/footer>/gi, '')
-      .replace(/<aside[\s\S]*?<\/aside>/gi, '');
-
-    const authorMatch = html.match(/<meta[^>]*name=["']author["'][^>]*content=["']([^"']+)["']/i) ||
-                       html.match(/<meta[^>]*property=["']article:author["'][^>]*content=["']([^"']+)["']/i);
-    const author = authorMatch?.[1] || '';
-
-    return {
-      title,
-      content,
-      textContent: content.replace(/<[^>]*>/g, '').trim(),
-      excerpt,
-      byline: author,
-      length: content.replace(/<[^>]*>/g, '').trim().length,
-      siteName: new URL(url).hostname.replace('www.', ''),
-    };
-  } catch (error: any) {
-    console.error(`Error fetching article content for ${url}:`, error);
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
     throw error;
   }
+}
+
+/**
+ * Parse HTML content using Readability-like extraction
+ * Uses CORS proxies to avoid CORS errors
+ */
+async function fetchAndParseArticle(url: string) {
+  // Try each CORS proxy in order
+  for (const proxyBase of CORS_PROXIES) {
+    try {
+      const proxyUrl = `${proxyBase}${encodeURIComponent(url)}`;
+      console.log(`[ArticleContent] Fetching via proxy: ${proxyBase.substring(0, 30)}...`);
+
+      // Fetch with timeout
+      const response = await fetchWithTimeout(proxyUrl, 8000);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      // Handle different proxy response formats
+      const html = data.contents || data.content || (typeof data === "string" ? data : null);
+
+      if (!html || typeof html !== "string") {
+        throw new Error("Invalid HTML content received from proxy");
+      }
+
+      // Parse HTML with DOMParser
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      // Extract title
+      const title = doc.querySelector("title")?.textContent?.trim() || 
+                    doc.querySelector("h1")?.textContent?.trim() ||
+                    "Untitled";
+
+      // Extract description/excerpt
+      const excerpt = doc.querySelector("meta[name='description']")?.getAttribute("content") ||
+                      doc.querySelector("meta[property='og:description']")?.getAttribute("content") ||
+                      "";
+
+      // Extract author
+      const byline = doc.querySelector("meta[name='author']")?.getAttribute("content") ||
+                     doc.querySelector("meta[property='article:author']")?.getAttribute("content") ||
+                     "";
+
+      // Try to find article content
+      const articleElement = doc.querySelector("article") ||
+                            doc.querySelector("main") ||
+                            doc.querySelector("[class*='article']") ||
+                            doc.querySelector("[class*='content']") ||
+                            doc.body;
+
+      if (!articleElement) {
+        throw new Error("Could not find article content");
+      }
+
+      // Remove scripts, styles, and other non-content elements
+      const scripts = articleElement.querySelectorAll("script, style, nav, header, footer, aside, .ad, .advertisement, [class*='ad-']");
+      scripts.forEach(el => el.remove());
+
+      // Get clean HTML content
+      let content = articleElement.innerHTML;
+
+      // Remove remaining scripts and styles
+      content = content
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<nav[\s\S]*?<\/nav>/gi, '')
+        .replace(/<header[\s\S]*?<\/header>/gi, '')
+        .replace(/<footer[\s\S]*?<\/footer>/gi, '')
+        .replace(/<aside[\s\S]*?<\/aside>/gi, '');
+
+      // Get text content for length calculation
+      const textContent = articleElement.textContent || "";
+
+      console.log(`[ArticleContent] Successfully parsed article: ${title.substring(0, 50)}...`);
+
+      return {
+        title,
+        content,
+        textContent: textContent.trim(),
+        excerpt,
+        byline,
+        length: textContent.trim().length,
+        siteName: new URL(url).hostname.replace('www.', ''),
+      };
+    } catch (error: any) {
+      console.warn(`[ArticleContent] Proxy ${proxyBase.substring(0, 30)} failed:`, error?.message || error);
+      // Try next proxy
+      continue;
+    }
+  }
+
+  // All proxies failed
+  throw new Error("All CORS proxies failed to fetch article content");
 }
 
 /**
@@ -109,7 +175,7 @@ export async function fetchArticleContent(url: string): Promise<ArticleContentRe
       throw new Error('Invalid URL format');
     }
 
-    // Fetch and parse article content
+    // Fetch and parse article content via CORS proxy
     const articleContent = await fetchAndParseArticle(url);
 
     return {
@@ -117,13 +183,13 @@ export async function fetchArticleContent(url: string): Promise<ArticleContentRe
       ...articleContent,
     };
   } catch (error: any) {
-    console.error('Error in article content service:', error);
+    console.error('[ArticleContent] Error fetching article content:', error);
     
     return {
       success: false,
       error: error?.message || 'Failed to fetch article content',
-      title: error?.title || null,
-      excerpt: error?.excerpt || null,
+      title: null,
+      excerpt: null,
     };
   }
 }
