@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 
 const MOCK_USER_STORAGE_KEY = "admin_dev_user";
 
@@ -12,65 +13,16 @@ interface MockUserData {
 }
 
 /**
- * Check if ClerkProvider is available
- */
-function isClerkProviderAvailable(): boolean {
-  try {
-    // Check if Clerk context exists
-    return typeof window !== 'undefined' && !!(window as any).__clerk_frontend_api;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Safe wrapper for Clerk hooks that handles missing ClerkProvider
- */
-function useClerkHooksSafely() {
-  const clerkAvailable = isClerkProviderAvailable();
-  
-  if (!clerkAvailable) {
-    return {
-      user: null,
-      isLoaded: false,
-      isSignedIn: false,
-    };
-  }
-
-  try {
-    // Dynamically import Clerk hooks only when provider is available
-    const { useUser, useAuth } = require("@clerk/clerk-react");
-    const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
-    const { isSignedIn } = useAuth();
-    return {
-      user: clerkUser,
-      isLoaded: clerkLoaded,
-      isSignedIn,
-    };
-  } catch (error) {
-    // ClerkProvider not available - return safe defaults
-    return {
-      user: null,
-      isLoaded: false,
-      isSignedIn: false,
-    };
-  }
-}
-
-/**
  * Enhanced useClerkUser Hook
  * Integrates Reown AppKit (PRIMARY) with Clerk (SECONDARY)
  * Priority: Mock user (dev) → Clerk user → Reown-based user
  * 
- * CRITICAL: Handles case when ClerkProvider is not yet rendered
+ * CRITICAL: ClerkProvider is always rendered, so Clerk hooks are safe to use
  */
 export function useClerkUser() {
   const { address, isConnected } = useAppKitAccount();
-  const clerkHooks = useClerkHooksSafely();
-  const clerkUser = clerkHooks.user;
-  const clerkLoaded = clerkHooks.isLoaded;
-  const isSignedIn = clerkHooks.isSignedIn;
-  
+  const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
+  const { isSignedIn } = useAuth();
   const [isSyncing, setIsSyncing] = useState(false);
   const [mockUser, setMockUserState] = useState<MockUserData | null>(null);
   const [mockUserLoaded, setMockUserLoaded] = useState(false);

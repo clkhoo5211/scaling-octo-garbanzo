@@ -48,16 +48,11 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
     // Only process when Clerk is loaded
     if (!clerkLoaded) return;
 
-    // Case 0: Reown disconnected → Sign out from Clerk and reset state
+    // CRITICAL: Prevent Clerk API calls until Reown authentication
+    // Only proceed if user is authenticated via Reown
     if (!isConnected || !address) {
-      // User disconnected from Reown - clear Clerk session
-      if (auth.isSignedIn) {
-        console.log("🔌 Reown disconnected - signing out from Clerk");
-        auth.signOut().catch((error: unknown) => {
-          console.error("Failed to sign out from Clerk:", error);
-        });
-      }
-      // Reset state to allow re-creation if user reconnects
+      // User not authenticated via Reown - don't make Clerk API calls
+      // But don't sign out if Clerk session exists (might be from previous session)
       setHasAttemptedCreation(false);
       setShowEmailPrompt(false);
       setPendingAddress(null);
