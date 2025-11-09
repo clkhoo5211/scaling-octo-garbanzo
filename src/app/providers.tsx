@@ -60,7 +60,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <ErrorBoundary
           fallback={
             <ClerkProvider publishableKey={clerkPublishableKey}>
-              <ToastProvider>{children}</ToastProvider>
+                <ToastProvider>{children}</ToastProvider>
             </ClerkProvider>
           }
         >
@@ -77,7 +77,7 @@ export function Providers({ children }: { children: ReactNode }) {
         // Render without AppKitProvider while initializing
         // But always render ClerkProvider to prevent hook errors
         <ClerkProvider publishableKey={clerkPublishableKey}>
-          <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>{children}</ToastProvider>
         </ClerkProvider>
       )}
     </ContextProvider>
