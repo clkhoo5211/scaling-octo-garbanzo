@@ -1,46 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Decentralized news aggregation with crypto-powered rewards" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Web3News" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <title>Web3News - Decentralized News Aggregation</title>
-    <script>
-      // GitHub Pages SPA routing fix
-      // Redirect all 404s to index.html for client-side routing
-      (function() {
-        var l = window.location;
-        var pathname = l.pathname;
-        
-        // Extract base path (repository name)
-        // e.g., /scaling-octo-garbanzo/subscription -> basePath = /scaling-octo-garbanzo
-        var pathParts = pathname.split('/').filter(p => p && p !== 'index.html');
-        var basePath = '';
-        
-        // Detect base path (repository name with hyphens)
-        if (pathParts.length > 0) {
-          var firstSegment = pathParts[0];
-          // Repository names typically have hyphens (e.g., scaling-octo-garbanzo)
-          if (firstSegment.includes('-') || firstSegment === 'scaling-octo-garbanzo') {
-            basePath = '/' + firstSegment;
-          }
-        }
-        
-        // Prevent infinite loops - if already on index.html, don't redirect
-        if (pathname.includes('index.html')) {
-          return;
-        }
-        
-        // Simple redirect: go to index.html and let React Router handle the routing
-        // The browser will maintain the pathname, which React Router will process
-        var redirectUrl = basePath + '/index.html';
-        
-        l.replace(redirectUrl);
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 
