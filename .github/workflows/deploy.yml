@@ -69,6 +69,21 @@ jobs:
         with:
           path: ./dist
 
+      - name: Verify built files
+        run: |
+          echo "Verifying built index.html..."
+          if grep -q "/src/main.tsx" dist/index.html; then
+            echo "ERROR: Built index.html still contains /src/main.tsx!"
+            echo "This means Vite build failed to transform the HTML."
+            exit 1
+          fi
+          if ! grep -q "/assets/" dist/index.html; then
+            echo "ERROR: Built index.html doesn't contain /assets/ paths!"
+            exit 1
+          fi
+          echo "✅ Built index.html is correct"
+          cat dist/index.html | grep -E "script|assets" | head -5
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
