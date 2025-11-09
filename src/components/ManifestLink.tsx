@@ -42,10 +42,25 @@ export function ManifestLink() {
         const manifestLink = document.createElement("link");
         manifestLink.rel = "manifest";
         manifestLink.href = manifestPath;
+        // Add data attribute to identify this as the injected link
+        manifestLink.setAttribute('data-injected', 'true');
         document.head.appendChild(manifestLink);
         
         injectedRef.current = true;
         console.log(`[ManifestLink] Injected manifest link: ${manifestLink.href}`);
+        
+        // Verify the manifest is accessible
+        fetch(manifestPath)
+          .then(response => {
+            if (response.ok) {
+              console.log('[ManifestLink] Manifest verified:', manifestPath);
+            } else {
+              console.warn('[ManifestLink] Manifest not accessible:', response.status, manifestPath);
+            }
+          })
+          .catch(error => {
+            console.warn('[ManifestLink] Manifest verification failed:', error);
+          });
       } catch (error) {
         console.warn('[ManifestLink] Error injecting manifest link:', error);
       }
