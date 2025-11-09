@@ -22,8 +22,6 @@ import type { Article } from "@/lib/services/indexedDBCache";
 import { FileText } from "lucide-react";
 import { useAppStore } from "@/lib/stores/appStore";
 import { shareContent } from "@/lib/utils";
-import { TranslationButton, TranslationDisplay } from "@/components/translation/TranslationButton";
-import { detectLanguage, getUserLanguage } from "@/lib/services/translationService";
 
 // Lazy load heavy reader components
 const ReadingProgress = lazy(() =>
@@ -55,9 +53,6 @@ export function ArticleReaderClient({
   const [fontSize, setFontSize] = useState(16);
   const [lineHeight, setLineHeight] = useState(1.6);
   const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
-  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
-  const [translationResult, setTranslationResult] = useState<any>(null);
-  const [showTranslated, setShowTranslated] = useState(false);
   const { userId } = useAppStore();
 
   // Search across ALL categories to find article by URL
@@ -107,15 +102,6 @@ export function ArticleReaderClient({
               // Sanitize the HTML content
               const sanitized = sanitizeArticleHtml(result.content);
               setParsedContent(sanitized);
-              
-              // Detect language from text content
-              const textContent = sanitized.replace(/<[^>]*>/g, "").trim();
-              if (textContent.length > 100) {
-                const lang = await detectLanguage(textContent);
-                if (lang) {
-                  setDetectedLanguage(lang);
-                }
-              }
             } else {
               console.warn("Article content fetch failed, showing excerpt");
               setParsedContent(null);
@@ -237,30 +223,6 @@ export function ArticleReaderClient({
               </>
             )}
           </div>
-          
-          {/* Translation Button */}
-          {parsedContent && (
-            <div className="mb-4 flex items-center gap-2">
-              <TranslationButton
-                text={parsedContent.replace(/<[^>]*>/g, "").trim()}
-                articleUrl={article.url}
-                sourceLanguage={detectedLanguage || undefined}
-                onTranslationComplete={(result) => {
-                  setTranslationResult(result);
-                  setShowTranslated(true);
-                }}
-              />
-              {translationResult && translationResult.success && (
-                <button
-                  onClick={() => setShowTranslated(!showTranslated)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  title={showTranslated ? "Show original" : "Show translation"}
-                >
-                  {showTranslated ? "Show Original" : "Show Translation"}
-                </button>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Article Content */}
@@ -269,24 +231,9 @@ export function ArticleReaderClient({
             <LoadingState message="Loading article content..." />
           ) : parsedContent ? (
             <div className="mb-8">
-              {/* Show translated content if available and toggled, otherwise show original */}
-              {translationResult && translationResult.success && showTranslated ? (
-                <div className="prose dark:prose-invert max-w-none">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: translationResult.translatedText.replace(/\n/g, "<br />"),
-                    }}
-                    style={{
-                      fontSize: `${fontSize}px`,
-                      lineHeight: lineHeight,
-                      color: theme === "dark" ? "#f3f4f6" : theme === "sepia" ? "#5c4a37" : "#1f2937",
-                      backgroundColor: theme === "dark" ? "#111827" : theme === "sepia" ? "#f4e8d8" : "#ffffff",
-                      padding: "1rem",
-                    }}
-                  />
-                </div>
-              ) : (
-                <iframe
+              {/* CRITICAL: Use iframe with srcdoc for better security and isolation */}
+              {/* This prevents XSS attacks even if sanitization fails */}
+              <iframe
                   srcDoc={`
                     <!DOCTYPE html>
                     <html>
