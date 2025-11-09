@@ -7,6 +7,7 @@ import { AppKitProvider } from "@reown/appkit/react";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { appKit } from "../../context/index";
 import type { AppKitInstance } from "@reown/appkit/react";
+import { ClerkFaviconUpdater } from "@/components/clerk/ClerkFaviconUpdater";
 
 /**
  * Providers Component
@@ -61,6 +62,7 @@ export function Providers({ children }: { children: ReactNode }) {
         >
           <AppKitProvider appKit={appKitInstance}>
             <ClerkProvider publishableKey={clerkPublishableKey}>
+              <ClerkFaviconUpdater />
               <ReownClerkIntegration>
                 <ToastProvider>{children}</ToastProvider>
               </ReownClerkIntegration>
@@ -71,6 +73,7 @@ export function Providers({ children }: { children: ReactNode }) {
         // Render without AppKitProvider while initializing
         // Components should handle the "not ready" state gracefully
         <ClerkProvider publishableKey={clerkPublishableKey}>
+          <ClerkFaviconUpdater />
           <ReownClerkIntegration>
             <ToastProvider>{children}</ToastProvider>
           </ReownClerkIntegration>
