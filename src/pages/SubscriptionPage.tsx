@@ -5,11 +5,20 @@ import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { Crown, Star, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SubscriptionPurchase } from "@/components/subscription/SubscriptionPurchase";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { PricingTable } from "@clerk/clerk-react";
+import { CLERK_BILLING_ENABLED } from "@/lib/config/clerkBilling";
 
 export default function SubscriptionPage() {
   const { user, isLoaded } = useUser();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [useClerkBilling, setUseClerkBilling] = useState(CLERK_BILLING_ENABLED);
+
+  // Check if Clerk Billing is enabled
+  useEffect(() => {
+    // Use environment variable or config file setting
+    setUseClerkBilling(CLERK_BILLING_ENABLED);
+  }, []);
 
   if (!isLoaded) {
     return <LoadingState message="Loading subscription..." fullScreen />;
@@ -24,6 +33,25 @@ export default function SubscriptionPage() {
             message="Please sign in via Reown to view your subscription"
             icon={<Crown className="w-12 h-12 text-gray-400" />}
           />
+        </div>
+      </ErrorBoundary>
+    );
+  }
+
+  // Use Clerk's PricingTable if billing is enabled, otherwise use custom implementation
+  if (useClerkBilling) {
+    return (
+      <ErrorBoundary>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              Subscription & Billing
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Choose a plan that works for you
+            </p>
+          </div>
+          <PricingTable />
         </div>
       </ErrorBoundary>
     );
