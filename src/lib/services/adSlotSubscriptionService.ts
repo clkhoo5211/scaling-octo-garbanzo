@@ -5,7 +5,7 @@
  */
 
 import { createPointsTransaction } from "@/lib/api/supabaseApi";
-import { supabase } from "@/lib/services/supabase";
+import { supabase, isSupabaseDisabled } from "@/lib/services/supabase";
 // Type from Clerk useUser hook - user can be null
 type ClerkUser = NonNullable<ReturnType<typeof import("@clerk/clerk-react").useUser>['user']>;
 import { awardPoints } from "@/lib/services/pointsService";
@@ -39,6 +39,11 @@ export async function subscribeToSlot({
   notificationPush = true,
 }: SubscribeToSlotParams): Promise<{ success: boolean; error?: string }> {
   try {
+    if (isSupabaseDisabled() || !supabase) {
+      console.debug("Supabase disabled - skipping subscription");
+      return { success: false, error: "Supabase disabled" };
+    }
+    
     // Check if already subscribed
     const { data: existing } = await supabase
       .from("slot_subscriptions")

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/services/supabase";
+import { supabase, isSupabaseDisabled } from "@/lib/services/supabase";
 import { messageQueue, type QueuedMessage } from "@/lib/services/messageQueue";
 import { useAppStore } from "@/lib/stores/appStore";
 
@@ -26,6 +26,10 @@ export function useMessages(conversationId: string) {
   const { data: supabaseMessages = [], isLoading } = useQuery({
     queryKey: ["messages", conversationId],
     queryFn: async () => {
+      if (isSupabaseDisabled() || !supabase) {
+        console.debug("Supabase disabled - returning empty messages");
+        return [];
+      }
       const { data, error } = await supabase
         .from("messages")
         .select("*")
@@ -35,7 +39,7 @@ export function useMessages(conversationId: string) {
       if (error) throw error;
       return (data || []) as Message[];
     },
-    enabled: !!conversationId,
+    enabled: !!conversationId && !isSupabaseDisabled(),
   });
 
   // Load queued messages (pending sends)
@@ -56,7 +60,7 @@ export function useMessages(conversationId: string) {
 
   // Subscribe to real-time updates (Supabase Realtime)
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId || isSupabaseDisabled() || !supabase) return;
 
     const channel = supabase
       .channel(`messages:${conversationId}`)
@@ -104,7 +108,9 @@ export function useMessages(conversationId: string) {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      if (supabase) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [conversationId, queryClient]);
 
@@ -202,6 +208,11 @@ export function useMarkMessageRead() {
       conversationId: string;
       messageId: string;
     }) => {
+      if (isSupabaseDisabled() || !supabase) {
+        console.debug("Supabase disabled - skipping mark as read");
+        return;
+      }
+      
       const { error } = await (supabase
         .from("messages") as any)
         .update({ is_read: true })
@@ -228,7 +239,7 @@ export function useConversations(userId: string | null) {
   return useQuery({
     queryKey: ["conversations", userId],
     queryFn: async () => {
-      if (!userId) return [];
+      if (!userId || isSupabaseDisabled() || !supabase) return [];
 
       const { data, error } = await supabase
         .from("conversations")
@@ -239,7 +250,7 @@ export function useConversations(userId: string | null) {
       if (error) throw error;
       return data || [];
     },
-    enabled: !!userId,
+    enabled: !!userId && !isSupabaseDisabled(),
   });
 }
 
@@ -257,6 +268,10 @@ export function useCreateConversation() {
       userId1: string;
       userId2: string;
     }) => {
+      if (isSupabaseDisabled() || !supabase) {
+        throw new Error("Supabase disabled");
+      }
+      
       // Check if conversation already exists
       const { data: existing } = await supabase
         .from("conversations")

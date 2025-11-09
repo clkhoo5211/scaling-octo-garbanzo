@@ -1,5 +1,5 @@
 import localforage from "localforage";
-import { supabase } from "./supabase";
+import { supabase, isSupabaseDisabled } from "./supabase";
 
 /**
  * Message Queue - Offline-first message queue with retry logic
@@ -82,6 +82,14 @@ class MessageQueue {
           await this.updateQueue(queue);
 
           // Send to Supabase
+          if (isSupabaseDisabled() || !supabase) {
+            console.debug("Supabase disabled - skipping message send");
+            message.status = "failed";
+            message.error = "Supabase disabled";
+            await this.updateQueue(queue);
+            continue;
+          }
+          
           const { error } = await (supabase.from("messages") as any).insert({
             conversation_id: message.conversationId,
             sender_id: message.senderId,

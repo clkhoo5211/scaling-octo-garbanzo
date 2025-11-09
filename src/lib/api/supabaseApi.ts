@@ -3,7 +3,7 @@
  * Client-side API wrappers for Supabase operations
  */
 
-import { supabase } from "../services/supabase";
+import { supabase, isSupabaseDisabled } from "../services/supabase";
 import type { Database } from "@/types/supabase";
 import { safeAsync } from "./errorHandler";
 
@@ -25,8 +25,8 @@ export async function getBookmarks(userId: string): Promise<{
   error: Error | null;
 }> {
   return safeAsync(async () => {
-    if (!supabase) {
-      throw new Error("Supabase client not initialized");
+    if (isSupabaseDisabled() || !supabase) {
+      throw new Error("Supabase disabled or not initialized");
     }
     const { data, error } = await supabase
       .from("bookmarks")

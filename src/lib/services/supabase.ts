@@ -1,28 +1,38 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
 
+// Global flag to disable Supabase (set VITE_SUPABASE_DISABLED=true in .env)
+const SUPABASE_DISABLED = import.meta.env.VITE_SUPABASE_DISABLED === 'true';
+
 // CRITICAL: Use Vite environment variables (VITE_* prefix)
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
-if (!supabaseUrl || !supabaseAnonKey) {
+if (SUPABASE_DISABLED) {
+  console.warn("⚠️ Supabase is DISABLED globally (VITE_SUPABASE_DISABLED=true). All Supabase operations will be skipped.");
+} else if (!supabaseUrl || !supabaseAnonKey) {
   console.warn("⚠️ Supabase credentials not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file");
 }
 
-// CRITICAL: Only create Supabase client if credentials are available
+// CRITICAL: Only create Supabase client if credentials are available AND not disabled
 // This prevents crashes during development when env vars aren't set
-export const supabase = (supabaseUrl && supabaseAnonKey)
+export const supabase = (!SUPABASE_DISABLED && supabaseUrl && supabaseAnonKey)
   ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
       auth: {
         persistSession: false, // Clerk handles authentication
         autoRefreshToken: false,
       },
     })
-  : null as any; // Type assertion - will be null if credentials missing
+  : null as any; // Type assertion - will be null if disabled or credentials missing
 
-// Helper function to check if Supabase is initialized
+// Helper function to check if Supabase is initialized and enabled
 export function isSupabaseInitialized(): boolean {
-  return supabase !== null;
+  return !SUPABASE_DISABLED && supabase !== null;
+}
+
+// Helper function to check if Supabase is disabled
+export function isSupabaseDisabled(): boolean {
+  return SUPABASE_DISABLED;
 }
 
 // Helper function to get authenticated user ID from Clerk
@@ -38,8 +48,8 @@ export async function getSubmissions(filters?: {
   category?: string;
   limit?: number;
 }) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping getSubmissions");
     return { data: [], error: null };
   }
   let query = (supabase.from("submissions") as any).select("*");
@@ -68,9 +78,9 @@ export async function createSubmission(data: {
   source: string;
   category: "tech" | "crypto" | "social" | "general";
 }) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping createSubmission");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("submissions") as any).insert({
     user_id: data.userId,
@@ -83,8 +93,8 @@ export async function createSubmission(data: {
 
 // Bookmarks
 export async function getBookmarks(userId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase
@@ -100,9 +110,9 @@ export async function createBookmark(data: {
   articleTitle: string;
   articleSource: string;
 }) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("bookmarks") as any).insert({
     user_id: data.userId,
@@ -113,9 +123,9 @@ export async function createBookmark(data: {
 }
 
 export async function removeBookmark(userId: string, articleId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase
     .from("bookmarks") as any)
@@ -126,9 +136,9 @@ export async function removeBookmark(userId: string, articleId: string) {
 
 // Article Likes
 export async function likeArticle(userId: string, articleId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("article_likes") as any).insert({
     user_id: userId,
@@ -137,9 +147,9 @@ export async function likeArticle(userId: string, articleId: string) {
 }
 
 export async function unlikeArticle(userId: string, articleId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase
     .from("article_likes") as any)
@@ -149,8 +159,8 @@ export async function unlikeArticle(userId: string, articleId: string) {
 }
 
 export async function getArticleLikes(articleId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase.from("article_likes") as any).select("*").eq("article_id", articleId);
@@ -158,9 +168,9 @@ export async function getArticleLikes(articleId: string) {
 
 // User Follows
 export async function followUser(followerId: string, followingId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("user_follows") as any).insert({
     follower_id: followerId,
@@ -169,9 +179,9 @@ export async function followUser(followerId: string, followingId: string) {
 }
 
 export async function unfollowUser(followerId: string, followingId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase
     .from("user_follows") as any)
@@ -181,16 +191,16 @@ export async function unfollowUser(followerId: string, followingId: string) {
 }
 
 export async function getFollowing(userId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase.from("user_follows") as any).select("*").eq("follower_id", userId);
 }
 
 export async function getFollowers(userId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase.from("user_follows") as any).select("*").eq("following_id", userId);
@@ -198,8 +208,8 @@ export async function getFollowers(userId: string) {
 
 // Messages
 export async function getConversations(userId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase
@@ -210,9 +220,9 @@ export async function getConversations(userId: string) {
 }
 
 export async function createConversation(userId1: string, userId2: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("conversations") as any).insert({
     participant_1_id: userId1,
@@ -225,9 +235,9 @@ export async function sendMessage(data: {
   senderId: string;
   content: string;
 }) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("messages") as any).insert({
     conversation_id: data.conversationId,
@@ -237,8 +247,8 @@ export async function sendMessage(data: {
 }
 
 export async function getMessages(conversationId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase
@@ -254,8 +264,8 @@ export async function getProposals(filters?: {
   category?: string;
   limit?: number;
 }) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   let query = (supabase.from("proposals") as any).select("*");
@@ -284,9 +294,9 @@ export async function createProposal(data: {
   description: string;
   category: string;
 }) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("proposals") as any).insert({
     proposal_id: data.proposalId,
@@ -306,9 +316,9 @@ export async function vote(data: {
   votingPower: number;
   transactionHash: string;
 }) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase.from("votes") as any).insert({
     proposal_id: data.proposalId,
@@ -320,8 +330,8 @@ export async function vote(data: {
 }
 
 export async function getVotes(proposalId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase.from("votes") as any).select("*").eq("proposal_id", proposalId);
@@ -329,8 +339,8 @@ export async function getVotes(proposalId: string) {
 
 // Notifications
 export async function getNotifications(userId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase
@@ -342,9 +352,9 @@ export async function getNotifications(userId: string) {
 }
 
 export async function markNotificationRead(notificationId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
-    return { data: null, error: new Error("Supabase client not initialized") };
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
+    return { data: null, error: new Error("Supabase disabled") };
   }
   return (supabase
     .from("notifications") as any)
@@ -354,8 +364,8 @@ export async function markNotificationRead(notificationId: string) {
 
 // Points Transactions
 export async function getPointsTransactions(userId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase
@@ -367,8 +377,8 @@ export async function getPointsTransactions(userId: string) {
 
 // Auction Bids
 export async function getAuctionBids(auctionId: string) {
-  if (!supabase) {
-    console.warn("Supabase client not initialized");
+  if (SUPABASE_DISABLED || !supabase) {
+    console.debug("Supabase disabled or not initialized - skipping operation");
     return { data: [], error: null };
   }
   return (supabase
