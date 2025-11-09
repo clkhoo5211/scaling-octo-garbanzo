@@ -47,6 +47,7 @@ export const ArticleCard = memo(function ArticleCard({
   const likesCount = likes?.length || 0;
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [gifPlaying, setGifPlaying] = useState(false);
   const awardSharePoints = useAwardSharePoints();
 
   const liked = isLiked(article.id);
