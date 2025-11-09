@@ -78,7 +78,7 @@ class ContentAggregator {
         type: "graphql",
         endpoint: "https://api.producthunt.com/v2/api/graphql",
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: CORS errors + requires API key. MCP server handles RSS feeds instead.
       },
       {
         name: "GitHub Trending",
@@ -92,7 +92,7 @@ class ContentAggregator {
         type: "rest",
         endpoint: "https://www.reddit.com",
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: CORS errors. MCP server handles RSS feeds instead.
       },
       {
         name: "Medium",
@@ -149,7 +149,7 @@ class ContentAggregator {
         type: "rest",
         endpoint: "https://www.reddit.com",
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: CORS errors. MCP server handles RSS feeds instead.
       },
       {
         name: "Mastodon",
@@ -258,35 +258,35 @@ class ContentAggregator {
         type: "rest",
         endpoint: "https://www.reddit.com",
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: CORS errors. MCP server handles RSS feeds instead.
       },
       {
         name: "Reddit All",
         type: "rest",
         endpoint: "https://www.reddit.com",
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: CORS errors. MCP server handles RSS feeds instead.
       },
       {
         name: "Reddit Videos",
         type: "rest",
         endpoint: "https://www.reddit.com",
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: CORS errors. MCP server handles RSS feeds instead.
       },
       {
         name: "Reddit Pics",
         type: "rest",
         endpoint: "https://www.reddit.com",
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: CORS errors. MCP server handles RSS feeds instead.
       },
       {
         name: "Reddit Crypto",
         type: "rest",
         endpoint: "https://www.reddit.com",
         category: "crypto", // FIXED: Should be crypto, not social
-        enabled: true,
+        enabled: false, // Disabled: CORS errors. MCP server handles RSS feeds instead.
       },
       {
         name: "YouTube Viral",
