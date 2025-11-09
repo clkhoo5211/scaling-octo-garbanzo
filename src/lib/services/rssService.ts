@@ -65,11 +65,29 @@ function parseRSSXML(xmlText: string, sourceName: string, category: NewsCategory
 }
 
 /**
- * Fetch RSS feed client-side
- * Falls back to MCP server if CORS blocks direct fetch
+ * Fetch RSS feed - MCP server is PRIMARY, direct fetch is fallback
+ * Changed: Use MCP server first (no CORS), fallback to direct fetch only if MCP fails
  */
 async function fetchRSSFeed(url: string, sourceName: string, category: NewsCategory) {
-  // Try direct fetch first (faster, no server dependency)
+  // PRIMARY: Try MCP server first (no CORS issues, server-side fetching)
+  try {
+    const mcpResult = await fetchRSSFeedViaMCP(url, sourceName, category);
+    
+    if (mcpResult.success && mcpResult.articles.length > 0) {
+      console.debug(`✅ MCP server fetched ${sourceName}: ${mcpResult.articles.length} articles`);
+      return {
+        success: true,
+        articles: mcpResult.articles,
+        source: sourceName,
+      };
+    } else {
+      console.debug(`⚠️ MCP server failed for ${sourceName}: ${mcpResult.error || 'Unknown error'}. Trying direct fetch fallback...`);
+    }
+  } catch (mcpError) {
+    console.debug(`⚠️ MCP server error for ${sourceName}:`, mcpError);
+  }
+
+  // FALLBACK: Try direct fetch only if MCP fails (may have CORS issues)
   try {
     const response = await fetch(url, {
       headers: {
@@ -88,6 +106,7 @@ async function fetchRSSFeed(url: string, sourceName: string, category: NewsCateg
     const articles = parseRSSXML(xmlText, sourceName, category);
     
     if (articles.length > 0) {
+      console.debug(`✅ Direct fetch succeeded for ${sourceName}: ${articles.length} articles`);
       return {
         success: true,
         articles,
@@ -95,31 +114,8 @@ async function fetchRSSFeed(url: string, sourceName: string, category: NewsCateg
       };
     }
   } catch (error: any) {
-    // Check if it's a CORS error
-    const isCorsError = error?.message?.includes('CORS') || 
-                       error?.message?.includes('Failed to fetch') ||
-                       error?.name === 'TypeError';
-    
-    if (isCorsError) {
-      // CORS blocked - try MCP server as fallback
-      console.debug(`⚠️ CORS blocked RSS feed ${sourceName} (${url}). Trying MCP server fallback...`);
-      
-      const mcpResult = await fetchRSSFeedViaMCP(url, sourceName, category);
-      
-      if (mcpResult.success && mcpResult.articles.length > 0) {
-        console.log(`✅ MCP server successfully fetched ${sourceName}: ${mcpResult.articles.length} articles`);
-        return {
-          success: true,
-          articles: mcpResult.articles,
-          source: sourceName,
-        };
-      } else {
-        console.debug(`⚠️ MCP server also failed for ${sourceName}: ${mcpResult.error || 'Unknown error'}`);
-      }
-    } else {
-      // Other errors should be logged normally
-      console.error(`❌ Error fetching RSS feed ${sourceName} (${url}):`, error?.message || error);
-    }
+    // Direct fetch failed - log but don't throw (MCP already tried)
+    console.debug(`⚠️ Direct fetch also failed for ${sourceName}:`, error?.message || error);
   }
   
   // All methods failed
@@ -127,7 +123,7 @@ async function fetchRSSFeed(url: string, sourceName: string, category: NewsCateg
     success: false,
     articles: [],
     source: sourceName,
-    error: 'Direct fetch and MCP fallback both failed',
+    error: 'MCP server and direct fetch both failed',
   };
 }
 
