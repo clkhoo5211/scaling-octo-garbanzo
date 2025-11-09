@@ -1,29 +1,11 @@
-import { defineConfig, Plugin } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
-import fs from 'fs';
 
 // Get base path from environment variable (for GitHub Pages)
 // Format: /repository-name (e.g., /scaling-octo-garbanzo)
 const basePath = process.env.VITE_BASE_PATH || '/';
-
-// Plugin to remove vite-plugin-pwa's manifest link injection (we use ManifestLink component instead)
-// Must run AFTER vite-plugin-pwa to remove its injected manifest link
-const removeManifestLinkPlugin = (): Plugin => ({
-  name: 'remove-manifest-link',
-  enforce: 'post', // Run after other plugins
-  writeBundle(_options: any, _bundle: any) {
-    // After build, modify index.html to remove vite-plugin-pwa's manifest link
-    const indexPath = path.join(process.cwd(), 'dist', 'index.html');
-    if (fs.existsSync(indexPath)) {
-      let html = fs.readFileSync(indexPath, 'utf-8');
-      // Remove vite-plugin-pwa's injected manifest link
-      html = html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
-      fs.writeFileSync(indexPath, html, 'utf-8');
-    }
-  },
-});
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -39,9 +21,6 @@ export default defineConfig({
       filename: 'sw.js',
       // Ensure service worker is generated even with injectRegister: false
       strategies: 'generateSW',
-      // CRITICAL: Use manifestFilename to ensure manifest is generated but don't inject link
-      // We'll inject the link manually via ManifestLink component with correct basePath
-      manifestFilename: 'manifest.webmanifest',
       includeAssets: ['favicon.ico', 'apple-icon.png', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
         name: 'Web3News - Decentralized News Aggregation',
@@ -88,7 +67,6 @@ export default defineConfig({
         ],
       },
     }),
-    removeManifestLinkPlugin(), // Run AFTER vite-plugin-pwa to remove its injected manifest link
   ],
   resolve: {
     alias: {
