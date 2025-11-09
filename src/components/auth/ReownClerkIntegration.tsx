@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import { ReactNode } from "react";
+import { EmailPrompt } from "./EmailPrompt";
 
 /**
  * Reown-Clerk Integration Component
@@ -40,6 +41,8 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
   const auth = useAuth();
   const [hasAttemptedCreation, setHasAttemptedCreation] = useState(false);
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false);
+  const [pendingAddress, setPendingAddress] = useState<string | null>(null);
 
   useEffect(() => {
     // Only process when Clerk is loaded
@@ -75,15 +78,23 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Case 2: Reown connected + No Clerk user → Create Clerk user silently
-    // This happens automatically after Reown login - no UI shown to user
-    // Uses Clerk's CLIENT-SIDE SDK (no server API)
+    // Case 2: Reown connected + No Clerk user → Prompt for email or create Clerk user
+    // This happens automatically after Reown login
     if (isConnected && address && !clerkUser && !auth.isSignedIn && !hasAttemptedCreation && auth.signUp) {
-      setHasAttemptedCreation(true);
-
-      // Generate email from address (Reown doesn't expose email in client SDK)
-      // For email login via Reown, email might be stored in localStorage
+      // Check if email is already stored
       const storedEmail = localStorage.getItem(`reown_email_${address}`);
+      
+      if (!storedEmail && !showEmailPrompt) {
+        // No email stored - show prompt
+        setShowEmailPrompt(true);
+        setPendingAddress(address);
+        return;
+      }
+
+      // Email provided or skipped - proceed with Clerk user creation
+      setHasAttemptedCreation(true);
+      setShowEmailPrompt(false);
+      
       const email = storedEmail || `${address.slice(0, 8)}@reown.app`;
 
       // Create Clerk user silently using client-side SDK
@@ -143,9 +154,40 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
     auth.isSignedIn,
     auth.signUp,
     hasAttemptedCreation,
+    showEmailPrompt,
   ]);
 
-  return <>{children}</>;
+  // Handle email prompt callbacks
+  const handleEmailProvided = (email: string) => {
+    if (pendingAddress) {
+      // Email stored, reset state to trigger Clerk user creation
+      setShowEmailPrompt(false);
+      setHasAttemptedCreation(false);
+      setPendingAddress(null);
+    }
+  };
+
+  const handleEmailSkipped = () => {
+    // User skipped email - proceed with fake email
+    if (pendingAddress) {
+      setShowEmailPrompt(false);
+      setHasAttemptedCreation(false);
+      setPendingAddress(null);
+    }
+  };
+
+  return (
+    <>
+      {children}
+      {showEmailPrompt && pendingAddress && (
+        <EmailPrompt
+          address={pendingAddress}
+          onEmailProvided={handleEmailProvided}
+          onSkip={handleEmailSkipped}
+        />
+      )}
+    </>
+  );
 }
 
 /**
