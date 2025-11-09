@@ -9,6 +9,7 @@ import { getCountryNewsSources } from '@/lib/sources/rss/country';
 import type { NewsCategory } from '@/lib/sources/types';
 import type { Article } from '../services/indexedDBCache';
 import { fetchRSSFeedViaMCP, fetchRSSFeedViaMCPRealtime, fetchNewsByCategoryViaMCP } from './mcpService';
+import { extractMediaFromRSSItem } from './mediaExtractor';
 
 /**
  * Parse RSS XML to extract articles
@@ -42,6 +43,9 @@ function parseRSSXML(xmlText: string, sourceName: string, category: NewsCategory
           ? new Date(dateMatch[1].trim()).getTime()
           : Date.now() - (index * 60000);
 
+        // Extract media information
+        const mediaInfo = extractMediaFromRSSItem(itemXml);
+
         articles.push({
           id: `rss-client-${sourceName.toLowerCase().replace(/\s+/g, '-')}-${publishedAt}-${index}`,
           title,
@@ -51,9 +55,17 @@ function parseRSSXML(xmlText: string, sourceName: string, category: NewsCategory
           publishedAt,
           author: authorMatch?.[1]?.trim(),
           excerpt: descMatch?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').replace(/<[^>]*>/g, "").trim().substring(0, 200),
-          thumbnail: thumbnailMatch?.[1],
+          thumbnail: thumbnailMatch?.[1] || mediaInfo.imageUrl || mediaInfo.mediaUrl,
           cachedAt: Date.now(),
           urlHash: link.toLowerCase().replace(/\/$/, ''),
+          // Media support
+          mediaType: mediaInfo.mediaType,
+          mediaUrl: mediaInfo.mediaUrl,
+          mediaUrls: mediaInfo.mediaUrls,
+          imageUrl: mediaInfo.imageUrl,
+          videoUrl: mediaInfo.videoUrl,
+          gifUrl: mediaInfo.gifUrl,
+          videoEmbedUrl: mediaInfo.videoEmbedUrl,
         });
       }
     }

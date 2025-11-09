@@ -19,6 +19,14 @@ export interface Article {
   urlHash: string;
   links?: string[]; // Extracted links from content (learn-anything pattern)
   topics?: string[]; // Extracted topics/keywords
+  // Media support (for image-only, video, GIF feeds)
+  mediaType?: 'text' | 'image' | 'video' | 'gif' | 'mixed'; // Type of media content
+  mediaUrl?: string; // Primary media URL (image/video/GIF)
+  mediaUrls?: string[]; // Multiple media URLs (for galleries)
+  imageUrl?: string; // Specific image URL
+  videoUrl?: string; // Specific video URL (YouTube, Vimeo, direct)
+  gifUrl?: string; // Specific GIF URL
+  videoEmbedUrl?: string; // Embed URL for videos (YouTube, Vimeo)
 }
 
 export interface CacheConfig {

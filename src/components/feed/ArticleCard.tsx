@@ -16,6 +16,7 @@ import { useAwardSharePoints } from "@/lib/hooks/usePointsEarning";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ArticlePreviewModal } from "@/components/article/ArticlePreviewModal";
 import { Modal } from "@/components/ui/Modal";
+import { Play, Image as ImageIcon, Video, Gif } from "lucide-react";
 
 export interface ArticleCardProps {
   article: Article;
@@ -134,17 +135,144 @@ export const ArticleCard = memo(function ArticleCard({
     open({ view: "Connect" });
   };
 
+  // Determine media display
+  const mediaType = article.mediaType || 'text';
+  const displayImage = article.imageUrl || article.mediaUrl || article.thumbnail;
+  const displayVideo = article.videoUrl || article.videoEmbedUrl;
+  const displayGif = article.gifUrl;
+  const hasMedia = mediaType !== 'text' && (displayImage || displayVideo || displayGif);
+
   return (
     <>
-      <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-elevated hover:border-primary/50 transition-all duration-200 group shadow-sm">
+      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-elevated hover:border-primary/50 transition-all duration-200 group shadow-sm">
         <div
           onClick={handleCardClick}
           className="cursor-pointer"
         >
+          {/* Media Display (Image-only, Video, GIF) */}
+          {hasMedia && variant !== "compact" && (
+            <div className="relative w-full bg-gray-100 dark:bg-gray-900">
+              {/* Image-only or Image from mixed */}
+              {(mediaType === 'image' || (mediaType === 'mixed' && displayImage && !displayVideo && !displayGif)) && displayImage && (
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <img
+                    src={displayImage}
+                    alt={article.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                    <ImageIcon className="w-3 h-3" />
+                    Image
+                  </div>
+                </div>
+              )}
+
+              {/* Video */}
+              {(mediaType === 'video' || (mediaType === 'mixed' && displayVideo)) && displayVideo && (
+                <div className="relative aspect-video w-full bg-black overflow-hidden">
+                  {article.videoEmbedUrl ? (
+                    <iframe
+                      src={article.videoEmbedUrl}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={article.title}
+                    />
+                  ) : (
+                    <>
+                      {displayImage && (
+                        <img
+                          src={displayImage}
+                          alt={article.title}
+                          className="w-full h-full object-cover opacity-50"
+                        />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-black/70 rounded-full p-4">
+                          <Play className="w-12 h-12 text-white" fill="white" />
+                        </div>
+                      </div>
+                      <div className="absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                        <Video className="w-3 h-3" />
+                        Video
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* GIF */}
+              {(mediaType === 'gif' || (mediaType === 'mixed' && displayGif)) && displayGif && (
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <img
+                    src={displayGif}
+                    alt={article.title}
+                    className={`w-full h-full object-cover ${gifPlaying ? '' : 'opacity-75'}`}
+                    loading="lazy"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGifPlaying(!gifPlaying);
+                      // Toggle GIF animation by adding/removing ?t= timestamp
+                      const img = e.currentTarget;
+                      if (gifPlaying) {
+                        img.src = img.src.split('?')[0];
+                      } else {
+                        img.src = `${img.src.split('?')[0]}?t=${Date.now()}`;
+                      }
+                    }}
+                  />
+                  <div className="absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                    <Gif className="w-3 h-3" />
+                    GIF {gifPlaying ? 'Playing' : 'Paused'}
+                  </div>
+                  {!gifPlaying && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGifPlaying(true);
+                          const img = e.currentTarget.parentElement?.querySelector('img');
+                          if (img) {
+                            img.src = `${img.src.split('?')[0]}?t=${Date.now()}`;
+                          }
+                        }}
+                        className="bg-black/70 rounded-full p-3 hover:bg-black/90 transition-colors"
+                      >
+                        <Play className="w-8 h-8 text-white" fill="white" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Mixed Media Gallery */}
+              {mediaType === 'mixed' && article.mediaUrls && article.mediaUrls.length > 1 && (
+                <div className="grid grid-cols-2 gap-1 p-1">
+                  {article.mediaUrls.slice(0, 4).map((url, idx) => (
+                    <div key={idx} className="relative aspect-square overflow-hidden">
+                      <img
+                        src={url}
+                        alt={`${article.title} - Image ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+                  {article.mediaUrls.length > 4 && (
+                    <div className="relative aspect-square bg-black/50 flex items-center justify-center text-white text-sm font-semibold">
+                      +{article.mediaUrls.length - 4}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="p-4">
             {/* Header */}
-            <div className="flex items-start gap-3 mb-2">
-              {article.thumbnail && variant !== "compact" && (
+            <div className={`flex items-start gap-3 mb-2 ${hasMedia && variant !== "compact" ? '' : ''}`}>
+              {article.thumbnail && variant !== "compact" && !hasMedia && (
                 <img
                   src={article.thumbnail}
                   alt={article.title}
@@ -152,10 +280,10 @@ export const ArticleCard = memo(function ArticleCard({
                 />
               )}
               <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1 line-clamp-2 group-hover:text-primary transition-colors">
                   {article.title}
                 </h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <span>{article.source}</span>
                   <span>•</span>
                   <span>{formatRelativeTime(article.publishedAt)}</span>
@@ -171,7 +299,7 @@ export const ArticleCard = memo(function ArticleCard({
 
             {/* Excerpt */}
             {article.excerpt && variant !== "compact" && (
-                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-2">
                 {truncate(article.excerpt, 150)}
               </p>
             )}
