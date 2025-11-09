@@ -99,49 +99,49 @@ class ContentAggregator {
         type: "rss",
         endpoint: "https://medium.com/feed",
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "CoinDesk",
         type: "rss",
         endpoint: "https://www.coindesk.com/arc/outboundfeeds/rss/",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "CoinTelegraph",
         type: "rss",
         endpoint: "https://cointelegraph.com/rss",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "Decrypt",
         type: "rss",
         endpoint: "https://decrypt.co/feed",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "Bitcoin Magazine",
         type: "rss",
         endpoint: "https://bitcoinmagazine.com/.rss/full/",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "The Block",
         type: "rss",
         endpoint: "https://www.theblock.co/rss.xml",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "CoinGecko",
         type: "rest",
         endpoint: "https://api.coingecko.com/api/v3",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       // Social Category Sources
       {
@@ -164,42 +164,42 @@ class ContentAggregator {
         type: "rss",
         endpoint: "https://feeds.bbci.co.uk/news/rss.xml",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "Reuters",
         type: "rss",
         endpoint: "https://www.reuters.com/tools/rss",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "The Guardian",
         type: "rss",
         endpoint: "https://www.theguardian.com/world/rss",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "TechCrunch",
         type: "rss",
         endpoint: "https://techcrunch.com/feed/",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "The Verge",
         type: "rss",
         endpoint: "https://www.theverge.com/rss/index.xml",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "Ars Technica",
         type: "rss",
         endpoint: "https://feeds.arstechnica.com/arstechnica/index",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       // Additional Tech Sources
       {
@@ -207,28 +207,28 @@ class ContentAggregator {
         type: "rss",
         endpoint: "https://hackernoon.com/feed",
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "Wired",
         type: "rss",
         endpoint: "https://www.wired.com/feed/rss",
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "MIT Technology Review",
         type: "rss",
         endpoint: "https://www.technologyreview.com/feed/",
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "The Next Web",
         type: "rss",
         endpoint: "https://thenextweb.com/feed",
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       // Additional Crypto Sources
       {
@@ -236,21 +236,21 @@ class ContentAggregator {
         type: "rest",
         endpoint: "https://min-api.cryptocompare.com",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "CoinMarketCap",
         type: "rss",
         endpoint: "https://coinmarketcap.com/headlines/news/",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "CryptoSlate",
         type: "rss",
         endpoint: "https://cryptoslate.com/feed/",
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       // Additional Social Sources
       {
@@ -293,21 +293,21 @@ class ContentAggregator {
         type: "rss",
         endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ", // YouTube Trending
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "YouTube Music",
         type: "rss",
         endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UC-9-kyTW8ZkZNDHQJ6FgpwQ", // YouTube Music
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "YouTube Gaming",
         type: "rss",
         endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCOpNcN46UbXVtpKMrmU4Abg", // YouTube Gaming
         category: "social",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       // Additional General Sources
       {
@@ -315,21 +315,21 @@ class ContentAggregator {
         type: "rss",
         endpoint: "http://rss.cnn.com/rss/cnn_topstories.rss",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "Associated Press",
         type: "rss",
         endpoint: "https://apnews.com/apf-topnews",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "The New York Times",
         type: "rss",
         endpoint: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
         category: "general",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "Wired General",
@@ -344,14 +344,14 @@ class ContentAggregator {
         type: "rss",
         endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q", // VergeTech
         category: "tech",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
       {
         name: "YouTube Crypto",
         type: "rss",
         endpoint: "https://www.youtube.com/feeds/videos.xml?channel_id=UCqNCLd2r19wpWWQE6yDLOeQ", // Coin Bureau
         category: "crypto",
-        enabled: true,
+        enabled: false, // Disabled: MCP server handles all RSS feeds,
       },
     ];
   }
