@@ -143,8 +143,9 @@ export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string
       throw new Error('Category parameter is required');
     }
 
-    // Try MCP server's get_news_by_category first (if enabled)
-    const useMCPCategoryFetch = import.meta.env.VITE_USE_MCP_CATEGORY_FETCH !== 'false';
+    // Skip MCP for "local" category - it needs country-specific sources, not general news
+    // MCP maps "local" to "general" which returns global news, not country-specific news
+    const useMCPCategoryFetch = import.meta.env.VITE_USE_MCP_CATEGORY_FETCH !== 'false' && category !== 'local';
     
     if (useMCPCategoryFetch) {
       try {
@@ -180,6 +181,8 @@ export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string
         console.debug(`[RSS] ⚠️ MCP category fetch error for ${category}:`, mcpError);
         // Continue to fallback RSS fetching
       }
+    } else if (category === 'local') {
+      console.log(`[RSS] Skipping MCP for "local" category - using country-specific RSS feeds instead`);
     }
 
     // Fallback: Get RSS sources for this category and fetch individually
