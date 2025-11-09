@@ -231,6 +231,64 @@ export function ArticleReaderClient({
             <LoadingState message="Loading article content..." />
           ) : parsedContent ? (
             <div className="mb-8">
+              {/* Media Display (Image-only, Video, GIF) */}
+              {article.mediaType && article.mediaType !== 'text' && (
+                <div className="mb-6">
+                  {/* Image-only */}
+                  {article.mediaType === 'image' && article.imageUrl && (
+                    <div className="relative w-full mb-4">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full rounded-lg shadow-lg"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
+                  {/* Video */}
+                  {article.mediaType === 'video' && article.videoEmbedUrl && (
+                    <div className="relative w-full aspect-video mb-4">
+                      <iframe
+                        src={article.videoEmbedUrl}
+                        className="w-full h-full rounded-lg shadow-lg"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title={article.title}
+                      />
+                    </div>
+                  )}
+
+                  {/* GIF */}
+                  {article.mediaType === 'gif' && article.gifUrl && (
+                    <div className="relative w-full mb-4">
+                      <img
+                        src={article.gifUrl}
+                        alt={article.title}
+                        className="w-full rounded-lg shadow-lg"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
+                  {/* Mixed Media Gallery */}
+                  {article.mediaType === 'mixed' && article.mediaUrls && article.mediaUrls.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      {article.mediaUrls.map((url, idx) => (
+                        <div key={idx} className="relative">
+                          <img
+                            src={url}
+                            alt={`${article.title} - Media ${idx + 1}`}
+                            className="w-full rounded-lg shadow-lg"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* CRITICAL: Use iframe with srcdoc for better security and isolation */}
               {/* This prevents XSS attacks even if sanitization fails */}
               <iframe
