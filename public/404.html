@@ -16,34 +16,25 @@
         var pathParts = pathname.split('/').filter(p => p && p !== 'index.html');
         var basePath = '';
         
-        // If pathname starts with a non-empty segment, it's likely the base path
+        // Detect base path (repository name with hyphens)
         if (pathParts.length > 0) {
-          // Check if first segment looks like a repository name (not a route)
-          // Routes typically don't have hyphens or are common route names
           var firstSegment = pathParts[0];
+          // Repository names typically have hyphens (e.g., scaling-octo-garbanzo)
           if (firstSegment.includes('-') || firstSegment === 'scaling-octo-garbanzo') {
             basePath = '/' + firstSegment;
-            // Remove base path from pathname for React Router
-            pathname = '/' + pathParts.slice(1).join('/');
-          } else {
-            // No base path detected, use root
-            pathname = '/' + pathParts.join('/');
           }
         }
         
-        // Ensure pathname starts with /
-        if (!pathname.startsWith('/')) {
-          pathname = '/' + pathname;
+        // Prevent infinite loops - if already on index.html, don't redirect
+        if (pathname.includes('index.html')) {
+          return;
         }
         
-        // Redirect to index.html with the pathname as-is
-        // React Router will handle the routing based on the pathname
-        var redirectUrl = basePath + '/index.html' + pathname + (l.search || '') + (l.hash || '');
+        // Simple redirect: go to index.html and let React Router handle the routing
+        // The browser will maintain the pathname, which React Router will process
+        var redirectUrl = basePath + '/index.html';
         
-        // Prevent infinite loops by checking if we're already on index.html
-        if (!l.pathname.includes('index.html')) {
-          l.replace(redirectUrl);
-        }
+        l.replace(redirectUrl);
       })();
     </script>
   </head>
