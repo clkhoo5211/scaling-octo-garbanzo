@@ -81,3 +81,4 @@ tmp/
 # MCP Server Testing (excluded from deployment)
 test-mcp-servers/
 
+index.html
