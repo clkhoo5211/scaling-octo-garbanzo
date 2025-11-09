@@ -22,6 +22,8 @@ import type { Article } from "@/lib/services/indexedDBCache";
 import { FileText } from "lucide-react";
 import { useAppStore } from "@/lib/stores/appStore";
 import { shareContent } from "@/lib/utils";
+import { TranslationButton, TranslationDisplay } from "@/components/translation/TranslationButton";
+import { detectLanguage, getUserLanguage } from "@/lib/services/translationService";
 
 // Lazy load heavy reader components
 const ReadingProgress = lazy(() =>
@@ -53,6 +55,9 @@ export function ArticleReaderClient({
   const [fontSize, setFontSize] = useState(16);
   const [lineHeight, setLineHeight] = useState(1.6);
   const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
+  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
+  const [translationResult, setTranslationResult] = useState<any>(null);
+  const [showTranslated, setShowTranslated] = useState(false);
   const { userId } = useAppStore();
 
   // Search across ALL categories to find article by URL
@@ -102,6 +107,15 @@ export function ArticleReaderClient({
               // Sanitize the HTML content
               const sanitized = sanitizeArticleHtml(result.content);
               setParsedContent(sanitized);
+              
+              // Detect language from text content
+              const textContent = sanitized.replace(/<[^>]*>/g, "").trim();
+              if (textContent.length > 100) {
+                const lang = await detectLanguage(textContent);
+                if (lang) {
+                  setDetectedLanguage(lang);
+                }
+              }
             } else {
               console.warn("Article content fetch failed, showing excerpt");
               setParsedContent(null);
@@ -206,7 +220,7 @@ export function ArticleReaderClient({
           <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             {article.title}
           </h1>
-          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-6">
+          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
             <span>{article.source}</span>
             <span>•</span>
             <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
@@ -223,6 +237,30 @@ export function ArticleReaderClient({
               </>
             )}
           </div>
+          
+          {/* Translation Button */}
+          {parsedContent && (
+            <div className="mb-4 flex items-center gap-2">
+              <TranslationButton
+                text={parsedContent.replace(/<[^>]*>/g, "").trim()}
+                articleUrl={article.url}
+                sourceLanguage={detectedLanguage || undefined}
+                onTranslationComplete={(result) => {
+                  setTranslationResult(result);
+                  setShowTranslated(true);
+                }}
+              />
+              {translationResult && translationResult.success && (
+                <button
+                  onClick={() => setShowTranslated(!showTranslated)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  title={showTranslated ? "Show original" : "Show translation"}
+                >
+                  {showTranslated ? "Show Original" : "Show Translation"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Article Content */}
@@ -231,58 +269,73 @@ export function ArticleReaderClient({
             <LoadingState message="Loading article content..." />
           ) : parsedContent ? (
             <div className="mb-8">
-              {/* CRITICAL: Use iframe with srcdoc for better security and isolation */}
-              {/* This prevents XSS attacks even if sanitization fails */}
-              <iframe
-                srcDoc={`
-                  <!DOCTYPE html>
-                  <html>
-                    <head>
-                      <meta charset="UTF-8">
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                      <style>
-                        * { margin: 0; padding: 0; box-sizing: border-box; }
-                        body {
-                          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                          font-size: ${fontSize}px;
-                          line-height: ${lineHeight};
-                          color: ${theme === "dark" ? "#f3f4f6" : theme === "sepia" ? "#5c4a37" : "#1f2937"};
-                          background: ${theme === "dark" ? "#111827" : theme === "sepia" ? "#f4e8d8" : "#ffffff"};
-                          padding: 1rem;
-                          max-width: 100%;
-                        }
-                        p { margin-bottom: 1rem; }
-                        h1, h2, h3, h4, h5, h6 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
-                        img { max-width: 100%; height: auto; display: block; margin: 1rem 0; }
-                        a { color: #2563eb; text-decoration: underline; }
-                        @media (prefers-color-scheme: dark) {
-                          a { color: #60a5fa; }
-                        }
-                        blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; margin: 1rem 0; font-style: italic; }
-                        @media (prefers-color-scheme: dark) {
-                          blockquote { border-left-color: #4b5563; }
-                        }
-                        code { background: #f3f4f6; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: 'Courier New', monospace; }
-                        @media (prefers-color-scheme: dark) {
-                          code { background: #374151; }
-                        }
-                        pre { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; }
-                        @media (prefers-color-scheme: dark) {
-                          pre { background: #374151; }
-                        }
-                        ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
-                        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-                        th, td { border: 1px solid #e5e7eb; padding: 0.5rem; text-align: left; }
-                        @media (prefers-color-scheme: dark) {
-                          th, td { border-color: #4b5563; }
-                        }
-                      </style>
-                    </head>
-                    <body>
-                      ${parsedContent}
-                    </body>
-                  </html>
-                `}
+              {/* Show translated content if available and toggled, otherwise show original */}
+              {translationResult && translationResult.success && showTranslated ? (
+                <div className="prose dark:prose-invert max-w-none">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: translationResult.translatedText.replace(/\n/g, "<br />"),
+                    }}
+                    style={{
+                      fontSize: `${fontSize}px`,
+                      lineHeight: lineHeight,
+                      color: theme === "dark" ? "#f3f4f6" : theme === "sepia" ? "#5c4a37" : "#1f2937",
+                      backgroundColor: theme === "dark" ? "#111827" : theme === "sepia" ? "#f4e8d8" : "#ffffff",
+                      padding: "1rem",
+                    }}
+                  />
+                </div>
+              ) : (
+                <iframe
+                  srcDoc={`
+                    <!DOCTYPE html>
+                    <html>
+                      <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                          * { margin: 0; padding: 0; box-sizing: border-box; }
+                          body {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                            font-size: ${fontSize}px;
+                            line-height: ${lineHeight};
+                            color: ${theme === "dark" ? "#f3f4f6" : theme === "sepia" ? "#5c4a37" : "#1f2937"};
+                            background: ${theme === "dark" ? "#111827" : theme === "sepia" ? "#f4e8d8" : "#ffffff"};
+                            padding: 1rem;
+                            max-width: 100%;
+                          }
+                          p { margin-bottom: 1rem; }
+                          h1, h2, h3, h4, h5, h6 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
+                          img { max-width: 100%; height: auto; display: block; margin: 1rem 0; }
+                          a { color: #2563eb; text-decoration: underline; }
+                          @media (prefers-color-scheme: dark) {
+                            a { color: #60a5fa; }
+                          }
+                          blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; margin: 1rem 0; font-style: italic; }
+                          @media (prefers-color-scheme: dark) {
+                            blockquote { border-left-color: #4b5563; }
+                          }
+                          code { background: #f3f4f6; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: 'Courier New', monospace; }
+                          @media (prefers-color-scheme: dark) {
+                            code { background: #374151; }
+                          }
+                          pre { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; }
+                          @media (prefers-color-scheme: dark) {
+                            pre { background: #374151; }
+                          }
+                          ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+                          table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+                          th, td { border: 1px solid #e5e7eb; padding: 0.5rem; text-align: left; }
+                          @media (prefers-color-scheme: dark) {
+                            th, td { border-color: #4b5563; }
+                          }
+                        </style>
+                      </head>
+                      <body>
+                        ${parsedContent}
+                      </body>
+                    </html>
+                  `}
                 className="w-full border-0 rounded-lg"
                 style={{ 
                   minHeight: '400px',
