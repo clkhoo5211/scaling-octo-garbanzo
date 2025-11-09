@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getBasePath } from "../lib/utils/basePath";
 
 export function ServiceWorkerRegistration() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -9,17 +10,22 @@ export function ServiceWorkerRegistration() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      // Get basePath dynamically from window.location or environment
-      const basePath = import.meta.env.VITE_BASE_PATH || '';
+      // Get basePath dynamically - works for both local dev and GitHub Pages
+      const basePath = getBasePath();
       
       // Service Worker path (Vite PWA plugin generates sw.js)
-      const swPath = `${basePath}/sw.js`;
+      // Use relative path if basePath is root, otherwise include basePath
+      const swPath = basePath === '/' || basePath === '' 
+        ? '/sw.js' 
+        : `${basePath}/sw.js`;
       
       const tryRegister = async () => {
         try {
           // CRITICAL: Service worker scope must end with trailing slash
           // The scope '/scaling-octo-garbanzo' must be '/scaling-octo-garbanzo/'
-          const scope = basePath && !basePath.endsWith('/') ? `${basePath}/` : (basePath || '/');
+          const scope = basePath === '/' || basePath === '' 
+            ? '/' 
+            : basePath.endsWith('/') ? basePath : `${basePath}/`;
           
           const reg = await navigator.serviceWorker.register(swPath, {
             scope: scope,

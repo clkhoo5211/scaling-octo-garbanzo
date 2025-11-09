@@ -14,6 +14,9 @@ export default defineConfig({
     react(),
       VitePWA({
       registerType: 'autoUpdate',
+      // CRITICAL: Disable auto-registration - we use custom ServiceWorkerRegistration component
+      // This allows us to handle basePath correctly for GitHub Pages
+      injectRegister: false,
       includeAssets: ['favicon.ico', 'apple-icon.png', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
         name: 'Web3News - Decentralized News Aggregation',
