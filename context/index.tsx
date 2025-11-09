@@ -84,7 +84,7 @@ async function initializeAppKit() {
         defaultNetwork: mainnet,
         metadata: metadata,
         features: {
-          analytics: true,
+          analytics: false, // Disabled to prevent Coinbase analytics errors when blocked by ad blockers
           email: true,
           socials: ['google', 'x', 'github', 'discord', 'apple'],
           onramp: true,
