@@ -13,15 +13,58 @@ interface ClerkEnvironmentConfig {
 /**
  * Hook to fetch and use Clerk environment configuration
  * Includes logo, favicon, and app name from Clerk Dashboard
+ * 
+ * CRITICAL: Only fetches when ClerkProvider is initialized (user authenticated via Reown)
+ * This hook checks if ClerkProvider exists before making API calls
  */
 export function useClerkEnvironment() {
   const [config, setConfig] = useState<ClerkEnvironmentConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [clerkInitialized, setClerkInitialized] = useState(false);
+
+  useEffect(() => {
+    // Check if ClerkProvider is initialized by checking for Clerk context
+    // ClerkProvider sets window.__clerk_frontend_api when initialized
+    const checkClerkInitialized = () => {
+      // Check if Clerk context exists (ClerkProvider has been rendered)
+      const clerkContext = (window as any).__clerk_frontend_api;
+      return !!clerkContext;
+    };
+
+    // Check periodically if Clerk has been initialized
+    const interval = setInterval(() => {
+      if (checkClerkInitialized()) {
+        setClerkInitialized(true);
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Also check immediately
+    if (checkClerkInitialized()) {
+      setClerkInitialized(true);
+      clearInterval(interval);
+    }
+
+    // Cleanup interval after 5 seconds (Clerk should initialize quickly if it's going to)
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      if (!checkClerkInitialized()) {
+        setIsLoading(false);
+      }
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   useEffect(() => {
     const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
     
-    if (!publishableKey) {
+    // CRITICAL: Only fetch if ClerkProvider is initialized
+    // This prevents API calls when user is not authenticated via Reown
+    if (!publishableKey || !clerkInitialized) {
       setIsLoading(false);
       return;
     }
@@ -65,7 +108,7 @@ export function useClerkEnvironment() {
     };
 
     fetchEnvironment();
-  }, []);
+  }, [clerkInitialized]);
 
   return { config, isLoading };
 }

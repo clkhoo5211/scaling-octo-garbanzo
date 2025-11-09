@@ -1,13 +1,11 @@
 import { ReactNode, useEffect, useState } from "react";
 import ContextProvider from "../../context/index";
 import { ToastProvider } from "@/components/ui/Toast";
-import { ClerkProvider } from "@clerk/clerk-react";
-import { ReownClerkIntegration } from "@/components/auth/ReownClerkIntegration";
+import { ConditionalClerkProvider } from "@/components/auth/ConditionalClerkProvider";
 import { AppKitProvider } from "@reown/appkit/react";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { appKit } from "../../context/index";
 import type { AppKitInstance } from "@reown/appkit/react";
-import { ClerkFaviconUpdater } from "@/components/clerk/ClerkFaviconUpdater";
 
 /**
  * Providers Component
@@ -43,41 +41,30 @@ export function Providers({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
-
   // CRITICAL: AppKitProvider MUST be rendered before any components use useAppKit hooks
   // So we wait for the instance to be ready before rendering AppKitProvider
   // Components like WalletConnect will show a loading state until AppKitProvider is ready
+  // 
+  // CRITICAL: ClerkProvider only initializes AFTER Reown authentication
+  // This prevents Clerk API calls when user is not logged in
   return (
     <ContextProvider cookies={null}>
       {mounted && appKitInstance ? (
         <ErrorBoundary
           fallback={
-            <ClerkProvider publishableKey={clerkPublishableKey}>
-              <ReownClerkIntegration>
-                <ToastProvider>{children}</ToastProvider>
-              </ReownClerkIntegration>
-            </ClerkProvider>
+            <ToastProvider>{children}</ToastProvider>
           }
         >
           <AppKitProvider appKit={appKitInstance}>
-            <ClerkProvider publishableKey={clerkPublishableKey}>
-              <ClerkFaviconUpdater />
-              <ReownClerkIntegration>
-                <ToastProvider>{children}</ToastProvider>
-              </ReownClerkIntegration>
-            </ClerkProvider>
+            <ConditionalClerkProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </ConditionalClerkProvider>
           </AppKitProvider>
         </ErrorBoundary>
       ) : (
         // Render without AppKitProvider while initializing
         // Components should handle the "not ready" state gracefully
-        <ClerkProvider publishableKey={clerkPublishableKey}>
-          <ClerkFaviconUpdater />
-          <ReownClerkIntegration>
-            <ToastProvider>{children}</ToastProvider>
-          </ReownClerkIntegration>
-        </ClerkProvider>
+        <ToastProvider>{children}</ToastProvider>
       )}
     </ContextProvider>
   );
