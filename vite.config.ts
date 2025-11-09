@@ -8,11 +8,30 @@ import path from 'path';
 const basePath = process.env.VITE_BASE_PATH || '/';
 
 // Plugin to remove vite-plugin-pwa's manifest link injection (we use ManifestLink component instead)
+// Must run AFTER vite-plugin-pwa to remove its injected manifest link
 const removeManifestLinkPlugin = () => ({
   name: 'remove-manifest-link',
-  transformIndexHtml(html: string) {
-    // Remove vite-plugin-pwa's injected manifest link (we inject it dynamically via ManifestLink component)
-    return html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
+  enforce: 'post' as const, // Run after other plugins
+  writeBundle(options: any, bundle: any) {
+    // After build, modify index.html to remove vite-plugin-pwa's manifest link
+    if (options.dir && bundle['index.html']) {
+      const fs = require('fs');
+      const path = require('path');
+      const indexPath = path.join(options.dir, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        let html = fs.readFileSync(indexPath, 'utf-8');
+        // Remove vite-plugin-pwa's injected manifest link
+        html = html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
+        fs.writeFileSync(indexPath, html, 'utf-8');
+      }
+    }
+  },
+  transformIndexHtml: {
+    enforce: 'post',
+    transform(html: string) {
+      // Remove vite-plugin-pwa's injected manifest link (we inject it dynamically via ManifestLink component)
+      return html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
+    },
   },
 });
 
@@ -21,7 +40,6 @@ export default defineConfig({
   base: basePath,
   plugins: [
     react(),
-    removeManifestLinkPlugin(),
       VitePWA({
       registerType: 'autoUpdate',
       // CRITICAL: Disable auto-registration - we use custom ServiceWorkerRegistration component
@@ -80,6 +98,7 @@ export default defineConfig({
         ],
       },
     }),
+    removeManifestLinkPlugin(), // Run AFTER vite-plugin-pwa to remove its injected manifest link
   ],
   resolve: {
     alias: {
