@@ -12,7 +12,7 @@ export default defineConfig({
   base: basePath,
   plugins: [
     react(),
-      VitePWA({
+    VitePWA({
       registerType: 'autoUpdate',
       // CRITICAL: Disable auto-registration - we use custom ServiceWorkerRegistration component
       // This allows us to handle basePath correctly for GitHub Pages
@@ -37,13 +37,13 @@ export default defineConfig({
             src: './icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'maskable',
+            purpose: 'any maskable',
           },
           {
             src: './icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'maskable',
+            purpose: 'any maskable',
           },
         ],
       },
