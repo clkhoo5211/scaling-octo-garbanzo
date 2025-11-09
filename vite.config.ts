@@ -1,7 +1,8 @@
-import { defineConfig } from 'vite';
+import { defineConfig, Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
+import fs from 'fs';
 
 // Get base path from environment variable (for GitHub Pages)
 // Format: /repository-name (e.g., /scaling-octo-garbanzo)
@@ -9,29 +10,18 @@ const basePath = process.env.VITE_BASE_PATH || '/';
 
 // Plugin to remove vite-plugin-pwa's manifest link injection (we use ManifestLink component instead)
 // Must run AFTER vite-plugin-pwa to remove its injected manifest link
-const removeManifestLinkPlugin = () => ({
+const removeManifestLinkPlugin = (): Plugin => ({
   name: 'remove-manifest-link',
-  enforce: 'post' as const, // Run after other plugins
-  writeBundle(options: any, bundle: any) {
+  enforce: 'post', // Run after other plugins
+  writeBundle(_options: any, _bundle: any) {
     // After build, modify index.html to remove vite-plugin-pwa's manifest link
-    if (options.dir && bundle['index.html']) {
-      const fs = require('fs');
-      const path = require('path');
-      const indexPath = path.join(options.dir, 'index.html');
-      if (fs.existsSync(indexPath)) {
-        let html = fs.readFileSync(indexPath, 'utf-8');
-        // Remove vite-plugin-pwa's injected manifest link
-        html = html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
-        fs.writeFileSync(indexPath, html, 'utf-8');
-      }
+    const indexPath = path.join(process.cwd(), 'dist', 'index.html');
+    if (fs.existsSync(indexPath)) {
+      let html = fs.readFileSync(indexPath, 'utf-8');
+      // Remove vite-plugin-pwa's injected manifest link
+      html = html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
+      fs.writeFileSync(indexPath, html, 'utf-8');
     }
-  },
-  transformIndexHtml: {
-    enforce: 'post',
-    transform(html: string) {
-      // Remove vite-plugin-pwa's injected manifest link (we inject it dynamically via ManifestLink component)
-      return html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
-    },
   },
 });
 
