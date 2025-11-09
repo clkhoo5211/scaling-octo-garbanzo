@@ -63,7 +63,7 @@ export default function ProfilePage() {
           
           {/* Clerk's UserProfile Component (includes billing tab) */}
           <UserProfile />
-        </ErrorBoundary>
+        </div>
       </ErrorBoundary>
     );
   }
