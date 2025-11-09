@@ -84,12 +84,72 @@ async function fetchWithTimeout(
 }
 
 /**
+ * Fetch article content via MCP server (server-side, no CORS)
+ * Falls back to CORS proxies if MCP server fails
+ */
+async function fetchArticleContentViaMCP(url: string): Promise<ArticleContentResult | null> {
+  const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'https://web3news-mcp-server.vercel.app/api/server';
+  
+  try {
+    const response = await fetch(MCP_SERVER_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: Date.now(),
+        method: 'tools/call',
+        params: {
+          name: 'get_article_content',
+          arguments: {
+            article_url: url,
+          },
+        },
+      }),
+      signal: AbortSignal.timeout(25000), // 25 second timeout
+    });
+
+    if (!response.ok) {
+      return null; // Fall back to proxies
+    }
+
+    const data = await response.json();
+
+    if (data.error) {
+      console.warn('[ArticleContent] MCP server error:', data.error.message);
+      return null; // Fall back to proxies
+    }
+
+    if (data.result?.content?.[0]?.type === 'text') {
+      try {
+        const parsed = JSON.parse(data.result.content[0].text);
+        if (parsed.success) {
+          console.log('[ArticleContent] Successfully fetched via MCP server');
+          return parsed as ArticleContentResult;
+        }
+      } catch {
+        console.warn('[ArticleContent] Failed to parse MCP response');
+        return null;
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.debug('[ArticleContent] MCP server fetch failed, falling back to proxies:', error);
+    return null; // Fall back to proxies
+  }
+}
+
+/**
  * Parse HTML content using Readability-like extraction
  * Uses CORS proxies to avoid CORS errors
  */
 async function fetchAndParseArticle(url: string) {
   // Try each CORS proxy in order
   for (const proxy of CORS_PROXIES) {
+    let html: string | undefined;
+    
     try {
       const proxyUrl = `${proxy.url}${encodeURIComponent(url)}`;
       console.log(`[ArticleContent] Fetching via proxy: ${proxy.name}...`);
@@ -106,7 +166,7 @@ async function fetchAndParseArticle(url: string) {
         try {
           const data = await response.json();
           html = proxy.extract(data);
-        } catch (jsonError) {
+        } catch {
           // If JSON parsing fails, try to get text (might be HTML)
           const text = await response.text();
           if (text && text.trim().length > 100 && !text.includes("<!DOCTYPE")) {
@@ -120,7 +180,7 @@ async function fetchAndParseArticle(url: string) {
         html = await response.text();
       }
 
-      // Check if we got an HTML error page instead of content
+      // Validate html was set
       if (!html || typeof html !== "string" || html.trim().length < 100) {
         throw new Error("Invalid or empty HTML content received");
       }
@@ -221,6 +281,7 @@ async function fetchAndParseArticle(url: string) {
 
 /**
  * Fetch article content by URL
+ * Tries MCP server first (no CORS), then falls back to CORS proxies
  */
 export async function fetchArticleContent(url: string): Promise<ArticleContentResult> {
   try {
@@ -235,7 +296,14 @@ export async function fetchArticleContent(url: string): Promise<ArticleContentRe
       throw new Error('Invalid URL format');
     }
 
-    // Fetch and parse article content via CORS proxy
+    // Try MCP server first (server-side, no CORS issues)
+    const mcpResult = await fetchArticleContentViaMCP(url);
+    if (mcpResult && mcpResult.success) {
+      return mcpResult;
+    }
+
+    // Fall back to CORS proxies if MCP server fails
+    console.log('[ArticleContent] MCP server unavailable, using CORS proxies...');
     const articleContent = await fetchAndParseArticle(url);
 
     return {
