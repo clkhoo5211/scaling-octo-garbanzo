@@ -16,7 +16,7 @@ import { useAwardSharePoints } from "@/lib/hooks/usePointsEarning";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ArticlePreviewModal } from "@/components/article/ArticlePreviewModal";
 import { Modal } from "@/components/ui/Modal";
-import { Play, Image as ImageIcon, Video, Gif } from "lucide-react";
+import { Play, Image as ImageIcon, Video, FileImage } from "lucide-react";
 
 export interface ArticleCardProps {
   article: Article;
@@ -224,7 +224,7 @@ export const ArticleCard = memo(function ArticleCard({
                     }}
                   />
                   <div className="absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
-                    <Gif className="w-3 h-3" />
+                    <FileImage className="w-3 h-3" />
                     GIF {gifPlaying ? 'Playing' : 'Paused'}
                   </div>
                   {!gifPlaying && (
