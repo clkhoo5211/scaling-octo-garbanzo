@@ -22,19 +22,18 @@ export default defineConfig({
         theme_color: '#000000',
         background_color: '#000000',
         display: 'standalone',
-        // CRITICAL: start_url must match scope (both should have trailing slash for non-root paths)
-        start_url: basePath && basePath !== '/' && !basePath.endsWith('/') ? `${basePath}/` : basePath,
-        // CRITICAL: Service worker scope must end with trailing slash
-        scope: basePath && !basePath.endsWith('/') ? `${basePath}/` : (basePath || '/'),
+        // CRITICAL: Use relative paths like Next.js project - works with any basePath
+        start_url: '.',
+        scope: '.',
         icons: [
           {
-            src: `${basePath && !basePath.endsWith('/') ? `${basePath}/` : basePath}icon-192x192.png`,
+            src: './icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable',
           },
           {
-            src: `${basePath && !basePath.endsWith('/') ? `${basePath}/` : basePath}icon-512x512.png`,
+            src: './icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
