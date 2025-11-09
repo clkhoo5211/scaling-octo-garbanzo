@@ -7,28 +7,44 @@
     <script>
       // GitHub Pages SPA routing fix
       // Redirect all 404s to index.html for client-side routing
-      var pathSegmentsToKeep = 0;
-      var l = window.location;
-      var basePath = '';
-      
-      // Detect base path from repository name (if deployed to GitHub Pages)
-      var pathname = l.pathname;
-      var pathParts = pathname.split('/').filter(p => p);
-      if (pathParts.length > 0 && pathParts[0] !== 'index.html') {
-        basePath = '/' + pathParts[0];
-      }
-      
-      l.replace(
-        l.protocol +
-          '//' +
-          l.hostname +
-          (l.port ? ':' + l.port : '') +
-          basePath +
-          '/index.html' +
-          l.pathname.slice(basePath.length) +
-          (l.search ? l.search : '') +
-          l.hash
-      );
+      (function() {
+        var l = window.location;
+        var pathname = l.pathname;
+        
+        // Extract base path (repository name)
+        // e.g., /scaling-octo-garbanzo/subscription -> basePath = /scaling-octo-garbanzo
+        var pathParts = pathname.split('/').filter(p => p && p !== 'index.html');
+        var basePath = '';
+        
+        // If pathname starts with a non-empty segment, it's likely the base path
+        if (pathParts.length > 0) {
+          // Check if first segment looks like a repository name (not a route)
+          // Routes typically don't have hyphens or are common route names
+          var firstSegment = pathParts[0];
+          if (firstSegment.includes('-') || firstSegment === 'scaling-octo-garbanzo') {
+            basePath = '/' + firstSegment;
+            // Remove base path from pathname for React Router
+            pathname = '/' + pathParts.slice(1).join('/');
+          } else {
+            // No base path detected, use root
+            pathname = '/' + pathParts.join('/');
+          }
+        }
+        
+        // Ensure pathname starts with /
+        if (!pathname.startsWith('/')) {
+          pathname = '/' + pathname;
+        }
+        
+        // Redirect to index.html with the pathname as-is
+        // React Router will handle the routing based on the pathname
+        var redirectUrl = basePath + '/index.html' + pathname + (l.search || '') + (l.hash || '');
+        
+        // Prevent infinite loops by checking if we're already on index.html
+        if (!l.pathname.includes('index.html')) {
+          l.replace(redirectUrl);
+        }
+      })();
     </script>
   </head>
   <body>
