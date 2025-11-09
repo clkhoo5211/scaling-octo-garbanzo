@@ -134,7 +134,7 @@
 - ✅ Daily login streak tracking
 - ✅ Profile completion detection
 - ✅ Transaction history from Supabase
-- ✅ Code cleanup (removed Folo references)
+- ✅ Code cleanup completed
 
 ### ⏳ Pending (~10%)
 - ⏳ Article author tracking (blocks upvote points)

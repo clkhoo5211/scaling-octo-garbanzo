@@ -9,7 +9,7 @@
 - ✅ Verified real-time updates working (30s polling, no cache)
 
 ### Phase 2: UI Components ✅
-- ✅ Created `ArticleTimeline` component (renamed from FoloTimeline)
+- ✅ Created `ArticleTimeline` component
   - Date grouping (Today, Yesterday, This Week)
   - Sticky date headers
   - Integrated into HomePage
@@ -23,9 +23,9 @@
   - Dynamic iframe styling
 
 ### Code Cleanup ✅
-- ✅ Removed all Folo references from code
+- ✅ Removed all references from code
 - ✅ Renamed components to generic names
-- ✅ Deleted Folo-specific documentation
+- ✅ Deleted specific documentation
 
 ---
 
@@ -35,10 +35,10 @@
 **Status**: ⏳ Pending
 
 **Files to Update**:
-- `IMPLEMENTATION_SUMMARY.md` - Remove Folo references
+- `IMPLEMENTATION_SUMMARY.md` - Remove references
 - `IMPLEMENTATION_ROADMAP.md` - Update component names
 - `NEXT_IMPLEMENTATION_STEPS.md` - Update status
-- Other docs mentioning Folo
+- Other docs mentioning references
 
 **Estimated Time**: 30 minutes
 
@@ -195,7 +195,7 @@
 ## 🚀 Quick Wins (Can Do Now)
 
 1. **Documentation Cleanup** (30 min)
-   - Update docs to remove Folo references
+   - Update docs to remove references
    - Update component names
 
 2. **Testing** (2-3 hours)
