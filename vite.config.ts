@@ -7,11 +7,21 @@ import path from 'path';
 // Format: /repository-name (e.g., /scaling-octo-garbanzo)
 const basePath = process.env.VITE_BASE_PATH || '/';
 
+// Plugin to remove vite-plugin-pwa's manifest link injection (we use ManifestLink component instead)
+const removeManifestLinkPlugin = () => ({
+  name: 'remove-manifest-link',
+  transformIndexHtml(html: string) {
+    // Remove vite-plugin-pwa's injected manifest link (we inject it dynamically via ManifestLink component)
+    return html.replace(/<link[^>]*rel=["']manifest["'][^>]*>/gi, '');
+  },
+});
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: basePath,
   plugins: [
     react(),
+    removeManifestLinkPlugin(),
       VitePWA({
       registerType: 'autoUpdate',
       // CRITICAL: Disable auto-registration - we use custom ServiceWorkerRegistration component
@@ -21,6 +31,9 @@ export default defineConfig({
       filename: 'sw.js',
       // Ensure service worker is generated even with injectRegister: false
       strategies: 'generateSW',
+      // CRITICAL: Use manifestFilename to ensure manifest is generated but don't inject link
+      // We'll inject the link manually via ManifestLink component with correct basePath
+      manifestFilename: 'manifest.webmanifest',
       includeAssets: ['favicon.ico', 'apple-icon.png', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
         name: 'Web3News - Decentralized News Aggregation',
