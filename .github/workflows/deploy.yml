@@ -55,6 +55,7 @@ jobs:
           VITE_BASE_PATH: /${{ github.event.repository.name }}
           VITE_REOWN_PROJECT_ID: ${{ secrets.VITE_REOWN_PROJECT_ID }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_CLERK_BILLING_ENABLED: ${{ secrets.VITE_CLERK_BILLING_ENABLED || 'true' }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           # MCP Server URL for RSS feed fetching (optional - defaults to Vercel deployment)
