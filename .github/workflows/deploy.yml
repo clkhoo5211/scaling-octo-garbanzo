@@ -58,6 +58,7 @@ jobs:
           VITE_CLERK_BILLING_ENABLED: ${{ secrets.VITE_CLERK_BILLING_ENABLED || 'true' }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_DISABLED: ${{ secrets.VITE_SUPABASE_DISABLED || 'false' }}
           # MCP Server URL for RSS feed fetching (optional - defaults to Vercel deployment)
           VITE_MCP_SERVER_URL: ${{ secrets.VITE_MCP_SERVER_URL }}
           # Enable MCP category fetch (optional - defaults to true if not set)

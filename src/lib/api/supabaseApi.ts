@@ -107,6 +107,9 @@ export async function likeArticle(
   articleId: string
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
+    if (isSupabaseDisabled() || !supabase) {
+      throw new Error("Supabase disabled or not initialized");
+    }
     const { error } = await (supabase.from("article_likes") as any).insert({
       user_id: userId,
       article_id: articleId,
@@ -124,6 +127,9 @@ export async function unlikeArticle(
   articleId: string
 ): Promise<{ error: Error | null }> {
   return safeAsync(async () => {
+    if (isSupabaseDisabled() || !supabase) {
+      throw new Error("Supabase disabled or not initialized");
+    }
     const { error } = await supabase
       .from("article_likes")
       .delete()
@@ -142,6 +148,9 @@ export async function getArticleLikes(articleId: string): Promise<{
   error: Error | null;
 }> {
   return safeAsync(async () => {
+    if (isSupabaseDisabled() || !supabase) {
+      throw new Error("Supabase disabled or not initialized");
+    }
     const { data, error } = await supabase
       .from("article_likes")
       .select("*")
