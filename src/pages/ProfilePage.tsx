@@ -14,6 +14,7 @@ import { UserProfile } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";
 import { StatsSection } from "@/components/profile/StatsSection";
 import { CLERK_BILLING_ENABLED } from "@/lib/config/clerkBilling";
+import { useAuth } from "@clerk/clerk-react";
 
 /**
  * ProfilePage Component
@@ -24,6 +25,7 @@ import { CLERK_BILLING_ENABLED } from "@/lib/config/clerkBilling";
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
   const { address, isConnected } = useAppKitAccount();
+  const { isSignedIn: isClerkSignedIn } = useAuth();
   const [useClerkBilling, setUseClerkBilling] = useState(CLERK_BILLING_ENABLED);
 
   // Check if Clerk Billing is enabled
@@ -50,9 +52,10 @@ export default function ProfilePage() {
     );
   }
 
-  // Use Clerk's UserProfile component if billing is enabled
-  // This includes billing management tab automatically
-  if (useClerkBilling) {
+  // Use Clerk's UserProfile component if billing is enabled AND user is signed in to Clerk
+  // Note: <UserProfile /> requires auth.isSignedIn to be true
+  // Since authentication is via Reown, we only show UserProfile if Clerk session exists
+  if (useClerkBilling && isClerkSignedIn && user) {
     return (
       <ErrorBoundary>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
