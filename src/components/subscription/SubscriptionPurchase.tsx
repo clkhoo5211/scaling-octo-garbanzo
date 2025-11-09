@@ -4,16 +4,17 @@
  * Subscription Purchase Component
  * Handles subscription purchase with smart contract integration
  * Per requirements: Pro = 30 USDT/month, Premium = 100 USDT/month
+ * Note: Contract uses native tokens (ETH/MATIC), not ERC20 USDT
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
-import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { useAppKitAccount, useAppKit, useAppKitBalance } from "@reown/appkit/react";
+import { usePublicClient, useWalletClient, useBalance } from "wagmi";
 import { SubscriptionService } from "@/lib/api/contractServices";
 import { Crown, Star, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
-import { parseUnits } from "viem";
+import { parseUnits, formatUnits } from "viem";
 
 interface SubscriptionPurchaseProps {
   tier: "pro" | "premium";
@@ -24,12 +25,37 @@ export function SubscriptionPurchase({ tier, onSuccess }: SubscriptionPurchasePr
   const { user, isLoaded } = useClerkUser();
   const { address, isConnected } = useAppKitAccount();
   const { open } = useAppKit();
+  const { fetchBalance } = useAppKitBalance();
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   const { addToast } = useToast();
   
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isCheckingBalance, setIsCheckingBalance] = useState(false);
+  const [balance, setBalance] = useState<{ formatted: string; value: bigint } | null>(null);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+
+  // Fetch balance when address changes
+  useEffect(() => {
+    if (address && isConnected) {
+      fetchBalance().then((result) => {
+        if (result.isSuccess && result.data) {
+          const data = result.data as any;
+          const value = data.value || BigInt(0);
+          const formatted = data.formatted || formatUnits(value, 18);
+          setBalance({ formatted, value });
+          setBalanceError(null);
+        } else {
+          setBalanceError("Failed to fetch balance");
+        }
+      }).catch((error) => {
+        console.error("Balance fetch error:", error);
+        setBalanceError("Failed to fetch balance");
+      });
+    } else {
+      setBalance(null);
+    }
+  }, [address, isConnected, fetchBalance]);
 
   if (!isLoaded || !user) {
     return null;
@@ -74,25 +100,55 @@ export function SubscriptionPurchase({ tier, onSuccess }: SubscriptionPurchasePr
     }
 
     setIsPurchasing(true);
+    setIsCheckingBalance(true);
+    
     try {
-      // Check USDT balance first
-      setIsCheckingBalance(true);
-      // TODO: Check USDT balance on current chain
-      // If insufficient, open on-ramp
-      
-      const subscriptionService = new SubscriptionService(
-        publicClient,
-        walletClient
-      );
-
       // Get current chain
       const chain = publicClient.chain;
       if (!chain) {
         throw new Error("Chain not detected");
       }
 
-      // Duration: 30 days in seconds
-      const duration = BigInt(30 * 24 * 60 * 60);
+      // Calculate required payment amount
+      // Note: Contract uses native tokens with 6 decimals
+      // Pricing: Pro = 10 USDT/month, Premium = 25 USDT/month (per contract)
+      // But UI shows: Pro = 30 USDT/month, Premium = 100 USDT/month
+      // Using contract pricing for now (can be updated later)
+      const duration = BigInt(30 * 24 * 60 * 60); // 30 days in seconds
+      const subscriptionService = new SubscriptionService(
+        publicClient,
+        walletClient
+      );
+      
+      // Calculate payment using contract's calculatePayment method
+      // We'll estimate: Pro = 10 * 10^6, Premium = 25 * 10^6 (6 decimals)
+      const requiredAmount = tier === "pro" 
+        ? BigInt(10 * 10 ** 6) // 10 USDT equivalent in native token (6 decimals)
+        : BigInt(25 * 10 ** 6); // 25 USDT equivalent in native token (6 decimals)
+
+      // Check balance
+      if (balance && balance.value < requiredAmount) {
+        const requiredFormatted = formatUnits(requiredAmount, 6);
+        const balanceFormatted = balance.formatted;
+        
+        addToast({
+          message: `Insufficient balance. Required: ${requiredFormatted}, Available: ${balanceFormatted}`,
+          type: "error",
+        });
+        
+        // Offer to open on-ramp
+        const shouldOpenOnRamp = window.confirm(
+          `You need ${requiredFormatted} to subscribe. Would you like to buy tokens?`
+        );
+        
+        if (shouldOpenOnRamp) {
+          open({ view: "OnRampProviders" });
+        }
+        
+        setIsPurchasing(false);
+        setIsCheckingBalance(false);
+        return;
+      }
 
       // Call smart contract
       const txHash = await subscriptionService.subscribe(
@@ -130,6 +186,18 @@ export function SubscriptionPurchase({ tier, onSuccess }: SubscriptionPurchasePr
           type: "success",
         });
 
+        // Refresh balance
+        if (address) {
+          fetchBalance().then((result) => {
+            if (result.isSuccess && result.data) {
+              const data = result.data as any;
+              const value = data.value || BigInt(0);
+              const formatted = data.formatted || formatUnits(value, 18);
+              setBalance({ formatted, value });
+            }
+          });
+        }
+
         onSuccess?.();
       } else {
         throw new Error("Transaction failed");
@@ -165,6 +233,25 @@ export function SubscriptionPurchase({ tier, onSuccess }: SubscriptionPurchasePr
           {info.price} USDT
         </p>
         <p className="text-sm text-gray-600 dark:text-gray-400">per month</p>
+        
+        {/* Balance Display */}
+        {isConnected && balance && (
+          <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-400">Balance:</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100">
+                {balance.formatted} {publicClient?.chain?.nativeCurrency?.symbol || "ETH"}
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {balanceError && (
+          <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-xs text-yellow-800 dark:text-yellow-200 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            {balanceError}
+          </div>
+        )}
       </div>
 
       {!isConnected ? (

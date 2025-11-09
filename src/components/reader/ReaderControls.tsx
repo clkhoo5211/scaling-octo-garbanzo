@@ -10,6 +10,8 @@ import {
   BookmarkCheck,
   Copy,
   ExternalLink,
+  Minus,
+  Plus,
 } from "lucide-react";
 
 interface ReaderControlsProps {
@@ -20,13 +22,15 @@ interface ReaderControlsProps {
   onShare?: () => void;
   fontSize?: number;
   onFontSizeChange?: (size: number) => void;
-  theme?: "light" | "dark";
+  lineHeight?: number;
+  onLineHeightChange?: (height: number) => void;
+  theme?: "light" | "dark" | "sepia";
   onThemeToggle?: () => void;
 }
 
 /**
  * ReaderControls Component
- * Provides controls for reading experience (font size, theme, bookmark, share)
+ * Provides controls for reading experience (font size, line height, theme, bookmark, share)
  */
 export function ReaderControls({
   articleUrl,
@@ -35,6 +39,8 @@ export function ReaderControls({
   onShare,
   fontSize = 16,
   onFontSizeChange,
+  lineHeight = 1.6,
+  onLineHeightChange,
   theme = "light",
   onThemeToggle,
 }: ReaderControlsProps) {
@@ -74,6 +80,19 @@ export function ReaderControls({
     }
   };
 
+  const handleLineHeightChange = (delta: number) => {
+    const newHeight = Math.max(1.2, Math.min(2.0, lineHeight + delta));
+    if (onLineHeightChange) {
+      onLineHeightChange(newHeight);
+    }
+  };
+
+  const cycleTheme = () => {
+    if (onThemeToggle) {
+      onThemeToggle();
+    }
+  };
+
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 px-4 py-2 z-40 flex items-center gap-2">
       {/* Font Size Controls */}
@@ -84,9 +103,9 @@ export function ReaderControls({
           aria-label="Decrease font size"
           disabled={fontSize <= 12}
         >
-          <Type className="w-4 h-4" />
+          <Minus className="w-3 h-3" />
         </button>
-        <span className="text-xs text-gray-600 dark:text-gray-400 min-w-[2rem] text-center">
+        <span className="text-xs text-gray-600 dark:text-gray-400 min-w-[2.5rem] text-center">
           {fontSize}px
         </span>
         <button
@@ -95,21 +114,49 @@ export function ReaderControls({
           aria-label="Increase font size"
           disabled={fontSize >= 24}
         >
-          <Type className="w-4 h-4 scale-125" />
+          <Plus className="w-3 h-3" />
         </button>
       </div>
+
+      {/* Line Height Controls */}
+      {onLineHeightChange && (
+        <div className="flex items-center gap-1 border-r border-gray-200 dark:border-gray-700 pr-2">
+          <button
+            onClick={() => handleLineHeightChange(-0.1)}
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            aria-label="Decrease line height"
+            disabled={lineHeight <= 1.2}
+          >
+            <Minus className="w-3 h-3" />
+          </button>
+          <span className="text-xs text-gray-600 dark:text-gray-400 min-w-[2.5rem] text-center">
+            {lineHeight.toFixed(1)}
+          </span>
+          <button
+            onClick={() => handleLineHeightChange(0.1)}
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            aria-label="Increase line height"
+            disabled={lineHeight >= 2.0}
+          >
+            <Plus className="w-3 h-3" />
+          </button>
+        </div>
+      )}
 
       {/* Theme Toggle */}
       {onThemeToggle && (
         <button
-          onClick={onThemeToggle}
+          onClick={cycleTheme}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
-          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+          aria-label={`Switch theme (current: ${theme})`}
+          title={`Current theme: ${theme}`}
         >
           {theme === "light" ? (
+            <Sun className="w-4 h-4" />
+          ) : theme === "dark" ? (
             <Moon className="w-4 h-4" />
           ) : (
-            <Sun className="w-4 h-4" />
+            <Sun className="w-4 h-4 text-amber-600" />
           )}
         </button>
       )}

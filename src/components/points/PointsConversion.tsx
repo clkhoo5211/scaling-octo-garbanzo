@@ -8,21 +8,23 @@
 
 import { useState } from "react";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
+import { useUser } from "@clerk/clerk-react"; // Import actual Clerk user hook
 import { convertPointsToUSDT, canConvertPoints, POINTS_RULES } from "@/lib/services/pointsService";
 import { Coins, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 export function PointsConversion() {
-  const { user, isLoaded } = useClerkUser();
+  const { user: clerkUserWrapper, isLoaded } = useClerkUser();
+  const { user: clerkUser } = useUser(); // Get actual Clerk user
   const { addToast } = useToast();
   const [pointsToConvert, setPointsToConvert] = useState<string>("");
   const [isConverting, setIsConverting] = useState(false);
 
-  if (!isLoaded || !user) {
+  if (!isLoaded || !clerkUserWrapper || !clerkUser || typeof clerkUser.update !== 'function') {
     return null;
   }
 
-  const currentPoints = (user.publicMetadata?.points as number) || 0;
+  const currentPoints = (clerkUser.publicMetadata?.points as number) || 0;
   const pointsNum = parseInt(pointsToConvert) || 0;
   const conversionRate = 1000; // 1,000 points = 1 USDT
   const conversionFee = 0.01; // 1%
@@ -31,17 +33,17 @@ export function PointsConversion() {
   const fee = grossUSDT * conversionFee;
   const netUSDT = grossUSDT - fee;
 
-  const validation = canConvertPoints(user, pointsNum);
+  const validation = canConvertPoints(clerkUser, pointsNum);
   const canConvert = validation.canConvert && pointsNum > 0;
 
   const handleConvert = async () => {
-    if (!canConvert || !user) return;
+    if (!canConvert || !clerkUser) return;
 
     setIsConverting(true);
     try {
       const result = await convertPointsToUSDT({
-        userId: user.id,
-        user,
+        userId: clerkUser.id,
+        user: clerkUser, // Use actual Clerk user
         points: pointsNum,
       });
 
@@ -52,7 +54,7 @@ export function PointsConversion() {
         });
         setPointsToConvert("");
         // Refresh user data
-        await user.reload();
+        await clerkUser.reload();
       } else {
         addToast({
           message: result.error || "Failed to convert points",

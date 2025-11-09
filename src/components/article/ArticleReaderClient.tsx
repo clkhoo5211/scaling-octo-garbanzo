@@ -51,7 +51,8 @@ export function ArticleReaderClient({
   const [parsedContent, setParsedContent] = useState<string | null>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [fontSize, setFontSize] = useState(16);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [lineHeight, setLineHeight] = useState(1.6);
+  const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
   const { userId } = useAppStore();
 
   // Search across ALL categories to find article by URL
@@ -152,8 +153,15 @@ export function ArticleReaderClient({
   };
 
   const handleThemeToggle = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-    document.documentElement.classList.toggle("dark");
+    if (theme === "light") {
+      setTheme("dark");
+      document.documentElement.classList.add("dark");
+    } else if (theme === "dark") {
+      setTheme("sepia");
+      document.documentElement.classList.remove("dark");
+    } else {
+      setTheme("light");
+    }
   };
 
   if (isLoading) {
@@ -181,7 +189,13 @@ export function ArticleReaderClient({
   return (
     <ErrorBoundary>
       <div
-        className={`min-h-screen bg-white dark:bg-gray-900 ${theme === "dark" ? "dark" : ""}`}
+        className={`min-h-screen ${
+          theme === "dark" 
+            ? "bg-gray-900 dark" 
+            : theme === "sepia"
+            ? "bg-amber-50"
+            : "bg-white"
+        }`}
       >
         <Suspense fallback={null}>
           <ReadingProgress />
@@ -231,13 +245,11 @@ export function ArticleReaderClient({
                         body {
                           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                           font-size: ${fontSize}px;
-                          line-height: 1.6;
-                          color: #1f2937;
+                          line-height: ${lineHeight};
+                          color: ${theme === "dark" ? "#f3f4f6" : theme === "sepia" ? "#5c4a37" : "#1f2937"};
+                          background: ${theme === "dark" ? "#111827" : theme === "sepia" ? "#f4e8d8" : "#ffffff"};
                           padding: 1rem;
                           max-width: 100%;
-                        }
-                        @media (prefers-color-scheme: dark) {
-                          body { color: #f3f4f6; background: #111827; }
                         }
                         p { margin-bottom: 1rem; }
                         h1, h2, h3, h4, h5, h6 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
@@ -349,6 +361,8 @@ export function ArticleReaderClient({
               onShare={handleShare}
               fontSize={fontSize}
               onFontSizeChange={setFontSize}
+              lineHeight={lineHeight}
+              onLineHeightChange={setLineHeight}
               theme={theme}
               onThemeToggle={handleThemeToggle}
             />

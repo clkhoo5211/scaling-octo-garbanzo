@@ -476,6 +476,95 @@ export async function fetchRSSFeedViaMCP(
 }
 
 /**
+ * Fetch RSS feed via MCP server - REAL-TIME (no cache)
+ * Forces fresh fetch with cache-busting parameters
+ */
+export async function fetchRSSFeedViaMCPRealtime(
+  url: string,
+  sourceName: string,
+  category: NewsCategory
+): Promise<{ success: boolean; articles: Article[]; error?: string }> {
+  if (!MCP_SERVER_URL) {
+    return {
+      success: false,
+      articles: [],
+      error: 'MCP server URL not configured',
+    };
+  }
+
+  try {
+    // Add cache-busting parameter
+    const cacheBuster = `?nocache=${Date.now()}`;
+    const serverUrl = `${MCP_SERVER_URL}${cacheBuster}`;
+    
+    const response = await fetch(serverUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: Date.now(),
+        method: 'tools/call',
+        params: {
+          name: 'get_rss_feed',
+          arguments: {
+            feed_url: url,
+            max_items: 50,
+            nocache: Date.now(), // Force fresh fetch
+          },
+        },
+      }),
+      cache: 'no-store', // Browser-level cache bypass
+      signal: AbortSignal.timeout(30000),
+    });
+
+    if (!response.ok) {
+      return {
+        success: false,
+        articles: [],
+        error: `HTTP ${response.status}: ${response.statusText}`,
+      };
+    }
+
+    const data = await response.json();
+
+    if (data.error) {
+      return {
+        success: false,
+        articles: [],
+        error: data.error.message || 'Unknown MCP error',
+      };
+    }
+
+    if (data.result?.content?.[0]?.type === 'text') {
+      const articles = parseMCPResponse(data.result.content[0].text, sourceName, category);
+      
+      return {
+        success: true,
+        articles,
+      };
+    }
+
+    return {
+      success: false,
+      articles: [],
+      error: 'Invalid MCP response format',
+    };
+  } catch (error: any) {
+    console.debug(`[MCP Realtime] Error fetching RSS feed ${sourceName} (${url}):`, error);
+    return {
+      success: false,
+      articles: [],
+      error: error?.message || 'Network error',
+    };
+  }
+}
+
+/**
  * Check if MCP server is available
  */
 export async function checkMCPServerAvailable(): Promise<boolean> {

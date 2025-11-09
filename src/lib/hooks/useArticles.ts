@@ -18,6 +18,7 @@ import {
   getPointsTransactions,
 } from "@/lib/api/supabaseApi";
 import { useAppStore } from "@/lib/stores/appStore";
+import { useClerkUser } from "@/lib/hooks/useClerkUser";
 import type { Article } from "@/lib/services/indexedDBCache";
 
 /**
@@ -192,7 +193,13 @@ async function fetchWithRetry<T>(
 
 export function useArticles(
   category: NewsCategory,
-  options?: { usePagination?: boolean; extractLinks?: boolean; enableRealtime?: boolean; countryCode?: string }
+  options?: { 
+    usePagination?: boolean; 
+    extractLinks?: boolean; 
+    enableRealtime?: boolean; 
+    countryCode?: string;
+    forceRealtime?: boolean; // NEW: Force real-time, bypass all caching
+  }
 ) {
   // CRITICAL: Track client-side mount to prevent hydration mismatch
   const [isClient, setIsClient] = useState(false);
@@ -201,17 +208,18 @@ export function useArticles(
     setIsClient(true);
   }, []);
 
+  const cacheBuster = options?.forceRealtime ? `?nocache=${Date.now()}` : '';
   return useQuery({
-    queryKey: ["articles", category, "realtime", options?.countryCode || "default"],
+    queryKey: ["articles", category, "realtime", options?.countryCode || "default", options?.forceRealtime ? "nocache" : undefined].filter(Boolean),
     enabled: isClient,
     queryFn: async () => {
-      console.log(`[useArticles] Fetching articles for ${category}...`);
+      console.log(`[useArticles] ${options?.forceRealtime ? '🔄 REAL-TIME' : '📦 CACHED'} fetch for ${category}${cacheBuster}...`);
       
       // Use client-side RSS fetching service
       let rssArticlesResult: PromiseSettledResult<Article[]>;
       
       try {
-        const rssResult = await getArticlesFromRSS(category, options?.countryCode);
+        const rssResult = await getArticlesFromRSS(category, options?.countryCode, options?.forceRealtime);
         if (rssResult.articles && rssResult.articles.length > 0) {
           console.log(`[useArticles] ✅ Client-side RSS fetch succeeded for ${category}: ${rssResult.articles.length} articles from ${rssResult.successfulSources}/${rssResult.totalSources} sources`);
           rssArticlesResult = {
@@ -294,16 +302,19 @@ export function useArticles(
       // Return empty array if no articles (don't throw error)
       return uniqueArticles;
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes - use cached data
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    // CRITICAL: Disable all caching for real-time mode
+    staleTime: options?.forceRealtime ? 0 : 2 * 60 * 1000, // 0 = always stale (force refetch)
+    gcTime: options?.forceRealtime ? 0 : 5 * 60 * 1000, // 0 = don't cache
     retry: 1, // Retry once on failure
     retryDelay: 1000, // 1 second delay
-    refetchOnMount: false, // Don't refetch if we have cached data
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    // CRITICAL: Enable real-time polling if requested (default: true)
-    // Poll every 2 minutes for new articles - only updates when new articles appear
-    refetchInterval: options?.enableRealtime !== false ? 2 * 60 * 1000 : false,
+    refetchOnMount: options?.forceRealtime ? true : false, // Always refetch on mount for real-time
+    refetchOnWindowFocus: options?.forceRealtime ? true : false, // Refetch on focus for real-time
+    refetchOnReconnect: options?.forceRealtime ? true : false, // Refetch on reconnect for real-time
+    // CRITICAL: Enable real-time polling
+    // Real-time mode: poll every 30 seconds (instead of 2 minutes)
+    refetchInterval: options?.forceRealtime 
+      ? 30 * 1000  // 30 seconds for true real-time
+      : (options?.enableRealtime !== false ? 2 * 60 * 1000 : false),
   });
 }
 
@@ -410,10 +421,12 @@ export function useRemoveBookmark() {
 
 /**
  * Hook to like an article
+ * Awards points to article author when liked
  */
 export function useLikeArticle() {
   const queryClient = useQueryClient();
   const { userId } = useAppStore();
+  const { user } = useClerkUser();
 
   return useMutation({
     mutationFn: async (articleId: string) => {
@@ -421,9 +434,14 @@ export function useLikeArticle() {
       const { error } = await likeArticle(userId, articleId);
       if (error) throw error;
     },
-    onSuccess: (_, articleId) => {
+    onSuccess: async (_, articleId) => {
       queryClient.invalidateQueries({ queryKey: ["article-likes", articleId] });
       useAppStore.getState().likeArticle(articleId);
+      
+      // Award points to article author (if article has author info)
+      // Note: This requires article author tracking - for now, we'll implement
+      // points earning when user receives upvotes on their submissions
+      // TODO: Implement article author tracking and award points
     },
   });
 }

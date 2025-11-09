@@ -8,7 +8,7 @@ import { getRSSSourcesByCategory } from '@/lib/sources/rssRegistry';
 import { getCountryNewsSources } from '@/lib/sources/rss/country';
 import type { NewsCategory } from '@/lib/sources/types';
 import type { Article } from '../services/indexedDBCache';
-import { fetchRSSFeedViaMCP, fetchNewsByCategoryViaMCP } from './mcpService';
+import { fetchRSSFeedViaMCP, fetchRSSFeedViaMCPRealtime, fetchNewsByCategoryViaMCP } from './mcpService';
 
 /**
  * Parse RSS XML to extract articles
@@ -68,10 +68,13 @@ function parseRSSXML(xmlText: string, sourceName: string, category: NewsCategory
  * Fetch RSS feed - MCP server is PRIMARY, direct fetch is fallback
  * Changed: Use MCP server first (no CORS), fallback to direct fetch only if MCP fails
  */
-async function fetchRSSFeed(url: string, sourceName: string, category: NewsCategory) {
+async function fetchRSSFeed(url: string, sourceName: string, category: NewsCategory, forceRealtime?: boolean) {
   // PRIMARY: Try MCP server first (no CORS issues, server-side fetching)
   try {
-    const mcpResult = await fetchRSSFeedViaMCP(url, sourceName, category);
+    // Use real-time function if forceRealtime is enabled
+    const mcpResult = forceRealtime 
+      ? await fetchRSSFeedViaMCPRealtime(url, sourceName, category)
+      : await fetchRSSFeedViaMCP(url, sourceName, category);
     
     if (mcpResult.success && mcpResult.articles.length > 0) {
       console.debug(`✅ MCP server fetched ${sourceName}: ${mcpResult.articles.length} articles`);
@@ -133,7 +136,7 @@ async function fetchRSSFeed(url: string, sourceName: string, category: NewsCateg
  * NEW: Optionally uses MCP server's get_news_by_category tool for better coverage
  * Falls back to individual RSS feeds if MCP fails
  */
-export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string) {
+export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string, forceRealtime?: boolean) {
   try {
     if (!category) {
       throw new Error('Category parameter is required');
@@ -209,7 +212,7 @@ export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string
     // Fetch all RSS feeds in parallel
     const results = await Promise.allSettled(
       sources.map(source => 
-        fetchRSSFeed(source.config.url, source.config.name, category)
+        fetchRSSFeed(source.config.url, source.config.name, category, forceRealtime)
       )
     );
 
@@ -250,7 +253,7 @@ export async function fetchRSSFeeds(category: NewsCategory, countryCode?: string
  * Fetches RSS feeds client-side for a specific category
  * Alias for fetchRSSFeeds for backward compatibility
  */
-export async function getArticlesFromRSS(category: NewsCategory, countryCode?: string) {
-  return fetchRSSFeeds(category, countryCode);
+export async function getArticlesFromRSS(category: NewsCategory, countryCode?: string, forceRealtime?: boolean) {
+  return fetchRSSFeeds(category, countryCode, forceRealtime);
 }
 

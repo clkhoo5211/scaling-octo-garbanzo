@@ -12,6 +12,7 @@ import {
 } from "@/lib/hooks/useArticles";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
 import { useSafeAppKit } from "@/lib/hooks/useSafeAppKit";
+import { useAwardSharePoints } from "@/lib/hooks/usePointsEarning";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ArticlePreviewModal } from "@/components/article/ArticlePreviewModal";
 import { Modal } from "@/components/ui/Modal";
@@ -45,6 +46,7 @@ export const ArticleCard = memo(function ArticleCard({
   const likesCount = likes?.length || 0;
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const awardSharePoints = useAwardSharePoints();
 
   const liked = isLiked(article.id);
   const bookmarked = isBookmarked(article.id);
@@ -89,6 +91,16 @@ export const ArticleCard = memo(function ArticleCard({
         url: article.url,
       });
     }
+    
+    // Award points for sharing (if user is signed in)
+    if (isSignedIn && user) {
+      try {
+        await awardSharePoints(article.id, article.title);
+      } catch (error) {
+        console.error("Failed to award share points:", error);
+      }
+    }
+    
     onShare?.(article.id);
   };
 

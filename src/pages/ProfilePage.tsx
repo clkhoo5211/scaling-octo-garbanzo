@@ -9,6 +9,7 @@ import { User, Wallet, Bookmark, Heart, MessageCircle, Crown, Star } from "lucid
 import { formatDistanceToNow } from "date-fns";
 import { PointsConversion } from "@/components/points/PointsConversion";
 import { AdSlotSubscriptions } from "@/components/adslot/AdSlotSubscriptions";
+import { useProfileCompletionPoints } from "@/lib/hooks/useProfileCompletion";
 import { Link } from "react-router-dom";
 import { UserProfile } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";
@@ -27,6 +28,9 @@ export default function ProfilePage() {
   const { address, isConnected } = useAppKitAccount();
   const { isSignedIn: isClerkSignedIn } = useAuth();
   const [useClerkBilling, setUseClerkBilling] = useState(CLERK_BILLING_ENABLED);
+  
+  // Check and award profile completion points
+  const { isComplete, hasBeenAwarded } = useProfileCompletionPoints();
 
   // Check if Clerk Billing is enabled
   useEffect(() => {
@@ -75,6 +79,8 @@ export default function ProfilePage() {
   const subscriptionTier = (user.publicMetadata?.subscription_tier as string) || "free";
   const subscriptionExpiry = user.publicMetadata?.subscription_expiry as string | null;
   const referralCode = (user.publicMetadata?.referral_code as string) || "N/A";
+  const reownAddress = (user.publicMetadata?.reown_address as string) || address || "Not connected";
+  const smartAccountAddress = (user.publicMetadata?.smart_account_address as string) || address || "Not connected";
   
   const isSubscriptionActive = subscriptionExpiry
     ? new Date(subscriptionExpiry) > new Date()

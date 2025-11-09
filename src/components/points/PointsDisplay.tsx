@@ -4,6 +4,7 @@ import { Coins, TrendingUp, TrendingDown, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useQuery } from "@tanstack/react-query";
+import { getPointsTransactions } from "@/lib/api/supabaseApi";
 
 interface PointsDisplayProps {
   points?: number;
@@ -13,8 +14,8 @@ interface PointsDisplayProps {
 
 /**
  * PointsDisplay Component
- * Displays user points from Clerk publicMetadata (not Supabase)
- * Per requirements: All user data stored in Clerk metadata
+ * Displays user points from Clerk publicMetadata
+ * Fetches transaction history from Supabase for audit trail
  */
 export function PointsDisplay({
   points: propPoints,
@@ -33,17 +34,18 @@ export function PointsDisplay({
       ? propUsdtValue
       : displayPoints / conversionRate;
 
-  // Get transaction history from Clerk metadata (if stored)
-  // Note: Transaction history can be stored in Supabase for historical records
-  // but current balance comes from Clerk metadata
-  const transactions = (user?.publicMetadata?.points_transactions as Array<{
-    id: string;
-    type: "earn" | "spend" | "convert";
-    points: number;
-    usdt?: number;
-    source?: string;
-    createdAt: string;
-  }>) || [];
+  // Fetch transaction history from Supabase
+  const { data: transactionsData, isLoading: isLoadingTransactions } = useQuery({
+    queryKey: ["points-transactions", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return { data: [], error: null };
+      const result = await getPointsTransactions(user.id);
+      return result;
+    },
+    enabled: !!user?.id,
+  });
+
+  const transactions = transactionsData?.data || [];
 
   return (
     <div className="space-y-8">
@@ -85,14 +87,26 @@ export function PointsDisplay({
       </div>
 
       {/* Transaction History */}
-      {transactions.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Recent Transactions
-          </h2>
-          <TransactionHistory transactions={transactions} />
-        </div>
-      )}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Recent Transactions
+        </h2>
+        {isLoadingTransactions ? (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <Clock className="w-12 h-12 mx-auto mb-2 opacity-50 animate-pulse" />
+            <p>Loading transactions...</p>
+          </div>
+        ) : (
+          <TransactionHistory transactions={transactions.map(tx => ({
+            id: tx.id,
+            type: tx.transaction_type as "earn" | "spend" | "convert",
+            points: tx.points_amount,
+            usdt: tx.usdt_amount || undefined,
+            source: tx.source || undefined,
+            createdAt: tx.created_at,
+          }))} />
+        )}
+      </div>
     </div>
   );
 }

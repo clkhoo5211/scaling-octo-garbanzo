@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { ArticleFeed } from "@/components/feed/ArticleFeed";
+import { ArticleTimeline } from "@/components/feed/ArticleTimeline";
 import { CategoryTabs } from "@/components/feed/CategoryTabs";
 import { ShowMoreButton } from "@/components/feed/ShowMoreButton";
 import { Autocomplete } from "@/components/search/Autocomplete";
@@ -34,6 +34,7 @@ export default function HomePage() {
     usePagination: true,
     extractLinks: true,
     enableRealtime: true,
+    forceRealtime: true, // 🔥 Enable real-time updates (no cache, 30s polling)
     countryCode: countryCode || undefined,
   });
 
@@ -137,7 +138,8 @@ export default function HomePage() {
           </div>
         ) : (
           <>
-            <ArticleFeed
+            {/* Use ArticleTimeline for real-time mode (forceRealtime: true) */}
+            <ArticleTimeline
               articles={displayedArticles}
               onSelectArticle={handleSelectArticle}
             />
@@ -147,7 +149,7 @@ export default function HomePage() {
             )}
             
             {displayedArticles.length > 0 && (
-              <p className="text-center text-sm text-gray-600 mt-4">
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
                 {showAllArticles 
                   ? `Showing all ${filteredArticles.length} articles`
                   : `Showing top ${displayedArticles.length} of ${filteredArticles.length} articles${hasMoreArticles ? " (Click 'Show More' to see all)" : ""}`

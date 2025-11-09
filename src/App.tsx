@@ -6,6 +6,7 @@ import { ServiceWorkerRegistration } from './components/ServiceWorkerRegistratio
 import { ManifestLink } from './components/ManifestLink';
 import { CookieConsentBanner } from './components/compliance';
 import { PWAInstallHandler } from './components/pwa/PWAInstallHandler';
+import { DailyLoginPointsHandler } from './components/points/DailyLoginPointsHandler';
 import './app/globals.css';
 
 // Pages
@@ -34,6 +35,7 @@ function App() {
     <Providers>
       <BrowserRouter basename={basePath}>
         <ManifestLink />
+        <DailyLoginPointsHandler />
         <div className="min-h-screen bg-gray-100">
           <Header />
           <main className="min-h-screen pb-16 md:pb-0">
