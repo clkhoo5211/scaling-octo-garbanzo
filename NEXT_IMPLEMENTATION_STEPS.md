@@ -10,7 +10,7 @@
 - HomePage updated with `forceRealtime: true`
 - ArticleTimeline component created and integrated
 - ReaderControls enhanced (line height, sepia theme)
-- All Folo references removed from code
+- Code cleanup completed
 
 ### 🔄 In Progress
 - Testing & verification
@@ -107,13 +107,13 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 ---
 
-## Phase 2: Folo UI Components (Priority: Medium)
+## Phase 2: UI Components (Priority: Medium)
 
-### Step 2.1: Create FoloTimeline Component
+### Step 2.1: Create ArticleTimeline Component
 
-**File**: `src/components/feed/FoloTimeline.tsx`
+**File**: `src/components/feed/ArticleTimeline.tsx`
 
-**Purpose**: Timeline view that groups articles by date (like Folo)
+**Purpose**: Timeline view that groups articles by date
 
 **Features**:
 - Group articles by date
@@ -125,9 +125,9 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 ---
 
-### Step 2.2: Create FoloReader Component
+### Step 2.2: Create Enhanced Reader Component
 
-**File**: `src/components/article/FoloReader.tsx`
+**File**: `src/components/article/ArticleReaderClient.tsx`
 
 **Purpose**: Distraction-free reader with customizable settings
 
@@ -146,7 +146,7 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 **File**: `src/components/article/TranslationButton.tsx`
 
-**Purpose**: AI-powered translation feature (like Folo)
+**Purpose**: AI-powered translation feature
 
 **Features**:
 - One-click translation
@@ -166,7 +166,7 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 **File**: `src/components/feed/ShareList.tsx`
 
-**Purpose**: Share curated lists of articles (like Folo)
+**Purpose**: Share curated lists of articles
 
 **Features**:
 - Create shareable lists
@@ -180,17 +180,17 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 ## Phase 3: CSS Styling (Priority: Medium)
 
-### Step 3.1: Add Folo-Inspired Styles
+### Step 3.1: Add Enhanced Styles
 
 **File**: `src/app/globals.css`
 
-**Action**: Add CSS classes for Folo components:
-- `.folo-timeline`
-- `.folo-reader`
-- `.folo-reader-header`
-- `.folo-reader-content`
-- `.folo-reader-dark`
-- `.folo-reader-sepia`
+**Action**: Add CSS classes for timeline and reader components:
+- `.article-timeline`
+- `.article-reader`
+- `.article-reader-header`
+- `.article-reader-content`
+- `.article-reader-dark`
+- `.article-reader-sepia`
 
 **Status**: ✅ COMPLETED
 
@@ -198,11 +198,11 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 ## Phase 4: Integration & Testing (Priority: High)
 
-### Step 4.1: Update HomePage to Use Folo Components
+### Step 4.1: Update HomePage to Use Enhanced Components
 
 **File**: `src/pages/HomePage.tsx`
 
-**Action**: Replace `ArticleFeed` with `FoloTimeline` when real-time mode is enabled.
+**Action**: Replace `ArticleFeed` with `ArticleTimeline` when real-time mode is enabled.
 
 **Status**: ✅ COMPLETED
 
@@ -270,8 +270,8 @@ const { data: articles } = useArticles(activeCategory, {
 - [ ] No caching occurs (check Network tab)
 - [ ] Articles update every 30 seconds
 - [ ] MCP server requests include cache-busting
-- [ ] FoloTimeline component displays correctly
-- [ ] FoloReader component works
+- [ ] ArticleTimeline component displays correctly
+- [ ] ArticleReaderClient component works
 - [ ] TranslationButton translates articles
 - [ ] ShareList creates shareable links
 - [ ] CSS styles applied correctly
@@ -284,23 +284,23 @@ const { data: articles } = useArticles(activeCategory, {
 ## Files to Create/Modify
 
 ### New Files to Create:
-1. `src/components/feed/FoloTimeline.tsx`
-2. `src/components/article/FoloReader.tsx`
+1. `src/components/feed/ArticleTimeline.tsx`
+2. `src/components/article/ArticleReaderClient.tsx`
 3. `src/components/article/TranslationButton.tsx`
 4. `src/components/feed/ShareList.tsx`
 
 ### Files to Modify:
 1. `src/lib/services/mcpService.ts` - Add real-time function
 2. `src/lib/services/rssService.ts` - Update for real-time
-3. `src/pages/HomePage.tsx` - Enable real-time + use Folo components
-4. `src/app/globals.css` - Add Folo styles
+3. `src/pages/HomePage.tsx` - Enable real-time + use enhanced components
+4. `src/app/globals.css` - Add enhanced styles
 
 ---
 
 ## Estimated Time
 
 - **Real-Time Implementation**: 2-3 hours
-- **Folo UI Components**: 4-6 hours
+- **UI Components**: 4-6 hours
 - **CSS Styling**: 1-2 hours
 - **Integration & Testing**: 2-3 hours
 

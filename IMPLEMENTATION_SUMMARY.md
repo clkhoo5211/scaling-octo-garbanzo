@@ -170,15 +170,11 @@ That's it! Articles will now update every 30 seconds with no caching.
 ## 📚 Documentation Created
 
 ### For MCP Server:
-- `COMPARISON_ANALYSIS.md` - Detailed comparison with Folo
-- `FOLO_SOURCES_EXTRACTION.md` - RSSHub sources guide
 - `IMPROVEMENT_PLAN.md` - Actionable improvements
 - `VERCEL_ENV_VARIABLES.md` - Environment variables guide
-- `FOLO_INTEGRATION_SUMMARY.md` - Integration summary
 - `QUICK_REFERENCE.md` - Quick reference guide
 
 ### For Aggregator:
-- `FOLO_UI_INTEGRATION.md` - Complete UI integration guide
 - `NEXT_IMPLEMENTATION_STEPS.md` - Next steps checklist
 - `IMPLEMENTATION_ROADMAP.md` - Detailed roadmap
 

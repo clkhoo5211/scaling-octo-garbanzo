@@ -5,7 +5,7 @@
 ### ✅ Completed (This Session)
 
 #### MCP Server (web3news-mcp-server)
-- ✅ Added 25+ RSSHub sources from Folo
+- ✅ Added 25+ RSSHub sources
 - ✅ Added `social` and `education` categories
 - ✅ Updated `NEWS_SOURCES_JSON.json` and minified version
 - ✅ Created comprehensive documentation
@@ -14,7 +14,7 @@
 #### React Aggregator (web3news-aggregator)
 - ✅ Updated `useArticles.ts` with `forceRealtime` option
 - ✅ Real-time fetching infrastructure ready
-- ✅ Documentation created (`FOLO_UI_INTEGRATION.md`)
+- ✅ Documentation created
 
 ---
 
@@ -188,13 +188,13 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 ---
 
-### Phase 2: Folo UI Components (4-6 hours)
+### Phase 2: UI Components (4-6 hours)
 
-#### 2.1 Create FoloTimeline Component ⏳
+#### 2.1 Create ArticleTimeline Component ⏳
 
-**File**: `src/components/feed/FoloTimeline.tsx`
+**File**: `src/components/feed/ArticleTimeline.tsx`
 
-**Purpose**: Timeline view that groups articles by date (Folo's signature feature)
+**Purpose**: Timeline view that groups articles by date
 
 **Key Features**:
 - Group articles by date (Today, Yesterday, This Week, etc.)
@@ -207,9 +207,9 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 ---
 
-#### 2.2 Create FoloReader Component ⏳
+#### 2.2 Create Enhanced Reader Component ⏳
 
-**File**: `src/components/article/FoloReader.tsx`
+**File**: `src/components/article/ArticleReaderClient.tsx`
 
 **Purpose**: Distraction-free reader with customizable settings
 
@@ -229,7 +229,7 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 **File**: `src/components/article/TranslationButton.tsx`
 
-**Purpose**: AI-powered translation (like Folo)
+**Purpose**: AI-powered translation
 
 **Key Features**:
 - One-click translation
@@ -251,7 +251,7 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 **File**: `src/components/feed/ShareList.tsx`
 
-**Purpose**: Share curated lists of articles (Folo community feature)
+**Purpose**: Share curated lists of articles
 
 **Key Features**:
 - Create shareable lists
@@ -266,17 +266,17 @@ const { data: articles, isLoading, isError, error } = useArticles(activeCategory
 
 ### Phase 3: CSS Styling (1-2 hours)
 
-#### 3.1 Add Folo-Inspired Styles ⏳
+#### 3.1 Add Enhanced Styles ⏳
 
 **File**: `src/app/globals.css`
 
 Add CSS classes:
-- `.folo-timeline` - Timeline container
-- `.folo-reader` - Reader container
-- `.folo-reader-header` - Reader header
-- `.folo-reader-content` - Reader content area
-- `.folo-reader-dark` - Dark theme
-- `.folo-reader-sepia` - Sepia theme
+- `.article-timeline` - Timeline container
+- `.article-reader` - Reader container
+- `.article-reader-header` - Reader header
+- `.article-reader-content` - Reader content area
+- `.article-reader-dark` - Dark theme
+- `.article-reader-sepia` - Sepia theme
 
 **Priority**: Medium  
 **Estimated Time**: 1 hour
@@ -292,10 +292,10 @@ Add CSS classes:
 - [ ] Test real-time updates (verify no caching)
 
 ### This Week
-- [ ] Create `FoloTimeline` component
-- [ ] Create `FoloReader` component
-- [ ] Add Folo CSS styles
-- [ ] Integrate Folo components into HomePage
+- [ ] Create `ArticleTimeline` component
+- [ ] Create `ArticleReaderClient` component
+- [ ] Add enhanced CSS styles
+- [ ] Integrate components into HomePage
 
 ### Next Week
 - [ ] Create `TranslationButton` component
@@ -327,8 +327,8 @@ const testRealtime = async () => {
 ```
 
 ### Component Testing
-- [ ] FoloTimeline displays articles grouped by date
-- [ ] FoloReader opens/closes correctly
+- [ ] ArticleTimeline displays articles grouped by date
+- [ ] ArticleReaderClient opens/closes correctly
 - [ ] Font size controls work
 - [ ] Theme switching works
 - [ ] TranslationButton translates articles
@@ -345,14 +345,14 @@ const testRealtime = async () => {
 - ⏳ `HomePage.tsx` updated (TODO)
 - ⏳ Testing (TODO)
 
-### Phase 2: Folo UI Components
-- ⏳ FoloTimeline (TODO)
-- ⏳ FoloReader (TODO)
+### Phase 2: UI Components
+- ⏳ ArticleTimeline (TODO)
+- ⏳ ArticleReaderClient (TODO)
 - ⏳ TranslationButton (TODO)
 - ⏳ ShareList (TODO)
 
 ### Phase 3: CSS Styling
-- ⏳ Folo CSS classes (TODO)
+- ⏳ Enhanced CSS classes (TODO)
 
 ---
 
@@ -364,7 +364,7 @@ const testRealtime = async () => {
 - ✅ MCP server requests include cache-busting
 - ✅ Console shows "🔄 REAL-TIME" messages
 
-### Folo UI Components
+### UI Components
 - ✅ Timeline view groups articles by date
 - ✅ Reader view is distraction-free
 - ✅ Translation works for multiple languages

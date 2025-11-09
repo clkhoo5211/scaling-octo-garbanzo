@@ -114,8 +114,7 @@
 ---
 
 ### 7. AI Summaries Feature ⏳
-**Status**: Not implemented  
-**Reference**: `FOLO_FEATURES_ADOPTION.md` (line 105)
+**Status**: Not implemented
 
 **Features**:
 - One-click article summarization (3-sentence TL;DR)
@@ -141,7 +140,7 @@
 - ✅ Transaction history from Supabase
 - ✅ Media support (image/video/GIF)
 - ✅ MCP server article content fetching (no CORS)
-- ✅ Code cleanup (removed Folo references)
+- ✅ Code cleanup completed
 
 ### ⏳ Pending (~10%)
 - ⏳ Article author tracking (blocks upvote points)
