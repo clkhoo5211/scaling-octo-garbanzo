@@ -21,9 +21,30 @@ interface ArticleContentResult {
  * Try multiple proxies for better reliability
  */
 const CORS_PROXIES = [
-  "https://api.allorigins.win/get?url=",
-  "https://corsproxy.io/?",
-  "https://api.codetabs.com/v1/proxy?quest=",
+  {
+    name: "allorigins",
+    url: "https://api.allorigins.win/get?url=",
+    format: "json" as const,
+    extract: (data: { contents?: string; content?: string }) => data.contents || data.content || "",
+  },
+  {
+    name: "corsproxy",
+    url: "https://corsproxy.io/?",
+    format: "html" as const, // Returns HTML directly, not JSON
+    extract: (data: string) => data,
+  },
+  {
+    name: "codetabs",
+    url: "https://api.codetabs.com/v1/proxy?quest=",
+    format: "html" as const, // Returns HTML directly, not JSON
+    extract: (data: string) => data,
+  },
+  {
+    name: "cors-anywhere",
+    url: "https://cors-anywhere.herokuapp.com/",
+    format: "html" as const,
+    extract: (data: string) => data,
+  },
 ];
 
 /**
@@ -68,24 +89,57 @@ async function fetchWithTimeout(
  */
 async function fetchAndParseArticle(url: string) {
   // Try each CORS proxy in order
-  for (const proxyBase of CORS_PROXIES) {
+  for (const proxy of CORS_PROXIES) {
     try {
-      const proxyUrl = `${proxyBase}${encodeURIComponent(url)}`;
-      console.log(`[ArticleContent] Fetching via proxy: ${proxyBase.substring(0, 30)}...`);
+      const proxyUrl = `${proxy.url}${encodeURIComponent(url)}`;
+      console.log(`[ArticleContent] Fetching via proxy: ${proxy.name}...`);
 
       // Fetch with timeout
-      const response = await fetchWithTimeout(proxyUrl, 8000);
+      const response = await fetchWithTimeout(proxyUrl, 10000); // Increased to 10s
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const data = await response.json();
       // Handle different proxy response formats
-      const html = data.contents || data.content || (typeof data === "string" ? data : null);
+      if (proxy.format === "json") {
+        try {
+          const data = await response.json();
+          html = proxy.extract(data);
+        } catch (jsonError) {
+          // If JSON parsing fails, try to get text (might be HTML)
+          const text = await response.text();
+          if (text && text.trim().length > 100 && !text.includes("<!DOCTYPE")) {
+            html = text;
+          } else {
+            throw new Error("Failed to parse JSON response from proxy");
+          }
+        }
+      } else {
+        // HTML format - get text directly
+        html = await response.text();
+      }
 
-      if (!html || typeof html !== "string") {
-        throw new Error("Invalid HTML content received from proxy");
+      // Check if we got an HTML error page instead of content
+      if (!html || typeof html !== "string" || html.trim().length < 100) {
+        throw new Error("Invalid or empty HTML content received");
+      }
+
+      // Check for common error indicators
+      if (html.includes("<!DOCTYPE html>") && (
+        html.includes("Error") || 
+        html.includes("403") || 
+        html.includes("404") ||
+        html.includes("Access Denied") ||
+        html.includes("CORS") ||
+        html.includes("Blocked")
+      )) {
+        // Might be an error page, but could also be the actual article
+        // Only skip if it's clearly an error page (very short or specific error messages)
+        const errorMatches = html.match(/error|blocked|denied/gi);
+        if (html.length < 500 || (errorMatches && errorMatches.length > 3)) {
+          throw new Error("Proxy returned error page");
+        }
       }
 
       // Parse HTML with DOMParser
@@ -137,7 +191,12 @@ async function fetchAndParseArticle(url: string) {
       // Get text content for length calculation
       const textContent = articleElement.textContent || "";
 
-      console.log(`[ArticleContent] Successfully parsed article: ${title.substring(0, 50)}...`);
+      // Validate we got meaningful content
+      if (textContent.trim().length < 100) {
+        throw new Error("Article content too short or empty");
+      }
+
+      console.log(`[ArticleContent] Successfully parsed article via ${proxy.name}: ${title.substring(0, 50)}...`);
 
       return {
         title,
@@ -148,8 +207,9 @@ async function fetchAndParseArticle(url: string) {
         length: textContent.trim().length,
         siteName: new URL(url).hostname.replace('www.', ''),
       };
-    } catch (error: any) {
-      console.warn(`[ArticleContent] Proxy ${proxyBase.substring(0, 30)} failed:`, error?.message || error);
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.warn(`[ArticleContent] Proxy ${proxy.name} failed:`, errorMsg);
       // Try next proxy
       continue;
     }
@@ -182,12 +242,12 @@ export async function fetchArticleContent(url: string): Promise<ArticleContentRe
       success: true,
       ...articleContent,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[ArticleContent] Error fetching article content:', error);
     
     return {
       success: false,
-      error: error?.message || 'Failed to fetch article content',
+      error: error instanceof Error ? error.message : 'Failed to fetch article content',
       title: null,
       excerpt: null,
     };
