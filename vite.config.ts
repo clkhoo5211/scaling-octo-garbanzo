@@ -12,7 +12,7 @@ export default defineConfig({
   base: basePath,
   plugins: [
     react(),
-    VitePWA({
+      VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-icon.png', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
@@ -28,13 +28,13 @@ export default defineConfig({
         scope: basePath && !basePath.endsWith('/') ? `${basePath}/` : (basePath || '/'),
         icons: [
           {
-            src: `${basePath}icon-192x192.png`,
+            src: `${basePath && !basePath.endsWith('/') ? `${basePath}/` : basePath}icon-192x192.png`,
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable',
           },
           {
-            src: `${basePath}icon-512x512.png`,
+            src: `${basePath && !basePath.endsWith('/') ? `${basePath}/` : basePath}icon-512x512.png`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',

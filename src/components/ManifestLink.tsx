@@ -1,11 +1,9 @@
-"use client";
-
 import { useEffect, useRef } from "react";
-import { getBasePath } from "@/lib/utils/basePath";
+import { getBasePath } from "../lib/utils/basePath";
 
 /**
  * Client-side component to inject manifest link with correct basePath
- * Next.js metadata API doesn't properly handle basePath for static exports
+ * Vite's HTML template doesn't properly handle basePath for GitHub Pages deployment
  * This component ensures the manifest link is correct at runtime
  */
 export function ManifestLink() {
@@ -20,7 +18,7 @@ export function ManifestLink() {
         // Only inject if we're in the browser
         if (typeof window === 'undefined' || !document.head) return;
 
-        // Remove any existing manifest links (from metadata or previous renders)
+        // Remove any existing manifest links (from HTML template or previous renders)
         const existingLinks = document.querySelectorAll('link[rel="manifest"]');
         existingLinks.forEach((link) => {
           try {
@@ -36,9 +34,14 @@ export function ManifestLink() {
 
         // Add manifest link with correct basePath
         const basePath = getBasePath();
+        // Ensure we don't create double slashes (basePath could be '/' or '/repo-name')
+        const manifestPath = basePath === '/' || basePath === '' 
+          ? '/manifest.webmanifest' 
+          : `${basePath}/manifest.webmanifest`;
+        
         const manifestLink = document.createElement("link");
         manifestLink.rel = "manifest";
-        manifestLink.href = `${basePath}/manifest.webmanifest`;
+        manifestLink.href = manifestPath;
         document.head.appendChild(manifestLink);
         
         injectedRef.current = true;

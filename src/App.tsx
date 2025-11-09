@@ -3,6 +3,7 @@ import { Providers } from './app/providers';
 import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
 import { ServiceWorkerRegistration } from './components/ServiceWorkerRegistration';
+import { ManifestLink } from './components/ManifestLink';
 import { CookieConsentBanner } from './components/compliance';
 import { PWAInstallHandler } from './components/pwa/PWAInstallHandler';
 import './app/globals.css';
@@ -32,6 +33,7 @@ function App() {
   return (
     <Providers>
       <BrowserRouter basename={basePath}>
+        <ManifestLink />
         <div className="min-h-screen bg-gray-100">
           <Header />
           <main className="min-h-screen pb-16 md:pb-0">
