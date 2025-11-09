@@ -1,16 +1,21 @@
 import { ReactNode, useEffect, useState } from "react";
 import ContextProvider from "../../context/index";
 import { ToastProvider } from "@/components/ui/Toast";
-import { ConditionalClerkProvider } from "@/components/auth/ConditionalClerkProvider";
+import { ClerkProvider } from "@clerk/clerk-react";
+import { ReownClerkIntegration } from "@/components/auth/ReownClerkIntegration";
 import { AppKitProvider } from "@reown/appkit/react";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { appKit } from "../../context/index";
 import type { AppKitInstance } from "@reown/appkit/react";
+import { ClerkFaviconUpdater } from "@/components/clerk/ClerkFaviconUpdater";
 
 /**
  * Providers Component
  * Wraps app with Reown AppKit (PRIMARY) + Clerk (SECONDARY) + Wagmi + React Query
  * Priority: Reown handles authentication, Clerk handles user management
+ * 
+ * CRITICAL: ClerkProvider must always be rendered to prevent hook errors
+ * ReownClerkIntegration prevents Clerk API calls until Reown authentication
  * 
  * CRITICAL: According to Reown docs, use the appKit instance from createAppKit()
  * Reference: https://docs.reown.com/appkit/react/core/multichain#wagmi-%2B-solana
@@ -41,30 +46,39 @@ export function Providers({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
+
   // CRITICAL: AppKitProvider MUST be rendered before any components use useAppKit hooks
   // So we wait for the instance to be ready before rendering AppKitProvider
   // Components like WalletConnect will show a loading state until AppKitProvider is ready
   // 
-  // CRITICAL: ClerkProvider only initializes AFTER Reown authentication
-  // This prevents Clerk API calls when user is not logged in
+  // CRITICAL: ClerkProvider must always be rendered to prevent hook errors
+  // ReownClerkIntegration will prevent Clerk API calls until Reown authentication
   return (
     <ContextProvider cookies={null}>
       {mounted && appKitInstance ? (
         <ErrorBoundary
           fallback={
-            <ToastProvider>{children}</ToastProvider>
+            <ClerkProvider publishableKey={clerkPublishableKey}>
+              <ToastProvider>{children}</ToastProvider>
+            </ClerkProvider>
           }
         >
           <AppKitProvider appKit={appKitInstance}>
-            <ConditionalClerkProvider>
-              <ToastProvider>{children}</ToastProvider>
-            </ConditionalClerkProvider>
+            <ClerkProvider publishableKey={clerkPublishableKey}>
+              <ClerkFaviconUpdater />
+              <ReownClerkIntegration>
+                <ToastProvider>{children}</ToastProvider>
+              </ReownClerkIntegration>
+            </ClerkProvider>
           </AppKitProvider>
         </ErrorBoundary>
       ) : (
         // Render without AppKitProvider while initializing
-        // Components should handle the "not ready" state gracefully
-        <ToastProvider>{children}</ToastProvider>
+        // But always render ClerkProvider to prevent hook errors
+        <ClerkProvider publishableKey={clerkPublishableKey}>
+          <ToastProvider>{children}</ToastProvider>
+        </ClerkProvider>
       )}
     </ContextProvider>
   );
