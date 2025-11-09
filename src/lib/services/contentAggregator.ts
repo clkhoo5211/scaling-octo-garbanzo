@@ -792,7 +792,7 @@ class ContentAggregator {
   }
 
   /**
-   * Fetch from RSS feed with fallback parsing
+   * Fetch from RSS feed via MCP server (primary) with fallback parsing
    */
   private async fetchRSSFeed(
     url: string,
@@ -801,51 +801,30 @@ class ContentAggregator {
   ): Promise<Article[]> {
     await this.rateLimiter.wait("rss");
 
-    // Try proxy first
+    // PRIMARY: Try MCP server first (no CORS issues, server-side fetching)
     try {
-      const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
-      const response = await fetch(proxyUrl, {
-        headers: {
-          'User-Agent': 'Web3News/1.0',
-        },
-      });
+      const { fetchRSSFeedViaMCP } = await import("./mcpService");
+      const mcpResult = await fetchRSSFeedViaMCP(url, sourceName, category);
       
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Check if RSS2JSON returned an error
-        if (data.status === "error") {
-          throw new Error(`RSS2JSON error: ${data.message || 'Unknown error'}`);
-        }
-
-        const items = data.items || [];
-        
-        if (items.length > 0) {
-          return items.map((item: any) => ({
-            id: `rss-${item.guid || item.link || `${sourceName}-${Date.now()}-${Math.random()}`}`,
-            title: item.title || "Untitled",
-            url: item.link || url,
-            source: sourceName,
-            category: category,
-            publishedAt: item.pubDate ? new Date(item.pubDate).getTime() : Date.now(),
-            author: item.author,
-            excerpt: item.description?.replace(/<[^>]*>/g, "").substring(0, 200),
-            thumbnail: item.enclosure?.link || item.thumbnail,
-            urlHash: "",
-            cachedAt: 0,
-          }));
-        }
+      if (mcpResult.success && mcpResult.articles.length > 0) {
+        console.debug(`✅ MCP server fetched ${sourceName}: ${mcpResult.articles.length} articles`);
+        return mcpResult.articles;
+      } else {
+        console.debug(`⚠️ MCP server failed for ${sourceName}: ${mcpResult.error || 'Unknown error'}. Trying direct fetch fallback...`);
       }
-    } catch (proxyError) {
-      console.warn(`RSS proxy failed for ${sourceName}, trying direct parsing...`, proxyError);
+    } catch (mcpError) {
+      console.debug(`⚠️ MCP server error for ${sourceName}:`, mcpError);
     }
 
-    // Fallback: Direct RSS parsing
+    // FALLBACK: Try direct fetch only if MCP fails (may have CORS issues)
     try {
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'Web3News/1.0',
         },
+        cache: 'no-store',
+        signal: AbortSignal.timeout(15000), // 15 second timeout
+        mode: 'cors', // Explicitly request CORS
       });
 
       if (!response.ok) {
@@ -875,7 +854,7 @@ class ContentAggregator {
         cachedAt: 0,
       }));
     } catch (error) {
-      console.error(`Error fetching RSS feed ${sourceName} (${url}):`, error);
+      console.warn(`Direct RSS fetch also failed for ${sourceName}:`, error);
       return [];
     }
   }
