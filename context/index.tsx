@@ -85,10 +85,7 @@ async function initializeAppKit() {
         metadata: metadata,
         features: {
           analytics: false, // Disabled to prevent Coinbase analytics errors when blocked by ad blockers
-          email: true,
-          socials: ['google', 'x', 'github', 'discord', 'apple'],
-          onramp: true,
-          swaps: true,
+          // All other features (email, socials, onramp, swaps) are managed via dashboard.reown.com
         },
       });
       
