@@ -49,15 +49,24 @@ export default function AccountSettingsPage() {
         </div>
 
         {/* Clerk UserProfile - Full page, no container constraints */}
-        <div className="w-full">
+        <div className="w-full min-h-[calc(100vh-4rem)]">
           <UserProfile 
             appearance={{
               elements: {
-                rootBox: "w-full",
-                card: "shadow-none border-0 bg-transparent",
-                navbar: "bg-white dark:bg-gray-800",
+                rootBox: "w-full h-full",
+                card: "shadow-none border-0 bg-transparent rounded-none w-full max-w-none",
+                cardBox: "shadow-none border-0 bg-transparent rounded-none w-full max-w-none",
+                navbar: "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700",
                 navbarButton: "text-gray-700 dark:text-gray-300",
-                page: "bg-white dark:bg-gray-800",
+                page: "bg-white dark:bg-gray-800 w-full max-w-none px-4 sm:px-6 lg:px-8",
+                pageContent: "w-full max-w-none",
+                profileSection: "w-full",
+                profileSectionContent: "w-full",
+                profileSectionPrimaryButton: "w-full sm:w-auto",
+              },
+              layout: {
+                socialButtonsPlacement: "top",
+                socialButtonsVariant: "blockButton",
               },
             }}
           />

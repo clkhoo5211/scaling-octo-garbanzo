@@ -142,3 +142,35 @@ html {
   }
 }
 
+/* Clerk UserProfile Full-Screen Overrides */
+.cl-rootBox,
+.cl-card,
+.cl-cardBox {
+  width: 100% !important;
+  max-width: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.cl-page {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 1rem !important;
+}
+
+@media (min-width: 640px) {
+  .cl-page {
+    padding: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cl-page {
+    padding: 2rem !important;
+  }
+}
+
