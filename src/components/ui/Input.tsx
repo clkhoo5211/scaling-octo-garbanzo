@@ -12,11 +12,11 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, helperText, ...props }, ref) => {
     return (
-      <div className="w-full">
+      <div className="w-full space-y-1.5">
         {label && (
           <label
             htmlFor={props.id}
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-text-secondary"
           >
             {label}
           </label>
@@ -24,18 +24,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           className={cn(
-            "flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm",
-            "placeholder:text-gray-400",
-            "focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            error && "border-red-500 focus:ring-red-500",
+            "flex h-11 w-full rounded-button border border-border-subtle bg-surface-primary px-3 text-base text-text-primary shadow-sm",
+            "placeholder:text-text-tertiary/80",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary",
+            "disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-surface-subtle",
+            error && "border-danger/70 focus-visible:ring-danger/50",
             className
           )}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
         {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+          <p className="text-sm text-text-tertiary">{helperText}</p>
         )}
       </div>
     );

@@ -23,20 +23,23 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+      "inline-flex items-center justify-center gap-2 rounded-button font-semibold transition-smooth duration-fast ease-emphasized focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60 focus-visible:ring-offset-background-base disabled:opacity-60 disabled:pointer-events-none active:scale-[0.98]";
 
     const variants = {
-      primary: "bg-black text-white hover:bg-gray-800 focus:ring-black",
+      primary:
+        "bg-primary text-white shadow-card hover:bg-primary-dark hover:shadow-card-hover focus-visible:ring-primary/70",
       secondary:
-        "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500",
+        "bg-surface-subtle text-text-primary border border-border-subtle hover:bg-surface-strong/60 focus-visible:ring-primary/40",
       outline:
-        "border border-gray-300 bg-transparent hover:bg-gray-50 focus:ring-gray-500",
-      ghost: "bg-transparent hover:bg-gray-100 focus:ring-gray-500",
-      danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+        "border border-border-strong bg-transparent text-text-primary hover:bg-surface-subtle focus-visible:ring-primary/30",
+      ghost:
+        "bg-transparent text-text-secondary hover:bg-surface-subtle hover:text-text-primary focus-visible:ring-primary/20",
+      danger:
+        "bg-danger text-white shadow-card hover:bg-danger/90 focus-visible:ring-danger/50",
     };
 
     const sizes = {
-      sm: "h-8 px-3 text-sm",
+      sm: "h-9 px-3 text-sm",
       md: "h-10 px-4 text-base",
       lg: "h-12 px-6 text-lg",
     };

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Loader2 } from "lucide-react";
 import { useSendMessage } from "@/lib/hooks/useMessages";
 import { useMessageQueueStats } from "@/lib/hooks/useMessages";
+import { Button } from "@/components/ui/Button";
 
 interface MessageInputProps {
   conversationId: string;
@@ -67,18 +68,18 @@ export function MessageInput({
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-t border-gray-200 dark:border-gray-700 p-4"
+      className="border-t border-border-subtle bg-background-elevated/70 px-4 py-4"
     >
       {hasPendingMessages && (
-        <div className="mb-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-          <Loader2 className="w-3 h-3 animate-spin" />
+        <div className="mb-3 flex items-center gap-2 text-xs text-text-tertiary">
+          <Loader2 className="h-3 w-3 animate-spin" />
           <span>
             {queueStats.sending > 0 && `${queueStats.sending} sending...`}
             {queueStats.pending > 0 && `${queueStats.pending} pending...`}
           </span>
         </div>
       )}
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-3">
         <textarea
           ref={textareaRef}
           value={content}
@@ -87,23 +88,24 @@ export function MessageInput({
           placeholder="Type a message... (Press Enter to send, Shift+Enter for new line)"
           disabled={disabled || isSending}
           rows={1}
-          className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 resize-none rounded-card border border-border-subtle bg-surface-primary px-4 py-3 text-sm text-text-primary shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ minHeight: "40px", maxHeight: "120px" }}
         />
-        <button
+        <Button
           type="submit"
           disabled={!content.trim() || isSending || disabled}
-          className="flex-shrink-0 rounded-lg bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          size="sm"
+          className="flex-shrink-0"
           aria-label="Send message"
         >
           {isSending ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <Send className="w-5 h-5" />
+            <Send className="h-4 w-4" />
           )}
-        </button>
+        </Button>
       </div>
-      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+      <p className="mt-2 text-xs text-text-tertiary">
         Press Enter to send, Shift+Enter for new line
       </p>
     </form>

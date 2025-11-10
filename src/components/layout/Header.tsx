@@ -8,7 +8,7 @@ export function Header() {
   const appName = config?.application_name || "Web3News";
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-gray-300 bg-white/95 backdrop-blur-sm shadow-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-border-subtle bg-background-elevated/95 backdrop-blur-sm shadow-card">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -28,14 +28,14 @@ export function Header() {
               />
             ) : null}
             <div 
-              className={`h-8 w-8 rounded-lg bg-black dark:bg-white flex items-center justify-center ${logoUrl ? 'hidden' : ''}`}
+              className={`flex h-8 w-8 items-center justify-center rounded-card bg-primary/10 text-primary ${logoUrl ? 'hidden' : ''}`}
               style={{ display: logoUrl ? 'none' : 'flex' }}
             >
-              <span className="text-white dark:text-black font-bold text-lg">
+              <span className="text-lg font-bold">
                 W3
               </span>
             </div>
-            <span className="text-xl font-bold text-gray-900">
+            <span className="text-xl font-bold text-text-primary">
               {appName}
             </span>
           </Link>
@@ -46,7 +46,7 @@ export function Header() {
               <input
                 type="text"
                 placeholder="Search articles..."
-                className="w-full h-10 px-4 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                className="h-11 w-full rounded-button border border-border-subtle bg-surface-subtle px-4 text-text-secondary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-smooth"
                 readOnly
               />
             </Link>

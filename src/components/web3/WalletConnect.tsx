@@ -26,29 +26,29 @@ function WalletConnectInternal() {
   if (isConnected && address) {
     return (
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          <Wallet className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+        <div className="flex items-center gap-2 rounded-card border border-primary/20 bg-primary/10 px-3 py-2 text-primary">
+          <Wallet className="h-4 w-4" />
+          <span className="text-sm font-medium text-primary-dark">
             {formatAddress(address)}
           </span>
         </div>
         <button
           onClick={handleCopyAddress}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          className="rounded-card p-2 text-text-tertiary transition-smooth hover:bg-surface-subtle hover:text-text-primary"
           aria-label={copied ? "Address copied" : "Copy address"}
         >
           {copied ? (
-            <Check className="w-4 h-4 text-green-500" />
+            <Check className="h-4 w-4 text-success" />
           ) : (
-            <Copy className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <Copy className="h-4 w-4" />
           )}
         </button>
         <button
           onClick={() => open({ view: "Account" })}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          className="rounded-card p-2 text-text-tertiary transition-smooth hover:bg-surface-subtle hover:text-text-primary"
           aria-label="Open account menu"
         >
-          <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          <LogOut className="h-4 w-4" />
         </button>
       </div>
     );
@@ -57,9 +57,9 @@ function WalletConnectInternal() {
   return (
     <button
       onClick={() => open()}
-      className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+      className="flex items-center gap-2 rounded-button bg-primary px-4 py-2 text-white shadow-card transition-smooth hover:bg-primary-dark"
     >
-      <Wallet className="w-4 h-4" />
+      <Wallet className="h-4 w-4" />
       <span>Connect Wallet</span>
     </button>
   );
@@ -116,10 +116,10 @@ export function WalletConnect() {
   if (!mounted) {
     return (
       <button
-        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        className="flex items-center gap-2 rounded-button bg-primary px-4 py-2 text-white opacity-60"
         disabled
       >
-        <Wallet className="w-4 h-4" />
+        <Wallet className="h-4 w-4" />
         <span>Loading...</span>
       </button>
     );
@@ -130,10 +130,10 @@ export function WalletConnect() {
   if (!appKitReady) {
     return (
       <button
-        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 rounded-button bg-primary px-4 py-2 text-white opacity-60"
         disabled
       >
-        <Wallet className="w-4 h-4" />
+        <Wallet className="h-4 w-4" />
         <span>Initializing...</span>
       </button>
     );

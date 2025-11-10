@@ -29,22 +29,22 @@ export function FilterChips({
   if (filters.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 p-2">
+    <div className="flex flex-wrap items-center gap-2 rounded-card bg-surface-subtle/60 p-3">
       {filters.map((filter) => (
         <button
           key={filter.id}
           onClick={() => onRemove(filter.id)}
-          className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+          className="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-sm text-primary transition-smooth hover:bg-primary/15"
           aria-label={`Remove ${filter.label} filter`}
         >
           <span className="font-medium">{filter.label}</span>
-          <X className="w-3 h-3" />
+          <X className="h-3 w-3" />
         </button>
       ))}
       {onClearAll && filters.length > 1 && (
         <button
           onClick={onClearAll}
-          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 underline"
+          className="text-sm font-medium text-text-tertiary underline-offset-4 transition-smooth hover:text-text-primary hover:underline"
         >
           Clear all
         </button>

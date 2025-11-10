@@ -38,14 +38,14 @@ export function AuthStatus() {
       {mounted && clerkLoaded && user && !isConnected && (
         <Link 
           to="/profile" 
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 rounded-card px-2 py-1 text-text-secondary transition-smooth hover:bg-surface-subtle hover:text-text-primary"
           title="View Profile"
         >
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium cursor-pointer">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
             {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() ||
               "U"}
           </div>
-          <span className="text-sm font-medium hidden sm:inline">
+          <span className="hidden text-sm font-medium sm:inline">
             {user.primaryEmailAddress?.emailAddress?.split("@")[0]}
           </span>
         </Link>
@@ -55,10 +55,10 @@ export function AuthStatus() {
       {mounted && clerkLoaded && user && isConnected && (
         <Link
           to="/profile"
-          className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="hidden items-center gap-2 rounded-card px-3 py-2 text-text-secondary transition-smooth hover:bg-surface-subtle hover:text-text-primary md:flex"
           title="View Profile"
         >
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
             {user.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() ||
               "U"}
         </div>

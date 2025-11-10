@@ -15,12 +15,13 @@ export function Skeleton({
   width,
   height,
 }: SkeletonProps) {
-  const baseStyles = "animate-pulse bg-gray-200";
+  const baseStyles =
+    "relative overflow-hidden bg-gradient-to-r from-surface-subtle via-surface-primary to-surface-subtle bg-[length:1000px_100%] animate-shimmer";
 
   const variants = {
-    text: "rounded",
+    text: "rounded-sm",
     circular: "rounded-full",
-    rectangular: "rounded-lg",
+    rectangular: "rounded-card",
   };
 
   const style: React.CSSProperties = {};

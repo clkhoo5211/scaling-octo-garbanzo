@@ -114,16 +114,16 @@ export function CookieSettings({
     >
       <div className="space-y-6">
         <div>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="mb-4 text-sm text-text-secondary">
             Manage your cookie preferences. You can enable or disable different types of cookies
             below. Note that necessary cookies cannot be disabled as they are required for the
             website to function.
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-text-tertiary">
             Learn more in our{" "}
             <a
               href={`${basePath}/cookie-policy`}
-              className="text-indigo-600 hover:text-indigo-700 underline"
+              className="text-primary underline transition-smooth hover:text-primary-dark"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -138,22 +138,22 @@ export function CookieSettings({
           {cookieCategories.map((category) => (
             <div
               key={category.id}
-              className="flex items-start justify-between p-4 border border-gray-200 rounded-lg"
+              className="flex items-start justify-between gap-4 rounded-card border border-border-subtle bg-background-elevated px-4 py-4 shadow-card"
             >
-              <div className="flex-1 mr-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-gray-900">
+              <div className="mr-4 flex-1">
+                <div className="mb-1 flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-text-primary">
                     {category.name}
                   </h4>
                   {category.required && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                    <span className="rounded-full bg-surface-subtle px-2 py-0.5 text-xs text-text-tertiary">
                       Required
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-600">{category.description}</p>
+                <p className="text-sm text-text-secondary">{category.description}</p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
+              <label className="relative inline-flex cursor-pointer items-center">
                 <input
                   type="checkbox"
                   checked={localPreferences[category.id]}
@@ -161,40 +161,24 @@ export function CookieSettings({
                   disabled={category.required}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
+                <div className="peer h-6 w-11 rounded-full bg-border-subtle transition-smooth peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/40 peer-checked:bg-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-40 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-border-subtle after:bg-white after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
               </label>
             </div>
           ))}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
-          <Button
-            variant="outline"
-            onClick={handleRejectAll}
-            className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
-          >
+        <div className="flex flex-col gap-3 border-t border-border-subtle pt-4 sm:flex-row">
+          <Button variant="outline" onClick={handleRejectAll} className="flex-1">
             Reject All
           </Button>
-          <Button
-            variant="outline"
-            onClick={handleAcceptNecessary}
-            className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
-          >
+          <Button variant="outline" onClick={handleAcceptNecessary} className="flex-1">
             Accept Necessary Only
           </Button>
-          <Button 
-            variant="secondary" 
-            onClick={handleSave} 
-            className="flex-1 bg-gray-100 text-gray-900 hover:bg-gray-200 transition-all font-semibold"
-          >
+          <Button variant="secondary" onClick={handleSave} className="flex-1">
             Save Preferences
           </Button>
-          <Button
-            variant="primary"
-            onClick={handleAcceptAll}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white transition-all font-semibold shadow-sm border-0"
-          >
+          <Button variant="primary" onClick={handleAcceptAll} className="flex-1">
             Accept All
           </Button>
         </div>

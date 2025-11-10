@@ -26,28 +26,30 @@ export function MessageBubble({
     const status = message.status;
 
     if (status === "pending") {
-      return <Clock className="w-3 h-3 text-gray-400" aria-label="Pending" />;
+      return (
+        <Clock className="h-3 w-3 text-text-tertiary" aria-label="Pending" />
+      );
     }
     if (status === "sending") {
       return (
         <Loader2
-          className="w-3 h-3 text-gray-400 animate-spin"
+          className="h-3 w-3 animate-spin text-text-tertiary"
           aria-label="Sending"
         />
       );
     }
     if (status === "failed") {
       return (
-        <AlertCircle className="w-3 h-3 text-red-500" aria-label="Failed" />
+        <AlertCircle className="h-3 w-3 text-danger" aria-label="Failed" />
       );
     }
     if (status === "sent" || !status) {
       if (message.is_read) {
         return (
-          <CheckCheck className="w-3 h-3 text-blue-500" aria-label="Read" />
+          <CheckCheck className="h-3 w-3 text-primary-light" aria-label="Read" />
         );
       }
-      return <Check className="w-3 h-3 text-gray-400" aria-label="Sent" />;
+      return <Check className="h-3 w-3 text-text-tertiary" aria-label="Sent" />;
     }
 
     return null;
@@ -63,22 +65,22 @@ export function MessageBubble({
 
   return (
     <div
-      className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-2 group`}
+      className={`group mb-3 flex ${isOwn ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`max-w-[70%] sm:max-w-[60%] rounded-lg px-4 py-2 ${
+        className={`max-w-[72%] rounded-2xl px-4 py-3 shadow-card transition-smooth sm:max-w-[60%] ${
           isOwn
-            ? "bg-blue-500 text-white"
-            : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            ? "bg-primary text-white"
+            : "bg-surface-subtle text-text-primary"
         }`}
       >
-        <p className="text-sm break-words whitespace-pre-wrap">
+        <p className="break-words whitespace-pre-wrap text-sm leading-relaxed">
           {message.content}
         </p>
-        <div className="flex items-center justify-end mt-1 gap-1">
+        <div className="mt-2 flex items-center justify-end gap-1 text-xs">
           <span
             className={`text-xs ${
-              isOwn ? "text-blue-100" : "text-gray-500 dark:text-gray-400"
+              isOwn ? "text-white/80" : "text-text-tertiary"
             }`}
           >
             {formatTime(message.created_at)}

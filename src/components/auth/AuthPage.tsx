@@ -4,6 +4,8 @@ import { WalletConnect } from "@/components/web3/WalletConnect";
 import { useClerkUser as useUser } from "@/lib/hooks/useClerkUser";
 import { useAppKit } from "@reown/appkit/react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 /**
  * AuthPage Component
@@ -29,27 +31,27 @@ export function AuthPage() {
 
   if (!isLoaded || !isMounted) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse text-gray-500">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center bg-background-base">
+        <LoadingState message="Preparing sign-in..." />
       </div>
     );
   }
 
   if (user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <div className="max-w-md w-full space-y-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-2">Welcome back!</h1>
-            <p className="text-gray-600 dark:text-gray-400">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background-base px-4 py-10">
+        <div className="w-full max-w-xl space-y-6 rounded-card border border-border-subtle bg-background-elevated p-8 shadow-elevated">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-semibold text-text-primary">Welcome back!</h1>
+            <p className="text-text-secondary">
               You&apos;re signed in as {user.primaryEmailAddress?.emailAddress}
             </p>
           </div>
 
           {/* Wallet Connection */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold mb-4">Connect Wallet</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <div className="rounded-card border border-border-subtle bg-surface-primary p-6 shadow-card">
+            <h2 className="mb-3 text-lg font-semibold text-text-primary">Connect Wallet</h2>
+            <p className="mb-4 text-sm text-text-secondary">
               Connect your wallet to participate in auctions, earn points, and
               vote on governance.
             </p>
@@ -62,24 +64,32 @@ export function AuthPage() {
 
   // Show sign-in page - user clicks button to trigger login
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="max-w-md w-full text-center">
-        <h1 className="text-2xl font-bold mb-4">Sign In</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+    <div className="flex min-h-screen items-center justify-center bg-background-base px-4 py-10">
+      <div className="w-full max-w-md text-center">
+        <div className="space-y-3">
+          <h1 className="text-3xl font-bold text-text-primary">Sign In</h1>
+          <p className="text-text-secondary">
           Please use the Reown modal to sign in with social login or email.
         </p>
-        <button
+        </div>
+        <Button
           onClick={() => {
             // Safe to call - AppKit should be initialized by now
             if (open) {
               open({ view: "Connect" });
             }
           }}
-          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!open}
+          size="lg"
+          className="mt-8 w-full justify-center"
         >
           Open Sign In
-        </button>
+        </Button>
+        {!open && (
+          <p className="mt-3 text-xs text-text-tertiary">
+            Loading Reown AppKit...
+          </p>
+        )}
       </div>
     </div>
   );

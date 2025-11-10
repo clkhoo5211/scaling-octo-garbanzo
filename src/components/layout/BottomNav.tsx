@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/", label: "Home", icon: "🏠" },
   { href: "/search", label: "Search", icon: "🔍" },
+  { href: "/messages", label: "Messages", icon: "💬" },
   { href: "/bookmarks", label: "Bookmarks", icon: "🔖" },
   { href: "/profile", label: "Profile", icon: "👤" },
 ];
@@ -13,19 +14,22 @@ export function BottomNav() {
   const pathname = location.pathname;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-300 bg-white/95 backdrop-blur-sm shadow-lg md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background-elevated/95 backdrop-blur-sm shadow-card md:hidden">
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               to={item.href}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full transition-colors",
+                "flex flex-1 flex-col items-center justify-center h-full transition-smooth",
                 isActive
-                        ? "text-primary font-medium scale-110"
-                        : "text-gray-600 hover:text-primary transition-all hover:scale-105"
+                        ? "text-primary font-semibold scale-110"
+                        : "text-text-tertiary hover:text-primary/80 hover:scale-105"
               )}
             >
               <span className="text-2xl mb-1">{item.icon}</span>

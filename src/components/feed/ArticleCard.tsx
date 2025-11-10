@@ -16,6 +16,7 @@ import { useAwardSharePoints } from "@/lib/hooks/usePointsEarning";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ArticlePreviewModal } from "@/components/article/ArticlePreviewModal";
 import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
 import { Play, Image as ImageIcon, Video, FileImage } from "lucide-react";
 
 export interface ArticleCardProps {
@@ -145,14 +146,14 @@ export const ArticleCard = memo(function ArticleCard({
 
   return (
     <>
-      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-elevated hover:border-primary/50 transition-all duration-200 group shadow-sm">
+      <article className="group overflow-hidden rounded-card border border-border-subtle bg-background-elevated shadow-card transition-smooth hover:border-primary/40 hover:shadow-card-hover">
         <div
           onClick={handleCardClick}
           className="cursor-pointer"
         >
           {/* Media Display (Image-only, Video, GIF) */}
           {hasMedia && variant !== "compact" && (
-            <div className="relative w-full bg-gray-100 dark:bg-gray-900">
+            <div className="relative w-full bg-surface-subtle">
               {/* Image-only or Image from mixed */}
               {(mediaType === 'image' || (mediaType === 'mixed' && displayImage && !displayVideo && !displayGif)) && displayImage && (
                 <div className="relative aspect-video w-full overflow-hidden">
@@ -270,21 +271,21 @@ export const ArticleCard = memo(function ArticleCard({
             </div>
           )}
 
-          <div className="p-4">
+          <div className="p-6">
             {/* Header */}
-            <div className={`flex items-start gap-3 mb-2 ${hasMedia && variant !== "compact" ? '' : ''}`}>
+            <div className={`flex items-start gap-4 mb-3 ${hasMedia && variant !== "compact" ? "" : ""}`}>
               {article.thumbnail && variant !== "compact" && !hasMedia && (
                 <img
                   src={article.thumbnail}
                   alt={article.title}
-                  className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                  className="h-20 w-20 flex-shrink-0 object-cover rounded-card"
                 />
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="mb-1 line-clamp-2 font-semibold text-text-primary transition-smooth group-hover:text-primary">
                   {article.title}
                 </h3>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-2 text-sm text-text-tertiary">
                   <span>{article.source}</span>
                   <span>•</span>
                   <span>{formatRelativeTime(article.publishedAt)}</span>
@@ -300,20 +301,20 @@ export const ArticleCard = memo(function ArticleCard({
 
             {/* Excerpt */}
             {article.excerpt && variant !== "compact" && (
-              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-2">
+              <p className="mb-4 line-clamp-2 text-sm text-text-secondary">
                 {truncate(article.excerpt, 150)}
               </p>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+            <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-4">
               <div className="flex items-center gap-4">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     handleLike();
                   }}
-                        className={`transition-colors hover:scale-110 ${liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
+                        className={`transition-smooth hover:scale-110 ${liked ? "text-danger" : "text-text-tertiary hover:text-danger"}`}
                   aria-label="Like article"
                 >
                   <span className="text-sm font-medium">👍 {likesCount || 0}</span>
@@ -323,7 +324,7 @@ export const ArticleCard = memo(function ArticleCard({
                     e.preventDefault();
                     handleBookmark();
                   }}
-                        className={`transition-colors hover:scale-110 ${bookmarked ? "text-yellow-500" : "text-gray-600 hover:text-yellow-500"}`}
+                        className={`transition-smooth hover:scale-110 ${bookmarked ? "text-warning" : "text-text-tertiary hover:text-warning"}`}
                   aria-label="Bookmark article"
                 >
                   🔖
@@ -333,14 +334,14 @@ export const ArticleCard = memo(function ArticleCard({
                     e.preventDefault();
                     handleShare();
                   }}
-                        className="text-gray-600 hover:text-primary transition-colors hover:scale-110"
+                        className="text-text-tertiary transition-smooth hover:scale-110 hover:text-primary"
                   aria-label="Share article"
                 >
                   📤
                 </button>
               </div>
               {article.comments !== undefined && (
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-text-tertiary">
                   {article.comments} comments
                 </span>
               )}
@@ -357,22 +358,23 @@ export const ArticleCard = memo(function ArticleCard({
         size="md"
       >
         <div className="space-y-4">
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-text-secondary">
             Please sign in to view articles and access all features.
           </p>
-          <div className="flex gap-3 justify-end">
-            <button
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setShowLoginPrompt(false)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleLogin}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              size="sm"
             >
               Sign In
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>
@@ -394,7 +396,7 @@ export const ArticleCard = memo(function ArticleCard({
 
 export function ArticleCardSkeleton() {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse shadow-sm">
+    <div className="rounded-card border border-border-subtle bg-background-elevated p-6 shadow-card">
       <Skeleton height={20} className="mb-2" />
       <Skeleton height={16} width="60%" className="mb-4" />
       <Skeleton height={16} width="40%" />

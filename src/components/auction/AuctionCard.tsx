@@ -1,13 +1,12 @@
 "use client";
 
-"use client";
-
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Gavel, Clock, Users, DollarSign, Bell, BellOff, Loader2 } from "lucide-react";
 import { TransactionStatus } from "@/components/web3/TransactionStatus";
 import { useClerkUser } from "@/lib/hooks/useClerkUser";
 import { useToast } from "@/components/ui/Toast";
+import { Button } from "@/components/ui/Button";
 import {
   subscribeToSlot,
   unsubscribeFromSlot,
@@ -139,23 +138,25 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="rounded-card border border-border-subtle bg-background-elevated p-6 shadow-card transition-smooth">
       {/* Transaction Status */}
       {txHash && <TransactionStatus hash={txHash} />}
 
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Gavel className="w-5 h-5 text-blue-500" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <div className="mb-4 flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Gavel className="h-4 w-4" />
+          </span>
+          <h3 className="text-lg font-semibold text-text-primary">
             {auction.title || `Ad Slot #${slotId.substring(0, 8)}`}
           </h3>
         </div>
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
+          className={`rounded-full px-3 py-1 text-xs font-medium ${
             auction.status === "active"
-              ? "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              ? "bg-success/15 text-success"
+              : "bg-surface-subtle text-text-secondary"
           }`}
         >
           {auction.status}
@@ -164,46 +165,46 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
 
       {/* Description */}
       {auction.description && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="mb-5 text-sm leading-relaxed text-text-secondary">
           {auction.description}
         </p>
       )}
 
       {/* Current Bid */}
-      <div className="mb-4">
-        <div className="flex items-baseline gap-2 mb-1">
-          <span className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="mb-5">
+        <div className="mb-2 flex items-baseline gap-2">
+          <span className="text-sm text-text-tertiary">
             Current Bid
           </span>
-          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <span className="text-2xl font-bold text-text-primary">
             {currentBid.toFixed(2)} USDT
           </span>
         </div>
         {bidder && (
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-xs text-text-tertiary">
             Bidder: {bidder.slice(0, 8)}...
           </div>
         )}
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-gray-400" />
+      <div className="mb-5 grid grid-cols-2 gap-4">
+        <div className="flex items-center gap-3 rounded-card border border-border-subtle bg-surface-subtle/60 px-4 py-3">
+          <Users className="h-4 w-4 text-text-tertiary" />
           <div>
-            <div className="text-sm font-medium">{participants}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-sm font-semibold text-text-primary">{participants}</div>
+            <div className="text-xs text-text-tertiary">
               Participants
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-gray-400" />
+        <div className="flex items-center gap-3 rounded-card border border-border-subtle bg-surface-subtle/60 px-4 py-3">
+          <Clock className="h-4 w-4 text-text-tertiary" />
           <div>
-            <div className="text-sm font-medium">
+            <div className="text-sm font-semibold text-text-primary">
               {isEnded ? "Ended" : timeRemaining}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-text-tertiary">
               Time Remaining
             </div>
           </div>
@@ -211,45 +212,43 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
       </div>
 
       {/* Actions */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {/* Subscribe Button */}
-        <button
+        <Button
           onClick={isSubscribed ? handleUnsubscribe : handleSubscribe}
           disabled={isUpdating}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-            isSubscribed
-              ? "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-              : "bg-green-500 text-white hover:bg-green-600"
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
+          variant={isSubscribed ? "secondary" : "primary"}
+          className="w-full"
         >
           {isUpdating ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : isSubscribed ? (
             <>
-              <BellOff className="w-4 h-4" />
+              <BellOff className="h-4 w-4" />
               <span>Unsubscribe</span>
             </>
           ) : (
             <>
-              <Bell className="w-4 h-4" />
+              <Bell className="h-4 w-4" />
               <span>Subscribe for Notifications</span>
             </>
           )}
-        </button>
+        </Button>
 
       {/* Bid Button */}
       {auction.status === "active" && !isEnded && (
-        <button
+        <Button
           onClick={() => {
             if (onBid) {
               onBid(auction.id);
             }
           }}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          variant="secondary"
+          className="w-full bg-info text-white hover:bg-info/90"
         >
-          <DollarSign className="w-4 h-4" />
+          <DollarSign className="h-4 w-4" />
           <span>Place Bid</span>
-        </button>
+        </Button>
       )}
       </div>
     </div>

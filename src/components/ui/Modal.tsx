@@ -56,12 +56,12 @@ export const Modal = memo(function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-8 bg-overlay-dark/90 backdrop-blur-lg"
       onClick={onClose}
     >
       <div
         className={cn(
-          "bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full",
+          "w-full rounded-modal border border-border-subtle bg-surface-primary text-text-primary shadow-modal transition-smooth",
           sizeClasses[size],
           "max-h-[90vh] overflow-y-auto"
         )}
@@ -71,13 +71,13 @@ export const Modal = memo(function Modal({
         aria-labelledby={title ? "modal-title" : undefined}
       >
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between gap-4 border-b border-border-subtle px-6 py-5">
             {title && (
               <div className="flex-1 pr-4">
                 {typeof title === "string" ? (
                   <h2
                     id="modal-title"
-                    className="text-xl font-semibold text-gray-900 dark:text-gray-100"
+                    className="text-xl font-semibold text-text-primary"
                   >
                     {title}
                   </h2>
@@ -95,7 +95,7 @@ export const Modal = memo(function Modal({
                 aria-label="Close modal"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -111,7 +111,7 @@ export const Modal = memo(function Modal({
             )}
           </div>
         )}
-        <div className="p-4 dark:text-gray-100">{children}</div>
+        <div className="px-6 py-5 text-text-secondary">{children}</div>
       </div>
     </div>
   );

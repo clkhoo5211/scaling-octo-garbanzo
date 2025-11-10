@@ -43,32 +43,29 @@ export function ProposalCard({
     totalVotes > 0 ? (proposal.abstain_votes / totalVotes) * 100 : 0;
 
   const getStatusColor = () => {
+    const base = "px-2 py-1 rounded-full text-xs font-medium";
     switch (proposal.status) {
       case "active":
-        return "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200";
+        return `${base} bg-info/15 text-info`;
       case "passed":
-        return "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200";
+        return `${base} bg-success/15 text-success`;
       case "rejected":
-        return "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200";
+        return `${base} bg-danger/15 text-danger`;
       default:
-        return "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200";
+        return `${base} bg-surface-subtle text-text-secondary`;
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="rounded-card border border-border-subtle bg-background-elevated p-6 shadow-card">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <h3 className="mb-2 text-lg font-semibold text-text-primary">
             {proposal.title}
           </h3>
-          <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-            <span
-              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}
-            >
-              {proposal.status}
-            </span>
+          <div className="flex items-center gap-3 text-sm text-text-tertiary">
+            <span className={getStatusColor()}>{proposal.status}</span>
             <span>{proposal.category}</span>
             <span>•</span>
             <span>
@@ -81,70 +78,74 @@ export function ProposalCard({
       </div>
 
       {/* Description */}
-      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+      <p className="mb-5 line-clamp-3 text-sm text-text-secondary">
         {proposal.description}
       </p>
 
       {/* Vote Results */}
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center justify-between text-sm">
+      <div className="mb-4 space-y-3">
+        <div className="flex items-center justify-between text-sm text-text-secondary">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-500" />
+            <CheckCircle className="h-4 w-4 text-success" />
             <span>Yes</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{proposal.yes_votes}</span>
-            <span className="text-gray-500">({yesPercentage.toFixed(1)}%)</span>
+          <div className="flex items-center gap-2 text-text-tertiary">
+            <span className="font-medium text-text-primary">
+              {proposal.yes_votes}
+            </span>
+            <span>({yesPercentage.toFixed(1)}%)</span>
           </div>
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div className="h-2 w-full rounded-full bg-border-subtle">
           <div
-            className="bg-green-500 h-2 rounded-full transition-all"
+            className="h-2 rounded-full bg-success transition-all"
             style={{ width: `${yesPercentage}%` }}
           />
         </div>
 
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-sm text-text-secondary">
           <div className="flex items-center gap-2">
-            <XCircle className="w-4 h-4 text-red-500" />
+            <XCircle className="h-4 w-4 text-danger" />
             <span>No</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{proposal.no_votes}</span>
-            <span className="text-gray-500">({noPercentage.toFixed(1)}%)</span>
+          <div className="flex items-center gap-2 text-text-tertiary">
+            <span className="font-medium text-text-primary">
+              {proposal.no_votes}
+            </span>
+            <span>({noPercentage.toFixed(1)}%)</span>
           </div>
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div className="h-2 w-full rounded-full bg-border-subtle">
           <div
-            className="bg-red-500 h-2 rounded-full transition-all"
+            className="h-2 rounded-full bg-danger transition-all"
             style={{ width: `${noPercentage}%` }}
           />
         </div>
 
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-sm text-text-secondary">
           <div className="flex items-center gap-2">
-            <Minus className="w-4 h-4 text-gray-500" />
+            <Minus className="h-4 w-4 text-text-tertiary" />
             <span>Abstain</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{proposal.abstain_votes}</span>
-            <span className="text-gray-500">
-              ({abstainPercentage.toFixed(1)}%)
+          <div className="flex items-center gap-2 text-text-tertiary">
+            <span className="font-medium text-text-primary">
+              {proposal.abstain_votes}
             </span>
+            <span>({abstainPercentage.toFixed(1)}%)</span>
           </div>
         </div>
       </div>
 
       {/* Voting Buttons */}
       {canVote && proposal.status === "active" && (
-        <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex gap-2 border-t border-border-subtle pt-4">
           <button
             onClick={() => onVote?.(proposal.proposal_id, "yes")}
             disabled={userVote === "yes"}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex-1 rounded-button px-4 py-2 text-sm font-medium transition-smooth ${
               userVote === "yes"
-                ? "bg-green-500 text-white"
-                : "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30"
+                ? "bg-success text-white shadow-card"
+                : "bg-success/10 text-success hover:bg-success/15"
             }`}
           >
             Vote Yes
@@ -152,10 +153,10 @@ export function ProposalCard({
           <button
             onClick={() => onVote?.(proposal.proposal_id, "no")}
             disabled={userVote === "no"}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex-1 rounded-button px-4 py-2 text-sm font-medium transition-smooth ${
               userVote === "no"
-                ? "bg-red-500 text-white"
-                : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
+                ? "bg-danger text-white shadow-card"
+                : "bg-danger/10 text-danger hover:bg-danger/15"
             }`}
           >
             Vote No
@@ -163,10 +164,10 @@ export function ProposalCard({
           <button
             onClick={() => onVote?.(proposal.proposal_id, "abstain")}
             disabled={userVote === "abstain"}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex-1 rounded-button px-4 py-2 text-sm font-medium transition-smooth ${
               userVote === "abstain"
-                ? "bg-gray-500 text-white"
-                : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                ? "bg-text-tertiary text-white shadow-card"
+                : "bg-surface-subtle text-text-secondary hover:bg-surface-strong/50"
             }`}
           >
             Abstain
@@ -176,7 +177,7 @@ export function ProposalCard({
 
       {/* User Vote Indicator */}
       {userVote && (
-        <div className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+        <div className="mt-3 text-sm text-text-tertiary">
           You voted: <span className="font-medium capitalize">{userVote}</span>
         </div>
       )}

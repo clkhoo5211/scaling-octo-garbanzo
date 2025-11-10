@@ -70,7 +70,7 @@ function ToastContainer({
   removeToast: (id: string) => void;
 }) {
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
       {toasts.map((toast) => (
         <ToastItem
           key={toast.id}
@@ -83,11 +83,30 @@ function ToastContainer({
 }
 
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
-  const typeStyles = {
-    success: "bg-green-500 text-white",
-    error: "bg-red-500 text-white",
-    info: "bg-blue-500 text-white",
-    warning: "bg-yellow-500 text-white",
+  const typeStyles: Record<
+    Toast["type"],
+    { container: string; badge: string; icon: string }
+  > = {
+    success: {
+      container: "border-success/40",
+      badge: "bg-success/15 text-success",
+      icon: "text-success",
+    },
+    error: {
+      container: "border-danger/40",
+      badge: "bg-danger/15 text-danger",
+      icon: "text-danger",
+    },
+    info: {
+      container: "border-info/40",
+      badge: "bg-info/15 text-info",
+      icon: "text-info",
+    },
+    warning: {
+      container: "border-warning/40",
+      badge: "bg-warning/20 text-warning/90",
+      icon: "text-warning",
+    },
   };
 
   const icons = {
@@ -100,20 +119,28 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[300px] max-w-md",
-        typeStyles[toast.type],
-        "animate-in slide-in-from-right"
+        "flex min-w-[300px] max-w-md items-start gap-3 rounded-card border-l-4 bg-surface-primary px-4 py-4 shadow-elevated text-text-primary transition-smooth animate-slide-up",
+        typeStyles[toast.type].container
       )}
     >
-      <span className="text-lg font-semibold">{icons[toast.type]}</span>
-      <p className="flex-1 text-sm">{toast.message}</p>
+      <span
+        className={cn(
+          "flex h-8 w-8 items-center justify-center rounded-full text-base font-semibold shadow-card",
+          typeStyles[toast.type].badge
+        )}
+      >
+        {icons[toast.type]}
+      </span>
+      <p className="flex-1 text-sm leading-relaxed text-text-secondary">
+        {toast.message}
+      </p>
       <button
         onClick={onClose}
-        className="text-white/80 hover:text-white transition-colors"
+        className="text-text-tertiary hover:text-text-primary transition-smooth"
         aria-label="Close toast"
       >
         <svg
-          className="w-4 h-4"
+          className="h-4 w-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

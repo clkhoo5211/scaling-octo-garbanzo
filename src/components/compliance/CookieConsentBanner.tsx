@@ -129,19 +129,19 @@ export function CookieConsentBanner() {
     <>
       {/* Cookie Consent Banner */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-300 shadow-lg p-4 md:p-6"
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background-elevated/95 px-4 py-5 shadow-elevated backdrop-blur"
         role="dialog"
         aria-label="Cookie consent"
         aria-modal="true"
       >
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-start gap-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-5 md:flex-row md:items-start">
             {/* Content */}
             <div className="flex-1">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 mt-1">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-warning/15 text-warning">
                   <svg
-                    className="w-6 h-6 text-gray-600"
+                    className="h-5 w-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -155,19 +155,19 @@ export function CookieConsentBanner() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-semibold text-text-primary">
                     We use cookies
                   </h3>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="mb-3 text-sm text-text-secondary">
                     We use cookies to enhance your browsing experience, analyze site traffic, and
                     personalize content. By clicking &quot;Accept All&quot;, you consent to our use of
                     cookies. You can customize your preferences or reject non-essential cookies.
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-text-tertiary">
                     Learn more in our{" "}
                     <a
                       href={`${basePath}/cookie-policy`}
-                      className="text-indigo-600 hover:text-indigo-700 underline"
+                      className="text-primary transition-smooth hover:text-primary-dark underline"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -176,7 +176,7 @@ export function CookieConsentBanner() {
                     and{" "}
                     <a
                       href={`${basePath}/privacy-policy`}
-                      className="text-indigo-600 hover:text-indigo-700 underline"
+                      className="text-primary transition-smooth hover:text-primary-dark underline"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -189,7 +189,7 @@ export function CookieConsentBanner() {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-2 md:items-start">
+            <div className="flex flex-col gap-2 sm:flex-row md:items-start">
               <Button
                 variant="outline"
                 size="sm"
