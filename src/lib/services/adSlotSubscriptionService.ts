@@ -2,10 +2,10 @@
  * Ad Slot Subscription Service
  * Handles subscribing/unsubscribing to ad slots for notifications
  * Per requirements: Award 10 points when subscribing
+ * 
+ * NOTE: Subscriptions are stored in Clerk publicMetadata, not Supabase
  */
 
-import { createPointsTransaction } from "@/lib/api/supabaseApi";
-import { supabase, isSupabaseDisabled } from "@/lib/services/supabase";
 // Type from Clerk useUser hook - user can be null
 type ClerkUser = NonNullable<ReturnType<typeof import("@clerk/clerk-react").useUser>['user']>;
 import { awardPoints } from "@/lib/services/pointsService";
@@ -28,6 +28,30 @@ export interface SubscribeToSlotParams {
 }
 
 /**
+ * Get subscriptions from Clerk publicMetadata
+ */
+function getSubscriptionsFromMetadata(user: ClerkUser): AdSlotSubscription[] {
+  const metadata = user.publicMetadata as Record<string, unknown>;
+  const subscriptions = metadata?.ad_slot_subscriptions as AdSlotSubscription[] | undefined;
+  return subscriptions || [];
+}
+
+/**
+ * Save subscriptions to Clerk publicMetadata
+ */
+async function saveSubscriptionsToMetadata(
+  user: ClerkUser,
+  subscriptions: AdSlotSubscription[]
+): Promise<void> {
+  await user.update({
+    publicMetadata: {
+      ...(user.publicMetadata as Record<string, unknown>),
+      ad_slot_subscriptions: subscriptions,
+    },
+  } as Parameters<typeof user.update>[0]);
+}
+
+/**
  * Subscribe to an ad slot for notifications
  * Awards 10 points (one-time) per requirements
  */
@@ -39,19 +63,11 @@ export async function subscribeToSlot({
   notificationPush = true,
 }: SubscribeToSlotParams): Promise<{ success: boolean; error?: string }> {
   try {
-    if (isSupabaseDisabled() || !supabase) {
-      console.debug("Supabase disabled - skipping subscription");
-      return { success: false, error: "Supabase disabled" };
-    }
+    // Get current subscriptions from Clerk metadata
+    const subscriptions = getSubscriptionsFromMetadata(user);
     
     // Check if already subscribed
-    const { data: existing } = await supabase
-      .from("slot_subscriptions")
-      .select("*")
-      .eq("clerk_id", userId)
-      .eq("slot_id", slotId)
-      .single();
-
+    const existing = subscriptions.find((sub) => sub.slot_id === slotId);
     if (existing) {
       return {
         success: false,
@@ -59,19 +75,19 @@ export async function subscribeToSlot({
       };
     }
 
-    // Create subscription
-    const { error: insertError } = await supabase
-      .from("slot_subscriptions")
-      .insert({
-        clerk_id: userId,
-        slot_id: slotId,
-        notification_email: notificationEmail,
-        notification_push: notificationPush,
-      });
+    // Create new subscription
+    const newSubscription: AdSlotSubscription = {
+      id: `${userId}-${slotId}-${Date.now()}`,
+      clerk_id: userId,
+      slot_id: slotId,
+      notification_email: notificationEmail,
+      notification_push: notificationPush,
+      created_at: new Date().toISOString(),
+    };
 
-    if (insertError) {
-      throw insertError;
-    }
+    // Save to Clerk metadata
+    const updatedSubscriptions = [...subscriptions, newSubscription];
+    await saveSubscriptionsToMetadata(user, updatedSubscriptions);
 
     // Award 10 points (one-time) per requirements
     const pointsResult = await awardPoints({
@@ -104,18 +120,20 @@ export async function subscribeToSlot({
  */
 export async function unsubscribeFromSlot(
   userId: string,
-  slotId: string
+  slotId: string,
+  user: ClerkUser
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
-      .from("slot_subscriptions")
-      .delete()
-      .eq("clerk_id", userId)
-      .eq("slot_id", slotId);
+    // Get current subscriptions from Clerk metadata
+    const subscriptions = getSubscriptionsFromMetadata(user);
+    
+    // Remove subscription
+    const updatedSubscriptions = subscriptions.filter(
+      (sub) => sub.slot_id !== slotId
+    );
 
-    if (error) {
-      throw error;
-    }
+    // Save to Clerk metadata
+    await saveSubscriptionsToMetadata(user, updatedSubscriptions);
 
     return {
       success: true,
@@ -133,24 +151,24 @@ export async function unsubscribeFromSlot(
  * Get all slots user is subscribed to
  */
 export async function getSubscribedSlots(
-  userId: string
+  userId: string,
+  user: ClerkUser
 ): Promise<{ data: AdSlotSubscription[]; error: Error | null }> {
   try {
-    const { data, error } = await supabase
-      .from("slot_subscriptions")
-      .select("*")
-      .eq("clerk_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      throw error;
-    }
+    // Get subscriptions from Clerk metadata
+    const subscriptions = getSubscriptionsFromMetadata(user);
+    
+    // Sort by created_at descending
+    const sortedSubscriptions = subscriptions.sort((a, b) => {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
     return {
-      data: (data || []) as AdSlotSubscription[],
+      data: sortedSubscriptions,
       error: null,
     };
   } catch (error) {
+    console.error("Failed to get subscribed slots:", error);
     return {
       data: [],
       error: error instanceof Error ? error : new Error("Unknown error"),
@@ -165,21 +183,36 @@ export async function updateSubscriptionPreferences(
   userId: string,
   slotId: string,
   notificationEmail: boolean,
-  notificationPush: boolean
+  notificationPush: boolean,
+  user: ClerkUser
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
-      .from("slot_subscriptions")
-      .update({
-        notification_email: notificationEmail,
-        notification_push: notificationPush,
-      })
-      .eq("clerk_id", userId)
-      .eq("slot_id", slotId);
+    // Get current subscriptions from Clerk metadata
+    const subscriptions = getSubscriptionsFromMetadata(user);
+    
+    // Find and update subscription
+    const updatedSubscriptions = subscriptions.map((sub) => {
+      if (sub.slot_id === slotId) {
+        return {
+          ...sub,
+          notification_email: notificationEmail,
+          notification_push: notificationPush,
+        };
+      }
+      return sub;
+    });
 
-    if (error) {
-      throw error;
+    // Check if subscription exists
+    const subscriptionExists = subscriptions.some((sub) => sub.slot_id === slotId);
+    if (!subscriptionExists) {
+      return {
+        success: false,
+        error: "Subscription not found",
+      };
     }
+
+    // Save to Clerk metadata
+    await saveSubscriptionsToMetadata(user, updatedSubscriptions);
 
     return {
       success: true,
@@ -192,4 +225,3 @@ export async function updateSubscriptionPreferences(
     };
   }
 }
-

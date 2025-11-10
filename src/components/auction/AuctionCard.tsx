@@ -62,7 +62,7 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
   // Check subscription status
   useEffect(() => {
     if (user) {
-      getSubscribedSlots(user.id).then((result) => {
+      getSubscribedSlots(user.id, user).then((result) => {
         if (!result.error) {
           const subscribed = result.data.some((sub) => sub.slot_id === slotId);
           setIsSubscribed(subscribed);
@@ -113,7 +113,7 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
 
     setIsUpdating(true);
     try {
-      const result = await unsubscribeFromSlot(user.id, slotId);
+      const result = await unsubscribeFromSlot(user.id, slotId, user);
 
       if (result.success) {
         setIsSubscribed(false);
@@ -121,6 +121,7 @@ export function AuctionCard({ auction, onBid, txHash }: AuctionCardProps) {
           message: "Unsubscribed from ad slot",
           type: "success",
         });
+        await user.reload(); // Refresh to update metadata
       } else {
         addToast({
           message: result.error || "Failed to unsubscribe",

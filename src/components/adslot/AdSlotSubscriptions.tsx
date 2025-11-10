@@ -35,7 +35,7 @@ export function AdSlotSubscriptions() {
     
     setIsLoading(true);
     try {
-      const result = await getSubscribedSlots(user.id);
+      const result = await getSubscribedSlots(user.id, user);
       if (result.error) {
         throw result.error;
       }
@@ -91,13 +91,15 @@ export function AdSlotSubscriptions() {
 
     setUpdatingSlot(slotId);
     try {
-      const result = await unsubscribeFromSlot(user.id, slotId);
+      const result = await unsubscribeFromSlot(user.id, slotId, user);
 
       if (result.success) {
         addToast({
           message: "Unsubscribed from ad slot",
           type: "success",
         });
+        // Reload user to refresh metadata
+        await user.reload();
         await loadSubscriptions();
       } else {
         addToast({
