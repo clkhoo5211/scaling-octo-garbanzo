@@ -1,11 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
 import { User, Wallet, Bookmark, Heart, MessageCircle, Crown, Star } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import type { UserResource } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
+import { verifyAccountSetupComplete } from "@/lib/services/accountVerificationService";
+
+type UserResource = NonNullable<ReturnType<typeof useUser>["user"]>;
 
 interface StatsSectionProps {
-  user: UserResource;
+  user: UserResource | null;
   address?: string;
   isConnected?: boolean;
 }
@@ -16,6 +20,10 @@ interface StatsSectionProps {
  * Can be used with both Clerk UserProfile and custom ProfilePage
  */
 export function StatsSection({ user, address, isConnected }: StatsSectionProps) {
+  if (!user) {
+    return null;
+  }
+
   const points = (user.publicMetadata?.points as number) || 0;
   const subscriptionTier = (user.publicMetadata?.subscription_tier as string) || "free";
   const subscriptionExpiry = user.publicMetadata?.subscription_expiry as string | null;
@@ -25,6 +33,24 @@ export function StatsSection({ user, address, isConnected }: StatsSectionProps) 
   const loginStreak = (user.publicMetadata?.login_streak as number) || 0;
   const reownAddress = (user.publicMetadata?.reown_address as string) || address || "Not connected";
   const smartAccountAddress = (user.publicMetadata?.smart_account_address as string) || address || "Not connected";
+  
+  // Verify account setup completion: Check if Reown address matches Clerk metadata
+  const isAccountSetupComplete = verifyAccountSetupComplete(user, address);
+  
+  // Only log verification status occasionally to avoid spam (every 5 seconds)
+  useEffect(() => {
+    const logInterval = setInterval(() => {
+      console.log("📊 StatsSection - Account verification:", {
+        reownAddress,
+        smartAccountAddress,
+        currentAddress: address,
+        isAccountSetupComplete,
+        isConnected,
+      });
+    }, 5000); // Log every 5 seconds instead of on every render
+    
+    return () => clearInterval(logInterval);
+  }, [reownAddress, smartAccountAddress, address, isAccountSetupComplete, isConnected]);
 
   const getTierBadge = (tier: string) => {
     switch (tier) {
@@ -80,12 +106,24 @@ export function StatsSection({ user, address, isConnected }: StatsSectionProps) 
                 : "recently"}
             </p>
             {isConnected && reownAddress && (
-              <div className="mt-2 flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                <Wallet size={14} className="sm:w-4 sm:h-4" />
-                <span className="font-mono truncate">
-                  {reownAddress.substring(0, 6)}...
-                  {reownAddress.substring(reownAddress.length - 4)}
-                </span>
+              <div className="mt-2 flex flex-col gap-1">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  <Wallet size={14} className="sm:w-4 sm:h-4" />
+                  <span className="font-mono truncate">
+                    {reownAddress.substring(0, 6)}...
+                    {reownAddress.substring(reownAddress.length - 4)}
+                  </span>
+                  {isAccountSetupComplete && (
+                    <span className="text-xs text-green-600 dark:text-green-400 font-semibold">
+                      ✓ Verified
+                    </span>
+                  )}
+                </div>
+                {!isAccountSetupComplete && address && (
+                  <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                    ⚠️ Account setup incomplete - addresses don't match
+                  </p>
+                )}
               </div>
             )}
             {smartAccountAddress && smartAccountAddress !== reownAddress && (

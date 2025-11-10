@@ -5,6 +5,10 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import { ReactNode } from "react";
 import { EmailPrompt } from "./EmailPrompt";
+import {
+  storeAccountLink,
+  getClerkUserIdByReownAddress,
+} from "@/lib/services/accountLinkingService";
 
 /**
  * Reown-Clerk Integration Component
@@ -43,6 +47,7 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
   const [hasAttemptedCreation, setHasAttemptedCreation] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [pendingAddress, setPendingAddress] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false); // Prevent multiple simultaneous syncs
 
   useEffect(() => {
     // Only process when Clerk is loaded
@@ -59,20 +64,27 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Case 1: Reown connected + Clerk user exists → Sync metadata
+    // Case 1: Reown connected + Clerk user exists → Sync metadata and store account link
     if (isConnected && address && clerkUser && auth.isSignedIn) {
+      const normalizedAddress = address.toLowerCase();
       const currentReownAddress = (clerkUser.publicMetadata as Record<string, unknown>)?.reown_address as
         | string
         | undefined;
 
+      // Store account link: reownAddress → clerkUserId
+      storeAccountLink(normalizedAddress, clerkUser.id);
+
       // Sync Reown address to Clerk metadata if missing or different
-      if (!currentReownAddress || currentReownAddress !== address) {
+      if (!currentReownAddress || currentReownAddress.toLowerCase() !== normalizedAddress) {
         clerkUser
           .update({
+            publicMetadata: {
+              ...(clerkUser.publicMetadata as Record<string, unknown> || {}),
+              reown_address: normalizedAddress,
+              smart_account_address: normalizedAddress, // Smart account address (same as Reown address)
+            },
             unsafeMetadata: {
               ...(clerkUser.unsafeMetadata as Record<string, unknown> || {}),
-              reown_address: address,
-              smart_account_address: address, // Smart account address (same as Reown address)
               // Ensure all required metadata fields exist
               points: (clerkUser.publicMetadata as Record<string, unknown>)?.points ?? 0,
               subscription_tier: (clerkUser.publicMetadata as Record<string, unknown>)?.subscription_tier ?? "free",
@@ -82,6 +94,10 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
               login_streak: (clerkUser.publicMetadata as Record<string, unknown>)?.login_streak ?? 0,
             },
           } as Parameters<typeof clerkUser.update>[0])
+          .then(() => {
+            // Ensure account link is stored after metadata update
+            storeAccountLink(normalizedAddress, clerkUser.id);
+          })
           .catch((error: unknown) => {
             console.error("Failed to sync Reown address to Clerk:", error);
           });
@@ -89,11 +105,24 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Case 2: Reown connected + No Clerk user → Prompt for email or create Clerk user
+    // Case 2: Reown connected + No Clerk user → Check account link, then prompt/create
     // This happens automatically after Reown login
     if (isConnected && address && !clerkUser && !auth.isSignedIn && !hasAttemptedCreation && auth.signUp) {
+      const normalizedAddress = address.toLowerCase();
+      
+      // Check if account link exists (user previously created Clerk account)
+      const storedClerkUserId = getClerkUserIdByReownAddress(normalizedAddress);
+      
+      if (storedClerkUserId) {
+        console.log(`🔗 Found account link: ${normalizedAddress} → Clerk ${storedClerkUserId}`);
+        console.log("⚠️ Note: Clerk SDK doesn't support signing in by ID client-side.");
+        console.log("   User needs to complete account setup via email verification.");
+        // Account link exists but user not signed in - they need to complete setup
+        // This will be handled by the email prompt flow below
+      }
+      
       // Check if email is already stored
-      const storedEmail = localStorage.getItem(`reown_email_${address}`);
+      const storedEmail = localStorage.getItem(`reown_email_${normalizedAddress}`);
       
       if (!storedEmail && !showEmailPrompt) {
         // No email stored - show prompt
@@ -131,26 +160,17 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
           return null;
         })
         .then((userId: string | null | undefined) => {
-          if (userId && clerkUser) {
-            // Update metadata with Reown address and user data
-            return clerkUser.update({
-              unsafeMetadata: {
-                reown_address: address,
-                smart_account_address: address,
-                points: 0,
-                subscription_tier: "free",
-                referral_code: generateReferralCode(),
-                total_submissions: 0,
-                total_upvotes: 0,
-                login_streak: 0,
-                created_at: new Date().toISOString(),
-                created_via: "reown_smart_account",
-              },
-            } as Parameters<typeof clerkUser.update>[0]);
+          if (userId) {
+            // Store account link: reownAddress → clerkUserId
+            storeAccountLink(normalizedAddress, userId);
+            
+            // Note: clerkUser might not be available yet, so we'll update metadata
+            // in the next effect cycle when clerkUser becomes available
+            console.log(`✅ Clerk user created: ${userId}, account link stored`);
+            
+            // Reload to get the new Clerk user
+            window.location.reload();
           }
-        })
-        .then(() => {
-          console.log("✅ Clerk user created silently for user management");
         })
         .catch((error: unknown) => {
           console.error("Failed to create Clerk user:", error);
@@ -166,6 +186,7 @@ export function ReownClerkIntegration({ children }: { children: ReactNode }) {
     auth.signUp,
     hasAttemptedCreation,
     showEmailPrompt,
+    isSyncing, // Add isSyncing to dependencies
   ]);
 
   // Handle email prompt callbacks

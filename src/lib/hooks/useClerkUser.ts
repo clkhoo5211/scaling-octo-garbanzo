@@ -77,55 +77,9 @@ export function useClerkUser() {
     }
   }, []);
 
-  // Sync Reown address to Clerk metadata when both are available
-  // Skip sync if mock user is active (development mode)
-  useEffect(() => {
-    if (
-      mockUser ||
-      !clerkLoaded ||
-      !clerkUser ||
-      !isSignedIn ||
-      !isConnected ||
-      !address ||
-      isSyncing
-    ) {
-      return;
-    }
-
-    const currentReownAddress = clerkUser.publicMetadata?.reown_address as
-      | string
-      | undefined;
-
-    // Update Clerk metadata if Reown address is missing or different
-    if (!currentReownAddress || currentReownAddress !== address) {
-      setIsSyncing(true);
-      clerkUser
-        .update({
-          publicMetadata: {
-            ...clerkUser.publicMetadata,
-            reown_address: address,
-            smart_account_address: address,
-          },
-        })
-        .then(() => {
-          console.log("Synced Reown address to Clerk metadata");
-        })
-        .catch((error) => {
-          console.error("Failed to sync Reown address:", error);
-        })
-        .finally(() => {
-          setIsSyncing(false);
-        });
-    }
-  }, [
-    address,
-    isConnected,
-    clerkUser,
-    clerkLoaded,
-    isSignedIn,
-    isSyncing,
-    mockUser,
-  ]);
+  // REMOVED: Duplicate sync logic - ReownClerkIntegration handles this
+  // This was causing infinite loops and 429 errors
+  // The sync is now handled exclusively by ReownClerkIntegration component
 
   // Priority 1: Mock user (development/admin key login)
   if (mockUser && mockUserLoaded) {

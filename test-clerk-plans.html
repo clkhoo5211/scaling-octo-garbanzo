@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clerk Subscription Plans Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        #pricing-table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Clerk Subscription Plans Verification</h1>
+    
+    <div id="status"></div>
+    <div id="pricing-table"></div>
+
+    <script>
+        const publishableKey = 'pk_test_ZmFpdGhmdWwtbW9uZ2Vyc2UuY2xlcmsuYWNjb3VudHMuZGV2JA'; // From your .env.local
+        
+        const statusDiv = document.getElementById('status');
+        
+        function showStatus(message, type = 'info') {
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        async function testClerkPlans() {
+            try {
+                showStatus('🔄 Initializing Clerk...', 'info');
+                
+                // Initialize Clerk
+                const clerk = new Clerk(publishableKey);
+                await clerk.load();
+                
+                showStatus('✅ Clerk initialized successfully!', 'success');
+                
+                // Check if billing is available
+                if (clerk.billing) {
+                    showStatus('✅ Clerk Billing is available!', 'success');
+                    
+                    // Try to access pricing table
+                    try {
+                        // Create pricing table element
+                        const pricingDiv = document.getElementById('pricing-table');
+                        pricingDiv.innerHTML = '<h2>Pricing Table Component:</h2>';
+                        
+                        // Note: PricingTable is a React component, so we can't directly render it here
+                        // But we can check if the billing API is accessible
+                        showStatus('✅ Billing API is accessible! Plans should be visible in your React app.', 'success');
+                        showStatus('💡 To verify plans: Visit your app\'s /subscription page and check if PricingTable shows your plans.', 'info');
+                        
+                    } catch (error) {
+                        showStatus(`⚠️ Error accessing billing: ${error.message}`, 'error');
+                    }
+                } else {
+                    showStatus('❌ Clerk Billing is not available. Make sure billing is enabled in Clerk Dashboard.', 'error');
+                }
+                
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        // Run test
+        testClerkPlans();
+    </script>
+</body>
+</html>
+

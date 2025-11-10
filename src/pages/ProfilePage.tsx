@@ -10,12 +10,12 @@ import { formatDistanceToNow } from "date-fns";
 import { PointsConversion } from "@/components/points/PointsConversion";
 import { AdSlotSubscriptions } from "@/components/adslot/AdSlotSubscriptions";
 import { useProfileCompletionPoints } from "@/lib/hooks/useProfileCompletion";
-import { Link } from "react-router-dom";
-import { UserProfile } from "@clerk/clerk-react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { StatsSection } from "@/components/profile/StatsSection";
 import { CLERK_BILLING_ENABLED } from "@/lib/config/clerkBilling";
 import { useAuth } from "@clerk/clerk-react";
+import { useToast } from "@/components/ui/Toast";
 
 /**
  * ProfilePage Component
@@ -28,6 +28,55 @@ export default function ProfilePage() {
   const { address, isConnected } = useAppKitAccount();
   const { isSignedIn: isClerkSignedIn } = useAuth();
   const [useClerkBilling, setUseClerkBilling] = useState(CLERK_BILLING_ENABLED);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { addToast } = useToast();
+  
+  // Handle Clerk redirect status parameters
+  useEffect(() => {
+    const clerkStatus = searchParams.get("__clerk_status");
+    if (clerkStatus === "client_mismatch") {
+      addToast({
+        message: "Email verification link opened in different browser/device. Please open the link in the same browser where you started signup.",
+        type: "warning",
+      });
+      // Remove the status parameter from URL
+      searchParams.delete("__clerk_status");
+      navigate(`/profile?${searchParams.toString()}`, { replace: true });
+    } else if (clerkStatus === "expired") {
+      addToast({
+        message: "Verification link has expired. Please request a new one.",
+        type: "error",
+      });
+      searchParams.delete("__clerk_status");
+      navigate(`/profile?${searchParams.toString()}`, { replace: true });
+    } else if (clerkStatus === "verified") {
+      addToast({
+        message: "Email verified successfully!",
+        type: "success",
+      });
+      
+      // Broadcast verification completion to other tabs
+      if (address) {
+        try {
+          // Method 1: BroadcastChannel
+          const broadcastChannel = new BroadcastChannel(`clerk_verification_${address}`);
+          broadcastChannel.postMessage({ type: 'verification_complete' });
+          broadcastChannel.close();
+          
+          // Method 2: localStorage flag (triggers storage event in other tabs)
+          localStorage.setItem(`clerk_verification_complete_${address}`, 'true');
+          
+          console.log("📢 Broadcasted verification completion to other tabs");
+        } catch (e) {
+          console.warn("Failed to broadcast verification completion:", e);
+        }
+      }
+      
+      searchParams.delete("__clerk_status");
+      navigate(`/profile?${searchParams.toString()}`, { replace: true });
+    }
+  }, [searchParams, navigate, addToast]);
   
   // Check and award profile completion points
   const { isComplete, hasBeenAwarded } = useProfileCompletionPoints();
@@ -59,17 +108,32 @@ export default function ProfilePage() {
   // Use Clerk's UserProfile component if billing is enabled AND user is signed in to Clerk
   // Note: <UserProfile /> requires auth.isSignedIn to be true
   // Since authentication is via Reown, we only show UserProfile if Clerk session exists
+  // Instead of embedding UserProfile here, redirect to dedicated account settings page
   if (useClerkBilling && isClerkSignedIn && user) {
+    // Show custom profile with link to full-page account settings
     return (
       <ErrorBoundary>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-          {/* Custom Stats Section (keep your custom stats) */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-20 md:pb-8">
+          {/* Custom Stats Section */}
           <div className="mb-6">
             <StatsSection user={user} address={address} isConnected={isConnected} />
           </div>
           
-          {/* Clerk's UserProfile Component (includes billing tab) */}
-          <UserProfile />
+          {/* Link to full-page account settings */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Account Settings
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Manage your account, billing, security, and more.
+            </p>
+            <Link
+              to="/account"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+            >
+              Open Account Settings
+            </Link>
+          </div>
         </div>
       </ErrorBoundary>
     );
@@ -113,7 +177,7 @@ export default function ProfilePage() {
 
   return (
     <ErrorBoundary>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-20 md:pb-8">
         {/* Stats Section (reusable component) */}
         <StatsSection user={user} address={address} isConnected={isConnected} />
 
@@ -171,7 +235,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Ad Slot Subscriptions */}
-        <div className="mb-4 sm:mb-6">
+        <div className="mb-4 sm:mb-6 pb-4 md:pb-0">
           <AdSlotSubscriptions />
         </div>
       </div>

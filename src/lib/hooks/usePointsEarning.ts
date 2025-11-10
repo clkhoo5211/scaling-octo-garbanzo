@@ -144,9 +144,10 @@ export function useAwardDailyLoginPoints() {
 
       if (result.success) {
         // Update login streak metadata using actual Clerk user
+        // CRITICAL: Must use proper structure - Clerk expects publicMetadata object
         await clerkUser.update({
           publicMetadata: {
-            ...clerkUser.publicMetadata,
+            ...(clerkUser.publicMetadata as Record<string, unknown> || {}),
             last_login_date: today,
             login_streak: streak,
           },

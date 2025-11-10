@@ -48,12 +48,13 @@ export async function awardPoints({
     const newBalance = currentPoints + amount;
 
     // Update Clerk metadata
+    // CRITICAL: Must use proper structure - Clerk expects publicMetadata object, not public_metadata
     await user.update({
       publicMetadata: {
-        ...(user.publicMetadata as Record<string, any>),
+        ...(user.publicMetadata as Record<string, unknown> || {}),
         points: newBalance,
       },
-    } as any);
+    });
 
     // Log transaction to Supabase for audit trail
     await createPointsTransaction({
@@ -168,15 +169,17 @@ export async function convertPointsToUSDT({
       ? ((user.publicMetadata?.daily_converted_points as number) || 0) + points
       : points;
 
+    // Update Clerk metadata
+    // CRITICAL: Must use proper structure - Clerk expects publicMetadata object, not public_metadata
     await user.update({
       publicMetadata: {
-        ...(user.publicMetadata as Record<string, any>),
+        ...(user.publicMetadata as Record<string, unknown> || {}),
         points: newBalance,
         last_conversion_date: today,
         daily_converted_points: newDailyConverted,
         usdt_balance_offchain: ((user.publicMetadata?.usdt_balance_offchain as number) || 0) + netUSDT,
       },
-    } as any);
+    });
 
     // Log transaction to Supabase
     await createPointsTransaction({

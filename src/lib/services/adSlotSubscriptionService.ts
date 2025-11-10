@@ -78,10 +78,10 @@ export async function subscribeToSlot({
     // Create new subscription
     const newSubscription: AdSlotSubscription = {
       id: `${userId}-${slotId}-${Date.now()}`,
-      clerk_id: userId,
-      slot_id: slotId,
-      notification_email: notificationEmail,
-      notification_push: notificationPush,
+        clerk_id: userId,
+        slot_id: slotId,
+        notification_email: notificationEmail,
+        notification_push: notificationPush,
       created_at: new Date().toISOString(),
     };
 
@@ -195,8 +195,8 @@ export async function updateSubscriptionPreferences(
       if (sub.slot_id === slotId) {
         return {
           ...sub,
-          notification_email: notificationEmail,
-          notification_push: notificationPush,
+        notification_email: notificationEmail,
+        notification_push: notificationPush,
         };
       }
       return sub;
